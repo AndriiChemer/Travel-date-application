@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>745993970453-ma56pkj4soaevilujjnc2q67oqb3ch1n.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.745993970453-ma56pkj4soaevilujjnc2q67oqb3ch1n</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAtY8dBkJ3NAb_eL0QUyuBghLy-7Rldfxo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>745993970453</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.andrii.travelDateApp</string>
+	<key>PROJECT_ID</key>
+	<string>date-app-83856</string>
+	<key>STORAGE_BUCKET</key>
+	<string>date-app-83856.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:745993970453:ios:7dddcec86c1a99c61f3f1c</string>
+	<key>DATABASE_URL</key>
+	<string>https://date-app-83856.firebaseio.com</string>
+</dict>
+</plist>
