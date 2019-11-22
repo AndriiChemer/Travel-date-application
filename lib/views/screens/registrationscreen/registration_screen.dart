@@ -55,8 +55,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Widget _nameInputField() {
-    return TextField(
+    return TextFormField(
       autofocus: false,
+      validator: null,
       style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
       decoration: InputDecoration(
           filled: true,
@@ -77,8 +78,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Widget _emailInputField() {
-    return TextField(
+    return TextFormField(
       autofocus: false,
+      keyboardType: TextInputType.emailAddress,
+      validator: null,
       style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
       decoration: InputDecoration(
           filled: true,
@@ -104,8 +107,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _selectCountry(),
         SizedBox(width: 10,),
         Flexible(
-          child: TextField(
+          child: TextFormField(
             autofocus: false,
+            keyboardType: TextInputType.phone,
+            validator: null,
             style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
             decoration: InputDecoration(
                 filled: true,
