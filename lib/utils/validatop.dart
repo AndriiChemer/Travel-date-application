@@ -1,27 +1,37 @@
-class CheckFields {
-//https://medium.com/@nitishk72/form-validation-in-flutter-d762fbc9212c
-  String isNameValid(String name) {
-    if(name != null) {
+import 'package:email_validator/email_validator.dart';
+
+class ValidateFields {
+
+  static String isNameValid(String name) {
+    if(name != null && name.isNotEmpty) {
       return null;
     } else {
-      return "Must not be empty";
+      return "Please enter name";
     }
   }
 
-  String isEmailValid(String email) {
-    if(email != null) {
-      return null;
+  static String isEmailValid(String email) {
+    if(email != null && email.isNotEmpty) {
+      if(EmailValidator.validate(email)) {
+        return null;
+      } else {
+        return "Please enter valid email.\nEmail must look like mail@mail.domain";
+      }
     } else {
-      return "Must not be empty";
+      return "Please enter email";
     }
   }
 
-  String isPhoneValid(String phone) {
-    if(phone != null) {
-      return null;
-    } else {
-      return "Must not be empty";
+  static String isPhoneValid(String phone) {
+    String patttern = "[0-9]{8,13}w";
+    RegExp regExp = new RegExp(patttern);
+
+    if (phone.length == 0) {
+      return 'Please enter mobile number';
+    } else if(!regExp.hasMatch(phone) && phone.length > 13) {
+      return 'Please enter valid mobile number';
     }
+    return null;
   }
 
 }

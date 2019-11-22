@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/utils/validatop.dart';
+import 'package:travel_date_app/views/screens/authflow/verifymobilenumber/verifynumber.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
@@ -15,6 +17,8 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
 
   CountryCode _selectedCountry;
   bool isTermsChecked = false;
@@ -27,27 +31,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         key: _scaffoldKey,
         body: Container(
           padding: EdgeInsets.only(left: 30, right: 30, top: 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(Strings.sing_up, style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.w500),),
-              Flexible(child: SizedBox(height: 60,),),
-              _nameInputField(),
-              Flexible(child: SizedBox(height: 20,),),
-              _emailInputField(),
-              Flexible(child: SizedBox(height: 20,),),
-              _phoneInputField(),
-              Flexible(child: SizedBox(height: 20,),),
-              _termsCheckBox(context),
-              SizedBox(height: 30,),
-              _buttonSingUp(context),
-              Flexible(child: SizedBox(height: 40,),),
-              Center(child: Text(Strings.or.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),),
-              Flexible(child: SizedBox(height: 40,),),
-              _socialMedias(),
-              Flexible(child: SizedBox(height: 40,),),
-              _singInButton(),
-            ],
+          child: Form(
+            key: _formKey,
+            autovalidate: _autoValidate,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(Strings.sing_up, style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.w500),),
+                Flexible(child: SizedBox(height: 60,),),
+                _nameInputField(),
+                Flexible(child: SizedBox(height: 20,),),
+                _emailInputField(),
+                Flexible(child: SizedBox(height: 20,),),
+                _phoneInputField(),
+                Flexible(child: SizedBox(height: 20,),),
+                _termsCheckBox(context),
+                SizedBox(height: 30,),
+                _buttonSingUp(context),
+                Flexible(child: SizedBox(height: 40,),),
+                Center(child: Text(Strings.or.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),),
+                Flexible(child: SizedBox(height: 40,),),
+                _socialMedias(),
+                Flexible(child: SizedBox(height: 40,),),
+                _singInButton(),
+              ],
+            ),
           ),
         ),
       )
@@ -57,14 +65,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget _nameInputField() {
     return TextFormField(
       autofocus: false,
-      validator: null,
-      style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
+      validator: ValidateFields.isNameValid,
+      style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,
           hintText: Strings.name,
           prefixIcon: Icon(Icons.person, color: Colors.grey[800],),
-          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
@@ -81,14 +89,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return TextFormField(
       autofocus: false,
       keyboardType: TextInputType.emailAddress,
-      validator: null,
-      style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
+      validator: ValidateFields.isEmailValid,
+      style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,
           hintText: Strings.email,
           prefixIcon: Icon(Icons.email, color: Colors.grey[800],),
-          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
@@ -110,14 +118,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: TextFormField(
             autofocus: false,
             keyboardType: TextInputType.phone,
-            validator: null,
-            style: TextStyle(fontSize: 22.0, color: Color(0xFFbdc6cf)),
+            validator: ValidateFields.isPhoneValid,
+            style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
                 hintText: Strings.phone_number,
                 prefixIcon: Icon(Icons.phone_iphone, color: Colors.grey[800],),
-                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                     borderRadius: BorderRadius.only(bottomRight: Radius.circular(25.7), topRight: Radius.circular(25.7)),
@@ -194,7 +202,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         textColor: Colors.white,
         child: Text(Strings.sing_up.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
         onPressed: () {
-          showFeatureNotImplementedYet();
+          _validateInputs();
         },
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(30.0),
@@ -328,5 +336,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     setState(() {
       _selectedCountry = countryCode;
     });
+  }
+
+  void _validateInputs() {
+    if (_formKey.currentState.validate() && isTermsChecked) {
+//    If all data are correct then save data to out variables
+      _formKey.currentState.save();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyMobileNumberScreen()));
+    } else {
+//    If all data are not valid then start auto validation.
+      setState(() {
+        _autoValidate = true;
+      });
+    }
   }
 }
