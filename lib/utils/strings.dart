@@ -20,4 +20,10 @@ class Strings {
   static const String verify_mobile_description = "It is important to verify the mobile number that is registered against your account.";
   static const String nave_nor_received_code = "I haven't received code.";
 
+  //Set Age Screen
+  static const String who_are_you = "Who are you?";
+  static const String age_title = "Age?";
+  static const String male = "Male";
+  static const String female = "Female";
+
 }

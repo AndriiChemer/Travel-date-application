@@ -12,6 +12,7 @@ class MainBackground extends StatefulWidget {
 }
 
 class _MainBackgroundState extends State<MainBackground> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +23,7 @@ class _MainBackgroundState extends State<MainBackground> {
           )
       ),
       child: Container(
-        color: Colors.black.withOpacity(0.55),
+          color: Colors.black.withOpacity(0.55),
           child: widget.child
       ),
     );

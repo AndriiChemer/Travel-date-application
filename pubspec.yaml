@@ -23,6 +23,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   shimmer:
+  flutter_cupertino_date_picker: ^1.0.12
+  intl: ^0.16.0
   email_validator: '^1.0.0'
   cupertino_icons: ^0.1.2
   bloc_pattern: ^2.3.2
@@ -58,6 +60,8 @@ flutter:
     - assets/images/socialmedia/google-plus.png
     - assets/images/socialmedia/instagram.png
     - assets/images/socialmedia/snapchat-ghost.png
+    - assets/images/material/man_icon.png
+    - assets/images/material/women_icon.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
