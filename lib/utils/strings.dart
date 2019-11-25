@@ -25,5 +25,14 @@ class Strings {
   static const String age_title = "Age?";
   static const String male = "Male";
   static const String female = "Female";
+  static const String select_age = "Select age";
+  static const String select_button = "Select";
+  static const String next = "Next";
+  static const String male_error = "Please select who are you!";
+  static const String age_error = "Please choose your age!";
+
+  //Set Age Screen
+  static const String interests = "Interests?";
+  static const String search = "Search?";
 
 }

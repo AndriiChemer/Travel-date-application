@@ -62,6 +62,14 @@ flutter:
     - assets/images/socialmedia/snapchat-ghost.png
     - assets/images/material/man_icon.png
     - assets/images/material/women_icon.png
+    - assets/images/interests/pie_category.jpg
+    - assets/images/interests/technology_category.jpg
+    - assets/images/interests/travel_category.jpg
+    - assets/images/interests/music_category.jpg
+    - assets/images/interests/art_category.jpg
+    - assets/images/interests/drinks_category.jpg
+    - assets/images/interests/news_category.jpg
+    - assets/images/interests/beauty_category.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

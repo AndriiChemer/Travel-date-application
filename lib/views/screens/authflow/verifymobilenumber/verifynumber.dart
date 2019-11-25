@@ -3,9 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/screens/authflow/successverify/success_verify.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class VerifyMobileNumberScreen extends StatefulWidget {
@@ -188,8 +186,7 @@ class _VerifyMobileNumberScreenState extends State<VerifyMobileNumberScreen> {
     setState(() {
       isProgressLoad = false;
     });
-
-    Navigator.push(context, MaterialPageRoute(builder: (context) => VerifySuccess()));
+    Navigator.pushReplacementNamed(context, '/verifyphone');
   }
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {

@@ -117,6 +117,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         Flexible(
           child: TextFormField(
             autofocus: false,
+            textInputAction: TextInputAction.done,
             keyboardType: TextInputType.phone,
             validator: ValidateFields.isPhoneValid,
             style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),

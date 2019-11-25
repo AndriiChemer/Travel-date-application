@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:travel_date_app/views/screens/authflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class VerifySuccess extends StatefulWidget {
@@ -74,7 +73,7 @@ class _VerifySuccessState extends State<VerifySuccess> {
 
   continueRegistrationScreen() async {
     Timer(Duration(seconds: 2), (){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => AgeScreen()));
+      Navigator.pushReplacementNamed(context, '/setage');
     });
   }
 

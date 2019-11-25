@@ -34,7 +34,7 @@ class _SplashState extends State<Splash> {
   }
 
   Future<Timer> loadData() async {
-    return Timer(Duration(seconds: 3), onDoneLoading);
+    return Timer(Duration(seconds: 2), onDoneLoading);
   }
 
   onDoneLoading() {
