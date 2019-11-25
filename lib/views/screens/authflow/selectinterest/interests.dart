@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/interest_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/screens/authflow/setpasswordscreen/set_password.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class InterestsScreen extends StatefulWidget {
@@ -207,6 +208,6 @@ class _InterestsScreenState extends State<InterestsScreen> {
   }
 
   _onButtonNextClick() {
-    //TODO open next screen
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SetPasswordScreen()));
   }
 }

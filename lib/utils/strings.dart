@@ -35,4 +35,9 @@ class Strings {
   static const String interests = "Interests?";
   static const String search = "Search?";
 
+  //Set Password Screen
+  static const String set_password = "Set password";
+  static const String password = "Password";
+  static const String confirm_password = "Confirm Password";
+
 }
