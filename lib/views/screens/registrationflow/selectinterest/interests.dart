@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/interest_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/screens/authflow/setpasswordscreen/set_password.dart';
+import 'package:travel_date_app/views/screens/registrationflow/setpasswordscreen/set_password.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class InterestsScreen extends StatefulWidget {
@@ -127,7 +127,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
         childAspectRatio: (itemWidth / itemHeight),
         padding: const EdgeInsets.all(10),
         children: searchList.map((InterestModel model) {
-          return _interestItem(model, itemWidth);
+          return _interestItem(model, itemWidth, itemHeight);
         }).toList(),
       ),
     );
@@ -157,7 +157,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
     );
   }
 
-  Container _interestItem(InterestModel model, double itemHeight) {
+  Container _interestItem(InterestModel model, double itemWidth, double itemHeight) {
     return Container(
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -171,14 +171,11 @@ class _InterestsScreenState extends State<InterestsScreen> {
           });
         },
         child: Stack(
-
           children: <Widget>[
+
             Column(
               children: <Widget>[
-                ClipRRect(
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(10), topLeft: Radius.circular(10), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
-                    child: Image.asset(model.image, fit: BoxFit.cover, height: itemHeight - 50,)
-                ),
+                _itemImage(model, itemWidth, itemHeight),
                 Container(
                   child: Expanded(
                     child: Align(
@@ -205,6 +202,32 @@ class _InterestsScreenState extends State<InterestsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _itemImage(InterestModel model, double itemWidth, double itemHeight) {
+    return Container(
+      width: itemWidth,
+      height: itemWidth - 25,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10), bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        image: DecorationImage(
+          image: AssetImage(model.image, ),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: FractionalOffset.topCenter,
+            end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
+            colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
+            tileMode: TileMode.repeated, // repeats the gradient over the canvas
+          ),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10),  bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        ),
+      ),
+    );
+
   }
 
   _onButtonNextClick() {

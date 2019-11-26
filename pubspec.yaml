@@ -36,6 +36,7 @@ dependencies:
   shared_preferences: ^0.5.4+3
   country_code_picker: 1.1.7
   firebase_auth: ^0.15.0+1
+  flutter_svg: ^0.15.0
 #  firebase_messaging: ^6.0.1
 #  firebase_analytics: ^5.0.6
 #  firebase_database: ^3.1.0
@@ -70,6 +71,7 @@ flutter:
     - assets/images/interests/drinks_category.jpg
     - assets/images/interests/news_category.jpg
     - assets/images/interests/beauty_category.jpg
+    - assets/images/icons/lips_icon.svg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

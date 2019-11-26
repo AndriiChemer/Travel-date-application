@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
-import 'package:travel_date_app/views/screens/authflow/verifymobilenumber/verifynumber.dart';
+import 'package:travel_date_app/views/screens/registrationflow/verifymobilenumber/verifynumber.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 

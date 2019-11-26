@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/utils/validatop.dart';
+import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class SetPasswordScreen extends StatefulWidget {
@@ -9,10 +11,10 @@ class SetPasswordScreen extends StatefulWidget {
 }
 
 class _SetPasswordScreenState extends State<SetPasswordScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
 
   var passwordController = TextEditingController();
-  var confirmPasswordController = TextEditingController();
-
 
   @override
   void initState() {
@@ -27,27 +29,31 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         body: Container(
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.only(top: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              arrowBack(),
-              Flexible(
-                child: SizedBox(height: 30,),
-              ),
-              Text(Strings.set_password, style: TextStyle(color: Colors.white, fontSize: 35),),
-              Flexible(
-                child: SizedBox(height: 30,),
-              ),
-              _passwordTextField(),
-              Flexible(
-                child: SizedBox(height: 20,),
-              ),
-              _confirmPasswordTextField(),
-              Flexible(
-                child: SizedBox(height: 30,),
-              ),
-              _nextButton(context)
-            ],
+          child: Form(
+            key: _formKey,
+            autovalidate: _autoValidate,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                arrowBack(),
+                Flexible(
+                  child: SizedBox(height: 30,),
+                ),
+                Text(Strings.set_password, style: TextStyle(color: Colors.white, fontSize: 35),),
+                Flexible(
+                  child: SizedBox(height: 30,),
+                ),
+                _passwordTextField(),
+                Flexible(
+                  child: SizedBox(height: 20,),
+                ),
+                _confirmPasswordTextField(),
+                Flexible(
+                  child: SizedBox(height: 30,),
+                ),
+                _nextButton(context)
+              ],
+            ),
           ),
         ),
       ),
@@ -66,8 +72,10 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   Widget _passwordTextField() {
     return TextFormField(
       autofocus: false,
+      keyboardType: TextInputType.visiblePassword,
       controller: passwordController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
+      validator: ValidateFields.isPasswordValid,
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,
@@ -89,7 +97,8 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   Widget _confirmPasswordTextField() {
     return TextFormField(
       autofocus: false,
-      controller: confirmPasswordController,
+      keyboardType: TextInputType.visiblePassword,
+      validator: validateConfirmPassword,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
           filled: true,
@@ -133,7 +142,28 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
     );
   }
 
+  String validateConfirmPassword(String confirmPassword) {
+    if(confirmPassword == passwordController.text) {
+      return null;
+    } else {
+      return "Enter the correct password";
+    }
+  }
+
   _onButtonNextClick() {
-    //TODO open next screen
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+    } else {
+      setState(() {
+        _autoValidate = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    passwordController.dispose();
   }
 }

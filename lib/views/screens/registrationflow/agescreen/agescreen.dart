@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/screens/authflow/selectinterest/interests.dart';
+import 'package:travel_date_app/views/screens/registrationflow//selectinterest/interests.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class AgeScreen extends StatefulWidget {
@@ -277,12 +277,12 @@ class _AgeScreenState extends State<AgeScreen> {
 
   _onButtonNextClick() {
     if(isMale == false && isFemale == false) {
-      showErrorMessage(Strings.age_error);
+      showErrorMessage(Strings.male_error);
        return;
     }
 
     if(_selectedDate == null) {
-      showErrorMessage(Strings.male_error);
+      showErrorMessage(Strings.age_error);
       return;
     }
     Navigator.push(context, MaterialPageRoute(builder: (context) => InterestsScreen()));
