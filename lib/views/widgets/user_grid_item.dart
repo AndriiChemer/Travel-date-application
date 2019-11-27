@@ -2,51 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:travel_date_app/models/person_model.dart';
-import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
+import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 
-class DiscoverScreen extends StatefulWidget {
+class UserGridItem extends StatefulWidget {
+
+  final UserModel model;
+  final double itemWidth;
+  final double itemHeight;
+
+
+  UserGridItem({@required this.model, @required this.itemWidth, @required this.itemHeight});
+
   @override
-  _DiscoverScreenState createState() => _DiscoverScreenState();
+  _UserGridItemState createState() => _UserGridItemState();
 }
-// TODO change array people in grid view
-class _DiscoverScreenState extends State<DiscoverScreen> {
 
-  List<PersonModel> people;
-
-  @override
-  void initState() {
-    super.initState();
-
-    MockServer.getPeoplesForDiscoversScreen().then((List<PersonModel> loadedPeople){
-      setState(() {
-        people = loadedPeople;
-      });
-    });
-  }
-
+class _UserGridItemState extends State<UserGridItem> {
   @override
   Widget build(BuildContext context) {
-
-    var size = MediaQuery.of(context).size;
-    final double itemHeight = (size.width / 1.5) + 15;
-    final double itemWidth = size.width / 2;
-
-    return Container(
-      color: CustomColors.discoverBackgroundScreen,
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        childAspectRatio: (itemWidth / itemHeight),
-        padding: const EdgeInsets.all(10),
-        children: MockServer.peopleList.map((PersonModel model) {
-          return _personItem(model, itemWidth, itemHeight);
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _personItem(PersonModel model, double itemWidth, double itemHeight) {
     return Container(
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -54,24 +28,26 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           borderRadius: BorderRadius.all(Radius.circular(10))
       ),
       child: GestureDetector(
-        onTap: personItemClick,
-        child: Stack(
-          children: <Widget>[
-            _buildMainColumnItem(model, itemWidth, itemHeight),
-            Row(
-              children: <Widget>[
-                _goldCircle(),
-                _userStatus(model.status)
-              ],
-            ),
-            _blueCircle(),
-          ],
-        ),
-      ),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: widget.model,)));
+          },
+          child: Stack(
+            children: <Widget>[
+              _buildMainColumnItem(widget.model, widget.itemWidth, widget.itemHeight),
+              Row(
+                children: <Widget>[
+                  _goldCircle(),
+                  _userStatus(widget.model.status)
+                ],
+              ),
+              _blueCircle(),
+            ],
+          ),
+        )
     );
   }
 
-  Widget _buildMainColumnItem(PersonModel model, double itemWidth, double itemHeight) {
+  Widget _buildMainColumnItem(UserModel model, double itemWidth, double itemHeight) {
     return Column(
       children: <Widget>[
         _itemImage(model, itemWidth, itemHeight),
@@ -107,37 +83,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ],
       ),
     );
-  }
-
-  Widget _itemImage(PersonModel model, double itemWidth, double itemHeight) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          width: itemWidth,
-          height: itemWidth - 25,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-            image: DecorationImage(
-              image: NetworkImage(model.imageUrl, ),
-              fit: BoxFit.cover,
-            )
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: FractionalOffset.topCenter,
-                end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
-                colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
-                tileMode: TileMode.repeated, // repeats the gradient over the canvas
-              ),
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-            ),
-          ),
-        ),
-        _nameCityColumn(),
-      ],
-    );
-
   }
 
   Widget _verificationVideoRow() {
@@ -184,22 +129,33 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _blueCircle() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Container(
-        width: 12,
-        height: 12,
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-            color: Colors.blue[800],
-            shape: BoxShape.circle
+  Widget _itemImage(UserModel model, double itemWidth, double itemHeight) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: itemWidth,
+          height: itemWidth - 25,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              image: DecorationImage(
+                image: NetworkImage(model.imageUrl, ),
+                fit: BoxFit.cover,
+              )
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: FractionalOffset.topCenter,
+                end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
+                colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
+                tileMode: TileMode.repeated, // repeats the gradient over the canvas
+              ),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            ),
+          ),
         ),
-        child: Center(
-          child: Icon(Icons.done, color: Colors.white, size: 10,),
-        ),
-
-      ),
+        _nameCityColumn(),
+      ],
     );
   }
 
@@ -222,8 +178,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  personItemClick() {
+  Widget _blueCircle() {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Container(
+        width: 12,
+        height: 12,
+        margin: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.blue[800],
+            shape: BoxShape.circle
+        ),
+        child: Center(
+          child: Icon(Icons.done, color: Colors.white, size: 10,),
+        ),
 
+      ),
+    );
   }
 
   onVerifyVideoClick() {

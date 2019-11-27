@@ -55,9 +55,6 @@ class _MainNavigationState extends State<MainNavigation> {
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.only(right: 20, left: 20),
           decoration: BoxDecoration(
-            boxShadow: [
-
-            ],
             border: Border(
               bottom: BorderSide(color: Colors.yellow[800], width: 1)
             )

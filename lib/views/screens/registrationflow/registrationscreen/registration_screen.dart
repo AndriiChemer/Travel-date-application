@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
+import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/verifymobilenumber/verifynumber.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
@@ -293,7 +294,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
             padding: EdgeInsets.all(20),
             child: Center(
-              child: Text(textContent),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+                },
+                child: Text(textContent),
+              ),
             )
           ),
         )

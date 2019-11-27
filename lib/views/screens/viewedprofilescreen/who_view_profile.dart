@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/widgets/person_grid_item.dart';
+import 'package:travel_date_app/views/widgets/user_grid_item.dart';
 
 class ViewsProfile extends StatefulWidget {
 
-  final List<PersonModel> people;
+  final List<UserModel> people;
 
 
   ViewsProfile({@required this.people});
@@ -38,8 +38,8 @@ class _ViewsProfileState extends State<ViewsProfile> {
       shrinkWrap: true,
       childAspectRatio: (itemWidth / itemHeight),
       padding: const EdgeInsets.all(10),
-      children: widget.people.map((PersonModel model) {
-        return PersonGridItem(model: model, itemWidth: itemWidth, itemHeight: itemHeight,);
+      children: widget.people.map((UserModel model) {
+        return UserGridItem(model: model, itemWidth: itemWidth, itemHeight: itemHeight,);
       }).toList(),
     );
   }
