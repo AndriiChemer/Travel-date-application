@@ -2,9 +2,9 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
+import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
-import 'package:travel_date_app/views/screens/registrationflow/selectinterest/interests.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
               canvasColor: Colors.transparent
           ),
-          home: Splash(),
+          home: MainNavigation(),//Splash(),
           routes: {
             '/singup': (context) => RegistrationScreen(),
             '/verifyphone': (context) => VerifySuccess(),

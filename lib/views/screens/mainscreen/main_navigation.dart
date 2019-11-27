@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
+import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
-import 'package:travel_date_app/views/screens/discover/discover_screen.dart';
+import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profile.dart';
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
+
+import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   @override
@@ -16,7 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  int _viewCounterNotification = 5;
+  int _viewCounterNotification = MockServer.peopleList.length;
   int _kissCounterNotification = 3;
 
   List<Widget> navigationScreens = [
@@ -74,9 +77,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   Widget _viewsIcon() {
     return GestureDetector(
-      onTap: () {
-        showFeatureNotImplementedYet();
-      },
+      onTap: onViewedIconClick,
       child: Container(
         child: Stack(
           children: [
@@ -160,5 +161,9 @@ class _MainNavigationState extends State<MainNavigation> {
 
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  onViewedIconClick() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(people: MockServer.peopleList,)));
   }
 }

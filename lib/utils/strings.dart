@@ -40,4 +40,7 @@ class Strings {
   static const String password = "Password";
   static const String confirm_password = "Confirm Password";
 
+  //Hwo View Profile Screen
+  static const String view_profile_toolbar_title = "Who viewed my profile?";
+
 }
