@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/screens/settingscreen/edit_profile_screen.dart';
 
 class AccountScreen extends StatefulWidget {
 
@@ -155,7 +156,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _settingsProfileButton() {
     return _buildButton(Icon(Icons.settings, size: 30, color: Colors.white,), Strings.settings, () {
-
+      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: widget.user)));
     });
   }
 
