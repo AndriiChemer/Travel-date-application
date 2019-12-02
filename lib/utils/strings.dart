@@ -40,7 +40,20 @@ class Strings {
   static const String password = "Password";
   static const String confirm_password = "Confirm Password";
 
-  //Hwo View Profile Screen
+  //Who View Profile Screen
   static const String view_profile_toolbar_title = "Who viewed my profile?";
+
+  //User Detail Screen
+  static const String send_champagne = "Send Champagne";
+  static const String send_message = "Send a message";
+  static const String report_user = "Report user";
+
+  //User Account Screen
+  static const String premium_center = "Premium Center";
+  static const String edit = "Edit";
+  static const String verify = "Verify";
+  static const String settings = "Settings";
+  static const String sign_out = "Sign Ount";
+  static const String not_verified = "Not Verified";
 
 }

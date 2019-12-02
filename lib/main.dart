@@ -44,3 +44,6 @@ class MyApp extends StatelessWidget {
 
 //Firebase CRUD tutorial
 //https://www.youtube.com/watch?v=uzkpDEG_4R4
+
+//Swipe animation like tinder
+//https://blog.geekyants.com/tinder-swipe-in-flutter-7e4fc56021bc

@@ -2,12 +2,14 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profile.dart';
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
 
+import 'account/account_screen.dart';
 import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -22,12 +24,29 @@ class _MainNavigationState extends State<MainNavigation> {
   int _viewCounterNotification = MockServer.peopleList.length;
   int _kissCounterNotification = 3;
 
+  UserModel userAccount;
   List<Widget> navigationScreens = [
     DiscoverScreen(),
     Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
     Container(child: Center(child: Text("3", style: TextStyle(color: Colors.white)),),),
-    Container(child: Center(child: Text("4", style: TextStyle(color: Colors.white)),),),
+    Container()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    MockServer.getPeoplesForDiscoversScreen().then((List<UserModel> users) {
+      setState(() {
+        userAccount = users.first;
+
+        navigationScreens.removeLast();
+        navigationScreens.add(
+            AccountScreen(user: userAccount)
+        );
+
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +58,7 @@ class _MainNavigationState extends State<MainNavigation> {
       body: StreamBuilder(
         stream: bottomNavBloc.navStream,
         builder: (context, snapshot) {
-          return snapshot.data != null ?
+          return snapshot.data != null && navigationScreens.length > 0 ?
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },
       ),
