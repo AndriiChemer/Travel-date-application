@@ -23,6 +23,7 @@ class Strings {
   //Set Age Screen
   static const String who_are_you = "Who are you?";
   static const String age_title = "Age?";
+  static const String age = "Age";
   static const String male = "Male";
   static const String female = "Female";
   static const String select_age = "Select age";
@@ -55,5 +56,9 @@ class Strings {
   static const String settings = "Settings";
   static const String sign_out = "Sign Ount";
   static const String not_verified = "Not Verified";
+
+  //Edit Account Screen
+  static const String where_from = "Where are you from?";
+  static const String from_title = "I'm from...";
 
 }

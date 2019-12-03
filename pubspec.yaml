@@ -73,6 +73,8 @@ flutter:
     - assets/images/interests/news_category.jpg
     - assets/images/interests/beauty_category.jpg
     - assets/images/icons/lips_icon.svg
+    - assets/images/no_image_female.jpg
+    - assets/images/no_image_male.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

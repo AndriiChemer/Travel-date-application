@@ -19,7 +19,7 @@ class UserModel {
   final String description;
   final bool isVerify;
 
-  List<String> photos;
+  List<String> photos = [];
   String birthday = "31/12/1995";
 
   UserModel({this.id, this.name, this.city, this.imageUrl, this.state,
@@ -44,5 +44,29 @@ class UserModel {
       }
     }
     return age.toString();
+  }
+
+  bool isPhotoEmpty() {
+    if(photos.length == 0 && imageUrl == null) {
+      return true;
+    } else {
+      buildPhotoList();
+      return false;
+    }
+
+  }
+
+  void buildPhotoList() {
+    if(imageUrl != null) {
+      photos.insert(0, imageUrl);
+    }
+  }
+
+  String getEmptyPhoto() {
+    if(state == 0) {
+      return "assets/images/no_image_male.jpg";
+    } else {
+      return "assets/images/no_image_female.jpg";
+    }
   }
 }

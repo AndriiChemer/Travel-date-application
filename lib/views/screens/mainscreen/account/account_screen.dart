@@ -144,7 +144,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _editProfileButton() {
     return _buildButton(Icon(Icons.edit, size: 30, color: Colors.white,), Strings.edit, () {
-
+      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: widget.user)));
     });
   }
 
@@ -156,7 +156,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _settingsProfileButton() {
     return _buildButton(Icon(Icons.settings, size: 30, color: Colors.white,), Strings.settings, () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: widget.user)));
+
     });
   }
 

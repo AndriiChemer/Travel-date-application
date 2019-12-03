@@ -20,7 +20,7 @@ class MockServer {
   }
 
   static List<UserModel> peopleList = [
-    UserModel(id: 1, name: "Andii", person: "Male", city: "Wroclaw", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C",
+    UserModel(id: 1, name: "Andii Chemer", person: "Male", city: "Wroclaw", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C",
           state: 0, status: "Diamond", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.099923, lng: 17.036116, description: description, isVerify: true),
     UserModel(id: 2, name: "Volodymyr", person: "Male", city: "Lublin", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50",
       state: 0, status: "Gold", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.22531, lng: 22.6220, description: description, isVerify: false),
