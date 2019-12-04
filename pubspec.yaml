@@ -73,6 +73,8 @@ flutter:
     - assets/images/interests/news_category.jpg
     - assets/images/interests/beauty_category.jpg
     - assets/images/icons/lips_icon.svg
+    - assets/images/icons/instagram_logo.png
+    - assets/images/icons/snapchat_logo.png
     - assets/images/no_image_female.jpg
     - assets/images/no_image_male.jpg
 

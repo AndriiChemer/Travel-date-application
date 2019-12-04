@@ -21,6 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   var _nameController = TextEditingController();
   var _ageController = TextEditingController();
+  var _describeController = TextEditingController();
 
   @override
   void initState() {
@@ -28,12 +29,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     _nameController.text = widget.user.name;
     _ageController.text = widget.user.calculateAge();
+    _describeController.text = widget.user.description;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      appBar: _appBar(context),
       backgroundColor: CustomColors.lightBackground,
       body: Stack(
         children: <Widget>[
@@ -44,6 +47,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: CustomColors.secondaryBackground,
+      automaticallyImplyLeading: false,
+      actions: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(left: 20, right: 20),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
+              )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _arrowBack(),
+              Text(Strings.edit_profile_toolbar, style: TextStyle(color: Colors.white, fontSize: 20),),
+              Container(width: 30, height: 30,)
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _arrowBack() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
+    );
+  }
+
   Widget _mainContent(BuildContext context) {
     return ListView(
       children: <Widget>[
@@ -51,7 +89,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _editName(),
         _editAge(),
         _editLocation(),
+        _editDescription(),
+        _instagramButton(context),
+        _snapchatButton(context),
+        _nextButton(context)
       ],
+    );
+  }
+
+  Widget _nextButton(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ButtonTheme(
+        minWidth: MediaQuery.of(context).size.width,
+        height: 50,
+        child: RaisedButton(
+          color: Colors.yellow[800],
+          textColor: Colors.white,
+          child: Text(Strings.save_button.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
+          onPressed: () {
+            // TODO set save event
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30.0),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _instagramButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+        decoration: BoxDecoration(
+          color: CustomColors.secondaryBackground,
+          borderRadius: BorderRadius.all(
+              Radius.circular(25)
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(right: 10),
+              child: Image.asset('assets/images/icons/instagram_logo.png'),
+            ),
+            Text(Strings.conn_instagram, style: TextStyle(fontSize: 20, color: Colors.white),)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _snapchatButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        margin: EdgeInsets.only(left: 20, right: 20, bottom: 20,),
+        decoration: BoxDecoration(
+          color: CustomColors.secondaryBackground,
+          borderRadius: BorderRadius.all(
+              Radius.circular(25)
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(right: 10),
+              child: Image.asset('assets/images/icons/snapchat_logo.png'),
+            ),
+            Text(Strings.conn_snapchat, style: TextStyle(fontSize: 20, color: Colors.white),)
+          ],
+        ),
+      ),
     );
   }
 
@@ -138,6 +261,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 hintText: Strings.from_title,
                 hintStyle: TextStyle(color: Colors.yellow[800].withOpacity(0.40)),
                 prefixIcon: Icon(Icons.location_on, color: Colors.yellow[800],),
+                contentPadding: const EdgeInsets.only(left: 25.0, bottom: 12.0, top: 12.0),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: CustomColors.secondaryBackground),
+                  borderRadius: BorderRadius.circular(25.7),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: CustomColors.secondaryBackground),
+                  borderRadius: BorderRadius.circular(25.7),
+                )
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _editDescription() {
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(Strings.describe_yourself, style: TextStyle(color: Colors.yellow[800]),),
+          SizedBox(height: 5,),
+          TextFormField(
+            autofocus: false,
+            style: TextStyle(fontSize: 18.0, color: Colors.yellow[800]),
+            maxLines: 7,
+            controller: _describeController,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: CustomColors.secondaryBackground,
+                hintText: Strings.few_words,
+                hintStyle: TextStyle(color: Colors.yellow[800].withOpacity(0.40)),
+                prefixIcon: Padding(
+                  padding: const EdgeInsetsDirectional.only(bottom: 125.0),
+                  child: Icon(Icons.event_note, color: Colors.yellow[800],),
+                ),
                 contentPadding: const EdgeInsets.only(left: 25.0, bottom: 12.0, top: 12.0),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: CustomColors.secondaryBackground),

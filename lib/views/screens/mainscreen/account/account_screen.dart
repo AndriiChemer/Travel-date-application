@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/screens/settingscreen/edit_profile_screen.dart';
+import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
+import 'package:travel_date_app/views/screens/settingsscreen/settings_screen.dart';
 
 class AccountScreen extends StatefulWidget {
 
@@ -156,14 +157,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _settingsProfileButton() {
     return _buildButton(Icon(Icons.settings, size: 30, color: Colors.white,), Strings.settings, () {
-
+      Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
     });
   }
 
   Widget _signOutButton() {
-    return _buildButton(Icon(Icons.exit_to_app, size: 30, color: Colors.white,), Strings.sign_out, () {
-
-    });
+    return _buildButton(Icon(Icons.exit_to_app, size: 30, color: Colors.white,), Strings.sign_out, onSingOutClick);
   }
 
   Widget _buildButton(Widget icon, String buttonText, GestureTapCallback callback) {
@@ -186,6 +185,33 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ),
     );
+  }
 
+  onSingOutClick() {
+    // TODO fix android (create dialog for ios)
+    var dialog = CupertinoAlertDialog(
+      title: Text(Strings.sign_out, style: TextStyle(color: Colors.yellow[800], fontSize: 25),),
+      content: Container(
+        margin: EdgeInsets.only(top: 20, bottom: 20),
+        child: Text(Strings.sure_sign_out, style: TextStyle(fontSize: 18),),
+      ),
+      actions: <Widget>[
+        CupertinoDialogAction(
+          onPressed: () {
+
+          },
+          isDefaultAction: true,
+          child: Text(Strings.yes),
+        ),
+        CupertinoDialogAction(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop("Discard");
+          },
+          child: Text(Strings.no),
+        ),
+      ],
+    );
+
+    showDialog(context: context, builder: (BuildContext context) => dialog);
   }
 }

@@ -38,6 +38,6 @@ class _SplashState extends State<Splash> {
   }
 
   onDoneLoading() {
-    Navigator.pushReplacementNamed(context, '/singup');
+    Navigator.pushReplacementNamed(context, '/main');
   }
 }

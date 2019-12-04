@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
             '/singup': (context) => RegistrationScreen(),
             '/verifyphone': (context) => VerifySuccess(),
             '/setage': (context) => AgeScreen(),
+            '/main': (context) => MainNavigation(),
           }
       ),
     );

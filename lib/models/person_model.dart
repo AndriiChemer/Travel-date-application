@@ -18,13 +18,14 @@ class UserModel {
   final String person;
   final String description;
   final bool isVerify;
+  final bool isHide;
 
   List<String> photos = [];
   String birthday = "31/12/1995";
 
   UserModel({this.id, this.name, this.city, this.imageUrl, this.state,
     this.status, this.dateCreated, this.lastTimeOnline, this.lat, this.lng,
-  this.person, this.description, this.isVerify});
+  this.person, this.description, this.isVerify, this.isHide});
 
   String calculateAge() {
     DateTime birthDate = DateFormat("dd/MM/yyyy").parse(birthday);

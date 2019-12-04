@@ -3,6 +3,8 @@ class Strings {
   // Generals
   static const String sing_up = "Sing up";
   static const String sing_in = "Sing In";
+  static const String yes = "Yes";
+  static const String no = "No";
 
   // Registration Screen
   static const String name = "Name";
@@ -54,11 +56,30 @@ class Strings {
   static const String edit = "Edit";
   static const String verify = "Verify";
   static const String settings = "Settings";
-  static const String sign_out = "Sign Ount";
+  static const String sign_out = "Sign Out";
   static const String not_verified = "Not Verified";
+  static const String sure_sign_out = "Are you sure, you want to sign out?";
 
   //Edit Account Screen
+  static const String edit_profile_toolbar = "Edit Profile";
   static const String where_from = "Where are you from?";
   static const String from_title = "I'm from...";
+  static const String describe_yourself = "Describe yourself";
+  static const String few_words = "Write a few words...";
+  static const String conn_instagram = "Connect Instagram";
+  static const String conn_snapchat = "Connect Snapchat";
+  static const String save_button = "Save";
+
+  //Settings Screen
+  static const String settings_toolbar = "Settings";
+  static const String push_notif_title = "Push Notifications";
+  static const String messages = "Messages";
+  static const String likes = "Likes";
+  static const String profile_views = "Profile views";
+  static const String other = "Other";
+  static const String app_vibration = "In App Vibration";
+  static const String app_sound = "In App Sound";
+  static const String hide_profile = "In App Sound";
+  static const String delete_account = "Delete my Account";
 
 }

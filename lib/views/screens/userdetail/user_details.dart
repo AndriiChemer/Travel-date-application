@@ -249,13 +249,13 @@ class _UserDetailsState extends State<UserDetails> {
 
           },
           isDefaultAction: true,
-          child: Text("Yes"),
+          child: Text(Strings.yes),
         ),
         CupertinoDialogAction(
           onPressed: () {
-
+            Navigator.of(context, rootNavigator: true).pop("Discard");
           },
-          child: Text("No"),
+          child: Text(Strings.no),
         ),
       ],
     );
