@@ -1,3 +1,5 @@
+import 'package:travel_date_app/models/person_model.dart';
+
 /**
  * If user isChatOpen = false => newMessageCount++, if isChatOpen = true => newMessageCount = 0;
  *
@@ -16,4 +18,6 @@ class ChatUserInfo {
     this.newMessageCount = obj["newMessageCount"];
     this.isChatOpen = obj["isChatOpen"];
   }
+
+  UserModel user;
 }

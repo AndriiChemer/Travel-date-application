@@ -2,6 +2,8 @@ import 'package:travel_date_app/models/chat_user_info.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/models/person_model.dart';
 
+
+// When we get chat then we check if our photo equals with photo in chat
 class ChatModel {
   String chatId;
   //user id witch create chat

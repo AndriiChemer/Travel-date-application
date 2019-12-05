@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
+import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
+
+//TODO add Bloc stream for getting chat by id
 class ChatListScreen extends StatefulWidget {
   @override
   _ChatListScreenState createState() => _ChatListScreenState();
@@ -17,13 +21,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var searchTextFieldController = TextEditingController();
 
-//  List<UserModel> users = [];
+  List<ChatModel> chatModels = [];
 
   @override
   void initState() {
-    MockServer.getPeoplesForDiscoversScreen().then((userList) {
+    MockServer.getChats().then((chatList) {
       setState(() {
-//        users.addAll(userList);
+        chatModels.addAll(chatList);
       });
     });
     super.initState();
@@ -39,16 +43,30 @@ class _ChatListScreenState extends State<ChatListScreen> {
         child: Column(
           children: <Widget>[
             _searchTextField(),
-            _usersInChat(),
+            _divider(context),
+            _listItems(context),
           ],
         ),
       ),
     );
   }
 
+  Widget _listItems(BuildContext context) {
+    return Expanded(
+      child: ListView(
+        children: <Widget>[
+          _usersInChat(),
+          _divider(context),
+        for(ChatModel chat in chatModels)
+          ChatItem(chat),
+        ],
+      ),
+    );
+  }
+
   Widget _searchTextField() {
     return Container(
-      margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
+      margin: EdgeInsets.fromLTRB(20, 30, 20, 20),
       child: TextFormField(
         autofocus: false,
         controller: searchTextFieldController,
@@ -84,17 +102,27 @@ class _ChatListScreenState extends State<ChatListScreen> {
           int itemCount = users.length;
 
           return Container(
-            height: 90,
-            child: ListView.builder(
-                itemCount: itemCount,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) {
-                  return _circleImage(users[index]);
-                }
+            margin: EdgeInsets.only(left: 20, top: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 24),),
+                  ),
+                  SizedBox(height: 10,),
+                  Container(
+                    height: 90,
+                    child: ListView.builder(
+                        itemCount: itemCount,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return _circleImage(users[index]);
+                        }
+                    ),
+                  ),
+                ],
             ),
           );
-
-
         }
       },
     );
@@ -102,6 +130,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   Widget _loading() {
     return Container(
+      height: 90,
       margin: EdgeInsets.only(top: 10, bottom: 10),
       child: Center(
         child: SpinKitFadingCube(
@@ -125,7 +154,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       },
 
       child: Container(
-        margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
+        margin: EdgeInsets.only(top: 10, bottom: 20, right: 20),
         child: Stack(
           children: <Widget>[
             Container(
@@ -158,6 +187,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
             shape: BoxShape.circle
         ),
       ),
+    );
+  }
+
+  Widget _divider(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20),
+      width: MediaQuery.of(context).size.width,
+      height: 1,
+      color: Colors.white.withOpacity(0.8),
     );
   }
 }

@@ -21,15 +21,63 @@ class MockServer {
     });
   }
 
-  static Future<List<ChatModel>> getChatsScreen() {
+  static Future<List<ChatModel>> getChats() {
+//    for(ChatModel chatModel in chatsAndrii) {
+//
+//    }
+//    for(ChatUserInfo chatUserInfo in chat.usersInfo) {
+//      chatUserInfo.user = getUserById(chatUserInfo.userId);
+//    }
     return Future.delayed(Duration(seconds: 2), () {
-      return chats;
+      return chatsAndrii;
+    });
+  }
+
+  static Future<ChatModel> getChatById(String chatId) {
+    ChatModel chat;
+    for(ChatModel model in chatsAndrii) {
+      if(model.chatId == chatId) {
+        chat = model;
+        break;
+      }
+    }
+
+    for(ChatUserInfo chatUserInfo in chat.usersInfo) {
+      chatUserInfo.user = userById(chatUserInfo.userId);
+    }
+
+    return Future.delayed(Duration(seconds: 2), () {
+      return chat;
+    });
+  }
+
+  static UserModel userById(String id) {
+    for (UserModel model in peopleList) {
+      if (model.id == id) {
+        return model;
+      }
+    }
+
+    return null;
+  }
+
+  static Future<UserModel> getUserById(String id) async {
+    UserModel userModel;
+
+    for(UserModel model in peopleList) {
+      if(model.id == id) {
+        userModel = model;
+      }
+    }
+
+    return Future.delayed(Duration(milliseconds: 500), () {
+      return userModel;
     });
   }
 
   static List<UserModel> peopleList = [
     UserModel(id: "1", name: "Andii Chemer", person: "Male", city: "Wroclaw", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C",
-          state: 0, status: "Diamond", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.099923, lng: 17.036116, description: description, isVerify: true, isHide: false, isOnline: true, createdAt: 123, lastVisitedAt: 123),
+          state: 0, status: "Diamond", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.099923, lng: 17.036116, description: description, isVerify: true, isHide: false, isOnline: true, createdAt: 123, lastVisitedAt: 123, chatsId: ["1", "2", "3"]),
     UserModel(id: "2", name: "Volodymyr", person: "Male", city: "Lublin", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50",
       state: 0, status: "Gold", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.22531, lng: 22.6220, description: description, isVerify: false, isHide: false, isOnline: false, createdAt: 123, lastVisitedAt: 123),
     UserModel(id: "3", name: "Viktoriia Knyr", person: "Female", city: "Wroclaw", imageUrl: "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/60457709_864772787189123_3743945282803466240_n.jpg?_nc_cat=110&_nc_ohc=gTZApKPcEbUAQna2UNk3Y74FrmCtU4BXI59vVWQL5heNWY6W8pwYqyetA&_nc_ht=scontent-waw1-1.xx&oh=5b7fbf84f77bdc0aa18fe91f2da610c0&oe=5E83FAD9",
@@ -42,10 +90,10 @@ class MockServer {
       state: 0, status: "Diamond", dateCreated: "2019.11.26", lastTimeOnline: "2019.11.26", lat: 51.099923, lng: 17.036116, description: description, isVerify: false, isHide: false, isOnline: false, createdAt: 123, lastVisitedAt: 123),
   ];
 
-  static List<ChatModel> chats = [
+  static List<ChatModel> chatsAndrii = [
     ChatModel("1", "1", chatAndriiViktoriia, 1575536725137, 1575536751106, null, true, 0),
-    ChatModel("2", "1", chatAndriiViktoriia, 1575542888763, 1575542900405, null, true, 0),
-    ChatModel("3", "1", chatAndriiViktoriia, 1575542909316, 1575542918023, null, true, 0),
+    ChatModel("2", "1", chatAndriiVolodymyr, 1575542888763, 1575542900405, null, true, 0),
+    ChatModel("3", "1", chatAndriiMariya, 1575542909316, 1575542918023, null, true, 0),
   ];
 
   static List<ChatUserInfo> chatAndriiViktoriia = [
