@@ -62,7 +62,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: ListView(
         children: <Widget>[
           _usersInChat(),
-          _divider(context),
         for(ChatModel chat in chatModels)
           ChatItem(chat, widget.user),
         ],
@@ -201,7 +200,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       margin: EdgeInsets.only(left: 20, right: 20),
       width: MediaQuery.of(context).size.width,
       height: 1,
-      color: Colors.white.withOpacity(0.8),
+      color: Colors.grey,
     );
   }
 }

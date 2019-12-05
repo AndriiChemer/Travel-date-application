@@ -43,16 +43,27 @@ class _ChatItemState extends State<ChatItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.only(left: 20, right: 20, top: 10),
-      child: Row(
-        children: <Widget>[
-          _circleImage(),
-          _chatInfo(),
-          _dateLastMessage(),
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+      },
+      child: Container(
+        height: 101,
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
+        child: Column(
+          children: <Widget>[
+            _divider(context),
+            SizedBox(height: 10,),
+            Row(
+              children: <Widget>[
+                _circleImage(),
+                _chatInfo(),
+                _dateLastMessage(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -80,11 +91,11 @@ class _ChatItemState extends State<ChatItem> {
       },
 
       child: Container(
-        margin: EdgeInsets.only(top: 10, bottom: 20, right: 20),
+        margin: EdgeInsets.only(top: 10, bottom: 10, right: 20),
         child: Stack(
           children: <Widget>[
             Container(
-              width: 60,
+              width: 70,
               height: 70,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -165,5 +176,13 @@ class _ChatItemState extends State<ChatItem> {
     }
 
     return time;
+  }
+
+  Widget _divider(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 1,
+      color: Colors.grey,
+    );
   }
 }
