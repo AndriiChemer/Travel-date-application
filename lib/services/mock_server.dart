@@ -93,22 +93,22 @@ class MockServer {
   static List<ChatModel> chatsAndrii = [
     ChatModel("1", "1", chatAndriiViktoriia, 1575536725137, 1575536751106, null, true, 0),
     ChatModel("2", "1", chatAndriiVolodymyr, 1575542888763, 1575542900405, null, true, 0),
-    ChatModel("3", "1", chatAndriiMariya, 1575542909316, 1575542918023, null, true, 0),
+    ChatModel("3", "1", chatAndriiMariya, 1575542909316, 1575561488144, null, true, 0),
   ];
 
   static List<ChatUserInfo> chatAndriiViktoriia = [
-    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true),
-    ChatUserInfo("3", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/60457709_864772787189123_3743945282803466240_n.jpg?_nc_cat=110&_nc_ohc=gTZApKPcEbUAQna2UNk3Y74FrmCtU4BXI59vVWQL5heNWY6W8pwYqyetA&_nc_ht=scontent-waw1-1.xx&oh=5b7fbf84f77bdc0aa18fe91f2da610c0&oe=5E83FAD9", 0, true),
+    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true, "Andii Chemer"),
+    ChatUserInfo("3", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/60457709_864772787189123_3743945282803466240_n.jpg?_nc_cat=110&_nc_ohc=gTZApKPcEbUAQna2UNk3Y74FrmCtU4BXI59vVWQL5heNWY6W8pwYqyetA&_nc_ht=scontent-waw1-1.xx&oh=5b7fbf84f77bdc0aa18fe91f2da610c0&oe=5E83FAD9", 0, true, "Viktoriia Knyr"),
   ];
 
   static List<ChatUserInfo> chatAndriiVolodymyr = [
-    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true),
-    ChatUserInfo("2", "https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50", 0, true),
+    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true, "Andii Chemer"),
+    ChatUserInfo("2", "https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50", 0, true, "Volodymyr"),
   ];
 
   static List<ChatUserInfo> chatAndriiMariya = [
-    ChatUserInfo("5", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/72976549_961800860825744_7338113352209530880_n.jpg?_nc_cat=108&_nc_ohc=C4tbIMGX1CwAQkW2iObE0m8k01BiscdgJ893JuWK-hkluh5IbkdNZOyZg&_nc_ht=scontent-waw1-1.xx&oh=461e530ece4f15eea46838a1b74b7b18&oe=5E8C6F67", 0, true),
-    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true),
+    ChatUserInfo("5", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/72976549_961800860825744_7338113352209530880_n.jpg?_nc_cat=108&_nc_ohc=C4tbIMGX1CwAQkW2iObE0m8k01BiscdgJ893JuWK-hkluh5IbkdNZOyZg&_nc_ht=scontent-waw1-1.xx&oh=461e530ece4f15eea46838a1b74b7b18&oe=5E8C6F67", 0, true, "Andii Chemer"),
+    ChatUserInfo("1", "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C", 0, true, "Mariya"),
   ];
 
 

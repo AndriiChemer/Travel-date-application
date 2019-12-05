@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/chat_user_info.dart';
 import 'package:travel_date_app/models/person_model.dart';
@@ -9,9 +11,10 @@ import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 class ChatItem extends StatefulWidget {
 
   ChatModel chatModel;
+  UserModel user;
 
 
-  ChatItem(this.chatModel);
+  ChatItem(this.chatModel, this.user);
 
   @override
   _ChatItemState createState() => _ChatItemState();
@@ -19,15 +22,19 @@ class ChatItem extends StatefulWidget {
 
 class _ChatItemState extends State<ChatItem> {
 
+  ChatUserInfo chatUserInfo;
   String chatImage;
+  String chatName;
   UserModel userModel;
 
   @override
   void initState() {
     super.initState();
-    chatImage = getChatImage();
+    chatUserInfo = getUserModel();
+    chatName = chatUserInfo.chatName;
+    chatImage = chatUserInfo.imageUrl;
 
-    MockServer.getUserById(getUserId()).then((user){
+    MockServer.getUserById(chatUserInfo.userId).then((user){
       setState(() {
         userModel = user;
       });
@@ -37,13 +44,31 @@ class _ChatItemState extends State<ChatItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 90,
       width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(left: 20, right: 20, top: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _circleImage()
+          _circleImage(),
+          _chatInfo(),
+          _dateLastMessage(),
         ],
+      ),
+    );
+  }
+
+  Widget _chatInfo() {
+    return Container(
+      padding: EdgeInsets.only(top: 10, bottom: 10),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
+            Text("Hello worlds", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+          ],
+        ),
       ),
     );
   }
@@ -65,7 +90,7 @@ class _ChatItemState extends State<ChatItem> {
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(getChatImage())
+                      image: NetworkImage(chatImage)
                   )
               ),
             ),
@@ -91,30 +116,54 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  String getChatImage() {
+  Widget _dateLastMessage() {
+    String lastMessage = readTimestamp(widget.chatModel.lastMessageAt);
+
+    return Expanded(
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
+      ),
+    );
+  }
+
+  ChatUserInfo getUserModel() {
     if(widget.chatModel.usersInfo.length == 2) {
-      if(widget.chatModel.usersInfo[0].userId != widget.chatModel.adminId) {
-        return widget.chatModel.usersInfo[0].imageUrl;
+      if(widget.chatModel.usersInfo[0].userId != widget.user.id) {
+        return widget.chatModel.usersInfo[0];
       } else {
-        return widget.chatModel.usersInfo[1].imageUrl;
+        return widget.chatModel.usersInfo[1];
       }
     } else {
-      //TODO check for group
-      return widget.chatModel.usersInfo.first.imageUrl;
+      //TODO check for 3 and more person
+      return null;
     }
   }
 
-  String getUserId() {
-    if(widget.chatModel.usersInfo.length == 2) {
-      if(widget.chatModel.usersInfo[0].userId != widget.chatModel.adminId) {
-        return widget.chatModel.usersInfo[0].userId;
+  String readTimestamp(int timestamp) {
+    var now = new DateTime.now();
+    var format = new DateFormat('HH:mm');
+    var date = new DateTime.fromMillisecondsSinceEpoch(timestamp);
+    var diff = now.difference(date);
+    var time = '';
+
+    if (diff.inSeconds <= 0 || diff.inSeconds > 0 && diff.inMinutes == 0 || diff.inMinutes > 0 && diff.inHours == 0 || diff.inHours > 0 && diff.inDays == 0) {
+      time = format.format(date);
+    } else if (diff.inDays > 0 && diff.inDays < 7) {
+      if (diff.inDays == 1) {
+        time = diff.inDays.toString() + ' DAY AGO';
       } else {
-        return widget.chatModel.usersInfo[1].userId;
+        time = diff.inDays.toString() + ' DAYS AGO';
       }
     } else {
-      //TODO check for group
-      return widget.chatModel.usersInfo.first.userId;
+      if (diff.inDays == 7) {
+        time = (diff.inDays / 7).floor().toString() + ' WEEK AGO';
+      } else {
+
+        time = (diff.inDays / 7).floor().toString() + ' WEEKS AGO';
+      }
     }
 
+    return time;
   }
 }

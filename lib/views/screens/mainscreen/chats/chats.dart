@@ -12,7 +12,13 @@ import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
 //TODO add Bloc stream for getting chat by id
 class ChatListScreen extends StatefulWidget {
-  @override
+
+ UserModel user;
+
+
+ ChatListScreen({@required this.user});
+
+ @override
   _ChatListScreenState createState() => _ChatListScreenState();
 }
 
@@ -58,7 +64,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           _usersInChat(),
           _divider(context),
         for(ChatModel chat in chatModels)
-          ChatItem(chat),
+          ChatItem(chat, widget.user),
         ],
       ),
     );

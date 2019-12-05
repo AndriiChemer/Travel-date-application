@@ -26,27 +26,19 @@ class _MainNavigationState extends State<MainNavigation> {
   int _kissCounterNotification = 3;
 
   UserModel userAccount;
-  List<Widget> navigationScreens = [
-    DiscoverScreen(),
-    Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
-    ChatListScreen(),
-    Container()
-  ];
+  List<Widget> navigationScreens;
 
   @override
   void initState() {
     super.initState();
-    MockServer.getPeoplesForDiscoversScreen().then((List<UserModel> users) {
-      setState(() {
-        userAccount = users.first;
+    userAccount = MockServer.peopleList.first;
 
-        navigationScreens.removeLast();
-        navigationScreens.add(
-            AccountScreen(user: userAccount)
-        );
-
-      });
-    });
+    navigationScreens = [
+      DiscoverScreen(),
+      Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
+      ChatListScreen(user: userAccount),
+      AccountScreen(user: userAccount)
+    ];
   }
 
   @override
