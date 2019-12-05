@@ -10,6 +10,7 @@ import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profi
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
 
 import 'account/account_screen.dart';
+import 'chats/chats.dart';
 import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -28,7 +29,7 @@ class _MainNavigationState extends State<MainNavigation> {
   List<Widget> navigationScreens = [
     DiscoverScreen(),
     Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
-    Container(child: Center(child: Text("3", style: TextStyle(color: Colors.white)),),),
+    ChatListScreen(),
     Container()
   ];
 

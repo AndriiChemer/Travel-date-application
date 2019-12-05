@@ -4,7 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
-import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 import 'package:travel_date_app/views/widgets/user_grid_item.dart';
 
 class DiscoverScreen extends StatefulWidget {

@@ -4,6 +4,16 @@
  * */
 class ChatUserInfo {
   String userId;
+  String imageUrl;
   int newMessageCount;
   bool isChatOpen;
+
+  ChatUserInfo(this.userId, this.imageUrl, this.newMessageCount, this.isChatOpen);
+
+  ChatUserInfo.map(dynamic obj) {
+    this.userId = obj["userId"];
+    this.imageUrl = obj["imageUrl"];
+    this.newMessageCount = obj["newMessageCount"];
+    this.isChatOpen = obj["isChatOpen"];
+  }
 }
