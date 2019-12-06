@@ -11,10 +11,10 @@ import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 class ChatItem extends StatefulWidget {
 
   ChatModel chatModel;
-  UserModel user;
+  UserModel yourModel;
 
 
-  ChatItem(this.chatModel, this.user);
+  ChatItem(this.chatModel, this.yourModel);
 
   @override
   _ChatItemState createState() => _ChatItemState();
@@ -37,7 +37,13 @@ class _ChatItemState extends State<ChatItem> {
     MockServer.getUserById(chatUserInfo.userId).then((user){
       setState(() {
         userModel = user;
+        setUsers(widget.yourModel);
+        setUsers(userModel);
       });
+    });
+
+    MockServer.getMessagesByChatId(widget.chatModel.chatId).then((messages) {
+      widget.chatModel.messages = messages;
     });
   }
 
@@ -77,7 +83,7 @@ class _ChatItemState extends State<ChatItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text("Hello worlds", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text(widget.chatModel.lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
           ],
         ),
       ),
@@ -140,7 +146,7 @@ class _ChatItemState extends State<ChatItem> {
 
   ChatUserInfo getUserModel() {
     if(widget.chatModel.usersInfo.length == 2) {
-      if(widget.chatModel.usersInfo[0].userId != widget.user.id) {
+      if(widget.chatModel.usersInfo[0].userId != widget.yourModel.id) {
         return widget.chatModel.usersInfo[0];
       } else {
         return widget.chatModel.usersInfo[1];
@@ -184,5 +190,14 @@ class _ChatItemState extends State<ChatItem> {
       height: 1,
       color: Colors.grey,
     );
+  }
+
+  setUsers(UserModel user) {
+    for(ChatUserInfo chatInfo in widget.chatModel.usersInfo) {
+      if(chatInfo.userId == user.id) {
+        chatInfo.user = user;
+        break;
+      }
+    }
   }
 }

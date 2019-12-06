@@ -1,5 +1,7 @@
 class MessageModel {
   String userId;
+
+  String chatId;
   //Date in milliseconds
   int createdAt;
   //Main message or image or sticker

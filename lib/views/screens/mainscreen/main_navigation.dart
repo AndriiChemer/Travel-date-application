@@ -10,7 +10,7 @@ import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profi
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
 
 import 'account/account_screen.dart';
-import 'chats/chats.dart';
+import 'chats/chatsscreen.dart';
 import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {

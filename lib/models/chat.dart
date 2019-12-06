@@ -21,9 +21,11 @@ class ChatModel {
   // If message modify than messageModify++
   int messageModify;
 
+  String lastMessage;
+
 
   ChatModel(this.chatId, this.adminId, this.usersInfo, this.createdAt,
-      this.lastMessageAt, this.messages, this.isChatActive, this.messageModify);
+      this.lastMessageAt, this.messages, this.isChatActive, this.messageModify, this.lastMessage);
 
   ChatModel.map(dynamic obj) {
     this.chatId = obj["chatId"];
