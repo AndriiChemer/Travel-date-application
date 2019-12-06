@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "418506897771",
+    "firebase_url": "https://travel-date-app.firebaseio.com",
+    "project_id": "travel-date-app",
+    "storage_bucket": "travel-date-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418506897771:android:62d4b43523717f0d94f42e",
+        "android_client_info": {
+          "package_name": "com.andrii.travel_date_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "418506897771-m4lvflq281jv7g4k6op2is5ljndqgtss.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andrii.travel_date_app",
+            "certificate_hash": "f4b55087f0bbd15f2b17bfd9940322750d59bea2"
+          }
+        },
+        {
+          "client_id": "418506897771-od674l8u3bm9od2np62oahhknbkboanu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOex2jE5uyJNEq3GoQsJV0FC7tsqiNn0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "418506897771-od674l8u3bm9od2np62oahhknbkboanu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "418506897771-de2fmu4m13biacgt1bcg7k891mgptfll.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.andrii.travelDateApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
