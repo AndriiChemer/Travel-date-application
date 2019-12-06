@@ -36,7 +36,7 @@ class _MainNavigationState extends State<MainNavigation> {
     navigationScreens = [
       DiscoverScreen(),
       Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
-      ChatListScreen(user: userAccount),
+      ChatListScreen(yourAccount: userAccount),
       AccountScreen(user: userAccount)
     ];
   }
