@@ -72,8 +72,10 @@ class _VerifySuccessState extends State<VerifySuccess> {
   }
 
   continueRegistrationScreen() async {
+    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+
     Timer(Duration(seconds: 2), (){
-      Navigator.pushReplacementNamed(context, '/setage');
+      Navigator.pushReplacementNamed(context, '/setage', arguments: {'newUser' : arguments['newUser']});
     });
   }
 

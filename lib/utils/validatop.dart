@@ -49,6 +49,14 @@ class ValidateFields {
     }
   }
 
+  static String emailOrPasswordValidate(String emailOrPassword) {
+    if(emailOrPassword != null && emailOrPassword.isNotEmpty) {
+      return null;
+    } else {
+      return "Please enter name";
+    }
+  }
+
 //  static int getPercentageStrength(String s) {
 //    switch (calculateStrength(s)) {
 //      case 1:

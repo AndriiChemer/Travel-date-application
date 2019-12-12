@@ -161,7 +161,7 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget _getLogoImage() {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacementNamed(context, '/singup');
+        Navigator.pushReplacementNamed(context, '/signin');
       },
       child: Image.asset("assets/images/logo_big.png",),
     );

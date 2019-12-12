@@ -1,8 +1,8 @@
 
 class Strings {
   // Generals
-  static const String sing_up = "Sing up";
-  static const String sing_in = "Sing In";
+  static const String sign_up = "Sing Up";
+  static const String sign_in = "Sing In";
   static const String yes = "Yes";
   static const String no = "No";
 
@@ -81,5 +81,9 @@ class Strings {
   static const String app_sound = "In App Sound";
   static const String hide_profile = "In App Sound";
   static const String delete_account = "Delete my Account";
+
+  //Sign In screen
+  static const String emailPassword = "Email / Phone password";
+  static const String dontHaveAccount = "Don't have an account?";
 
 }

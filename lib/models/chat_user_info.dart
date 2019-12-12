@@ -20,5 +20,21 @@ class ChatUserInfo {
     this.isChatOpen = obj["isChatOpen"];
   }
 
+  ChatUserInfo.fromMap(Map snapshot) :
+        userId = snapshot['userId'] ?? '',
+        imageUrl = snapshot['imageUrl'] ?? '',
+        newMessageCount = snapshot['newMessageCount'] ?? 0,
+        isChatOpen = snapshot['isChatOpen'] ?? false,
+        chatName = snapshot['chatName'] ?? '';
+
+  toJson() {
+    return {
+      "imageUrl": imageUrl,
+      "newMessageCount": newMessageCount,
+      "isChatOpen": isChatOpen,
+      "chatName": chatName,
+    };
+  }
+
   UserModel user;
 }

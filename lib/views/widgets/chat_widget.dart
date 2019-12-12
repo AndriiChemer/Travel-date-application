@@ -6,6 +6,7 @@ import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/chat_user_info.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/mock_server.dart';
+import 'package:travel_date_app/views/screens/chat/chatscreen.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 
 class ChatItem extends StatefulWidget {
@@ -51,7 +52,7 @@ class _ChatItemState extends State<ChatItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
       },
       child: Container(
         height: 101,

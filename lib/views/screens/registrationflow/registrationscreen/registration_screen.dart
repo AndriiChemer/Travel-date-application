@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/verifymobilenumber/verifynumber.dart';
+import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
@@ -17,12 +19,17 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autoValidate = false;
 
-  CountryCode _selectedCountry;
+  var nameController = TextEditingController();
+  var emailController = TextEditingController();
+  var phoneController = TextEditingController();
+
+  bool _autoValidate = false;
   bool isTermsChecked = false;
+  CountryCode _selectedCountry;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +45,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(Strings.sing_up, style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.w500),),
+                Text(Strings.sign_up, style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.w500),),
                 Flexible(child: SizedBox(height: 60,),),
                 _nameInputField(),
                 Flexible(child: SizedBox(height: 20,),),
@@ -67,6 +74,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return TextFormField(
       autofocus: false,
       validator: ValidateFields.isNameValid,
+      controller: nameController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
           filled: true,
@@ -90,6 +98,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return TextFormField(
       autofocus: false,
       keyboardType: TextInputType.emailAddress,
+      controller: emailController,
       validator: ValidateFields.isEmailValid,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
@@ -120,6 +129,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             autofocus: false,
             textInputAction: TextInputAction.done,
             keyboardType: TextInputType.phone,
+            controller: phoneController,
             validator: ValidateFields.isPhoneValid,
             style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
             decoration: InputDecoration(
@@ -202,7 +212,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       child: RaisedButton(
         color: Colors.yellow[800],
         textColor: Colors.white,
-        child: Text(Strings.sing_up.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
+        child: Text(Strings.sign_up.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
         onPressed: () {
           _validateInputs();
         },
@@ -267,11 +277,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             style: TextStyle(color: Colors.white, fontSize: 17),
             children: [
               TextSpan(
-                  text: Strings.sing_in,
+                  text: Strings.sign_in,
                   style: TextStyle(color: Colors.white, fontSize: 17),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      showFeatureNotImplementedYet();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
                     }
               ),
             ]
@@ -349,12 +359,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_formKey.currentState.validate() && isTermsChecked) {
 //    If all data are correct then save data to out variables
       _formKey.currentState.save();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyMobileNumberScreen()));
+
+      openVerifyMobileNumberScreen();
     } else {
 //    If all data are not valid then start auto validation.
       setState(() {
         _autoValidate = true;
       });
     }
+  }
+
+  openVerifyMobileNumberScreen() {
+    var newUser = UserModel(name: nameController.text, email: emailController.text, phone: phoneController.text,
+                            country: _selectedCountry.name, countryCode: _selectedCountry.code);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyMobileNumberScreen(newUser: newUser)));
   }
 }

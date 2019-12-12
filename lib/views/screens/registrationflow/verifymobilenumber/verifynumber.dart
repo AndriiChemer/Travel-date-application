@@ -3,10 +3,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class VerifyMobileNumberScreen extends StatefulWidget {
+
+  final UserModel newUser;
+
+
+  VerifyMobileNumberScreen({this.newUser});
+
   @override
   _VerifyMobileNumberScreenState createState() => _VerifyMobileNumberScreenState();
 }
@@ -186,7 +193,7 @@ class _VerifyMobileNumberScreenState extends State<VerifyMobileNumberScreen> {
     setState(() {
       isProgressLoad = false;
     });
-    Navigator.pushReplacementNamed(context, '/verifyphone');
+    Navigator.pushReplacementNamed(context, '/verifyphone', arguments: {'newUser' : widget.newUser});
   }
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {

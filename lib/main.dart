@@ -7,6 +7,7 @@ import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
+import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 
 void main() => runApp(MyApp());
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           ),
           home: MainNavigation(),//Splash(),
           routes: {
-            '/singup': (context) => RegistrationScreen(),
+            '/signin': (context) => SignInScreen(),
             '/verifyphone': (context) => VerifySuccess(),
             '/setage': (context) => AgeScreen(),
             '/main': (context) => MainNavigation(),
@@ -50,3 +51,9 @@ class MyApp extends StatelessWidget {
 
 //Swipe animation like tinder
 //https://blog.geekyants.com/tinder-swipe-in-flutter-7e4fc56021bc
+
+//Verification mobile code
+//https://medium.com/@cavdy/flutter-tutorial-phone-verification-and-authentication-b8ea5ddea18d
+
+//Scroll pagination
+// https://www.c-sharpcorner.com/article/pagination-in-flutter-using-firebase-cloud-firestore/

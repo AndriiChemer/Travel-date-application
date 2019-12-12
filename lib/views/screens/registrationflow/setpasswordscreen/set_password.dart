@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
+import 'package:travel_date_app/services/repository/auth_repository.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class SetPasswordScreen extends StatefulWidget {
+
+  final UserModel newUser;
+
+  SetPasswordScreen({this.newUser});
+
   @override
   _SetPasswordScreenState createState() => _SetPasswordScreenState();
 }
 
 class _SetPasswordScreenState extends State<SetPasswordScreen> {
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Auth _auth = Auth();
+  UserPreferences userPreferences = UserPreferences();
+  UserRepository userRepository = UserRepository();
+
   bool _autoValidate = false;
+  bool isLoading = false;
 
   var passwordController = TextEditingController();
 
@@ -153,7 +169,37 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   _onButtonNextClick() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+
+      setState(() {
+        isLoading = true;
+      });
+
+      _auth.signUp(widget.newUser.email, widget.newUser.password).then((firebaseUser) {
+        widget.newUser.id = firebaseUser.uid;
+
+        widget.newUser.createdAt = DateTime.now().millisecond;
+        userPreferences.writeUser(widget.newUser);
+        userRepository.addNewUser(widget.newUser).then((value) {
+          if(value) {
+            setState(() {
+              isLoading = false;
+            });
+
+            //TODO task clean stack screen
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+          } else {
+            isLoading = false;
+            // TODO task show error
+          }
+        });
+
+      }).catchError((error) {
+        // TODO task show error
+        setState(() {
+          isLoading = false;
+        });
+      });
+
     } else {
       setState(() {
         _autoValidate = true;

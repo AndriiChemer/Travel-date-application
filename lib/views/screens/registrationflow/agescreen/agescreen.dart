@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/registrationflow//selectinterest/interests.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
@@ -285,7 +286,13 @@ class _AgeScreenState extends State<AgeScreen> {
       showErrorMessage(Strings.age_error);
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => InterestsScreen()));
+
+    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+    var newUser = arguments['newUser'] as UserModel;
+    newUser.birthday = _selectedDate.millisecond;
+    newUser.sex = isFemale == false ? "Male" : "Female";
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => InterestsScreen(newUser: newUser)));
   }
 
   void showErrorMessage(String message) {

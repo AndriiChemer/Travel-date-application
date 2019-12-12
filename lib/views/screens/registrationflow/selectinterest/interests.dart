@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/interest_model.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/registrationflow/setpasswordscreen/set_password.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class InterestsScreen extends StatefulWidget {
+
+  final UserModel newUser;
+
+
+  InterestsScreen({this.newUser});
+
   @override
   _InterestsScreenState createState() => _InterestsScreenState();
 }
@@ -231,6 +238,6 @@ class _InterestsScreenState extends State<InterestsScreen> {
   }
 
   _onButtonNextClick() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SetPasswordScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SetPasswordScreen(newUser: widget.newUser,)));
   }
 }
