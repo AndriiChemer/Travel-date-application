@@ -57,3 +57,6 @@ class MyApp extends StatelessWidget {
 
 //Scroll pagination
 // https://www.c-sharpcorner.com/article/pagination-in-flutter-using-firebase-cloud-firestore/
+
+//Chat
+//https://www.c-sharpcorner.com/article/chat-app-in-flutter-using-google-firebase/
