@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
@@ -174,12 +175,17 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         isLoading = true;
       });
 
+      widget.newUser.password = passwordController.text;
+
       _auth.signUp(widget.newUser.email, widget.newUser.password).then((firebaseUser) {
         widget.newUser.id = firebaseUser.uid;
 
         widget.newUser.createdAt = DateTime.now().millisecond;
         userPreferences.writeUser(widget.newUser);
         userRepository.addNewUser(widget.newUser).then((value) {
+          print("Success");
+          print(value.toString());
+
           if(value) {
             setState(() {
               isLoading = false;
@@ -194,6 +200,11 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         });
 
       }).catchError((error) {
+        print("onError");
+        print(error.toString());
+        var errorModel = error as PlatformException;
+        print(errorModel.message);
+        print(errorModel.code);
         // TODO task show error
         setState(() {
           isLoading = false;

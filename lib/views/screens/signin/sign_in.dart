@@ -1,8 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
+import 'package:travel_date_app/services/repository/auth_repository.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
+import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
@@ -16,8 +20,12 @@ class _SignInScreenState extends State<SignInScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  var emailPasswordController = TextEditingController();
+  var emailController = TextEditingController();
   var passwordController = TextEditingController();
+
+  UserPreferences _userPreferences = UserPreferences();
+  UserRepository _userRepository = UserRepository();
+  Auth _auth = Auth();
 
   bool _autoValidate = false;
 
@@ -49,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 _marginHeight(30),
                 _socialMedias(),
                 _marginHeight(30),
-                _signUpButton(),
+                _signInButton(),
                 _marginHeight(30),
               ],
             ),
@@ -81,7 +89,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return TextFormField(
       autofocus: false,
       validator: ValidateFields.emailOrPasswordValidate,
-      controller: emailPasswordController,
+      controller: emailController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
           filled: true,
@@ -198,7 +206,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _signUpButton() {
+  Widget _signInButton() {
     return Center(
       child: RichText(
         text: TextSpan(
@@ -230,6 +238,36 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signInPressed() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
 
+      _auth.signIn(emailController.text, passwordController.text).then((firebaseUser) {
+
+        _userRepository.getUsersById(firebaseUser.uid).then((user) {
+          print(user.toJson().toString());
+          _userPreferences.writeUser(user);
+
+          _userPreferences.saveLoggedIn();
+          Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: user)));
+        }).catchError((onError) {
+          print("error: " + onError.toString());
+          // TODO task set Server Error
+        });
+      }).then((onError) {
+        print('error: ' + onError.toString());
+        // TODO task set Server Error
+      });
+    } else {
+      setState(() {
+        _autoValidate = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

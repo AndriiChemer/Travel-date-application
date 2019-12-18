@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
+import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
@@ -20,8 +22,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  UserPreferences _userPreferences = UserPreferences();
+  Auth _auth = Auth();
+
   @override
   Widget build(BuildContext context) {
+    print("ANDRII AccountScreen build");
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: CustomColors.mainBackground,
@@ -103,7 +109,7 @@ class _AccountScreenState extends State<AccountScreen> {
         height: 250,
         decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(widget.user.imageUrl),
+              image: widget.user.imageUrl == '' ? AssetImage(widget.user.getEmptyPhoto()) : NetworkImage(widget.user.imageUrl),
               fit: BoxFit.cover,
             )
         ),
@@ -112,11 +118,13 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _userInformation() {
+    var userName = widget.user.name;
+    var userAge = widget.user.calculateAge();
     return Container(
       padding: EdgeInsets.all(20),
       child: Row(
         children: <Widget>[
-          Text("Andrii Chemer, 23", style: TextStyle(color: Colors.white, fontSize: 23),),
+          Text("$userName, $userAge", style: TextStyle(color: Colors.white, fontSize: 23),),
           _goldCircle(),
         ],
       ),
@@ -197,9 +205,7 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
       actions: <Widget>[
         CupertinoDialogAction(
-          onPressed: () {
-
-          },
+          onPressed: logout,
           isDefaultAction: true,
           child: Text(Strings.yes),
         ),
@@ -213,5 +219,11 @@ class _AccountScreenState extends State<AccountScreen> {
     );
 
     showDialog(context: context, builder: (BuildContext context) => dialog);
+  }
+
+  void logout() {
+    _userPreferences.logout();
+    _auth.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, '/signin', (Route<dynamic> route) => false);
   }
 }

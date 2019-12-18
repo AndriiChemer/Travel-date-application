@@ -32,6 +32,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   CountryCode _selectedCountry;
 
   @override
+  void initState() {
+    _selectedCountry = CountryCode();
+    _selectedCountry.name = "Polska";
+    _selectedCountry.code = "PL";
+    _selectedCountry.dialCode = "+48";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MainBackground(
       child: Scaffold(

@@ -8,6 +8,7 @@ import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/errorscreen/error_screen.dart';
+import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -28,10 +29,11 @@ class _SplashState extends State<Splash> {
     userPreferences.isLoggedIn().then((isLoggedIn) {
       // if  user logged in
       if(isLoggedIn) {
-        showProgress();
+//        showProgress();
 
         userPreferences.getUser().then((user) {
           auth.signIn(user.email, user.password).then((firebaseUser) {
+
             openMainScreen(user);
           }).catchError((error) {
             print(error);
@@ -91,6 +93,6 @@ class _SplashState extends State<Splash> {
   }
 
   openMainScreen(UserModel userModel) {
-    Navigator.pushReplacementNamed(context, '/main', arguments: {"user" : userModel});
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: userModel)));
   }
 }

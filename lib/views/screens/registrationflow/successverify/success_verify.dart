@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
 class VerifySuccess extends StatefulWidget {
@@ -13,7 +14,6 @@ class _VerifySuccessState extends State<VerifySuccess> {
   @override
   void initState() {
     super.initState();
-    continueRegistrationScreen();
   }
 
   @override
@@ -29,6 +29,8 @@ class _VerifySuccessState extends State<VerifySuccess> {
     Color secondColor = Colors.yellow[800].withOpacity(0.5);
     Color thirdColor = Colors.yellow[800].withOpacity(0.4);
     Color fourthColor = Colors.yellow[800].withOpacity(0.3);
+
+    continueRegistrationScreen();
 
     return MainBackground(
       child: buildCircle(
@@ -72,10 +74,10 @@ class _VerifySuccessState extends State<VerifySuccess> {
   }
 
   continueRegistrationScreen() async {
-    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+    final arguments = ModalRoute.of(context).settings.arguments as UserModel;
 
     Timer(Duration(seconds: 2), (){
-      Navigator.pushReplacementNamed(context, '/setage', arguments: {'newUser' : arguments['newUser']});
+      Navigator.pushReplacementNamed(context, '/setage', arguments: arguments);
     });
   }
 

@@ -23,7 +23,7 @@ class UserPreferences {
     await prefs.setBool("isLoggedIn", true);
   }
 
-  logout(bool isSave) async {
+  logout() async {
     prefs = await SharedPreferences.getInstance();
 
     await prefs.setBool("isLoggedIn", false);

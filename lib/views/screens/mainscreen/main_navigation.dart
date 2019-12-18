@@ -14,6 +14,11 @@ import 'chats/chatsscreen.dart';
 import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
+
+  final UserModel userModel;
+
+  MainNavigation({this.userModel});
+
   @override
   _MainNavigationState createState() => _MainNavigationState();
 }
@@ -25,24 +30,22 @@ class _MainNavigationState extends State<MainNavigation> {
   int _viewCounterNotification = MockServer.peopleList.length;
   int _kissCounterNotification = 3;
 
-  UserModel userAccount;
   List<Widget> navigationScreens;
 
   @override
   void initState() {
     super.initState();
-    userAccount = MockServer.peopleList.first;
-
     navigationScreens = [
       DiscoverScreen(),
       Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
-      ChatListScreen(yourAccount: userAccount),
-      AccountScreen(user: userAccount)
+      ChatListScreen(yourAccount: widget.userModel),
+      AccountScreen(user: widget.userModel)
     ];
   }
 
   @override
   Widget build(BuildContext context) {
+    print("ANDRII MainNavigation build");
     BottomNavBloc bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
 
     return Scaffold(

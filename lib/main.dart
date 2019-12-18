@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_list_block.dart';
+import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       blocs: [
         Bloc((i)=> BottomNavBloc()),
         Bloc((i)=> MessageListBloc()),
+        Bloc((i)=> UsersByLocationBloc()),
       ],
       child: MaterialApp(
           title: 'Date App',
@@ -33,12 +35,12 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
               canvasColor: Colors.transparent
           ),
-          home: MainNavigation(),//Splash(),
+          home: Splash(),//MainNavigation(),//Splash(),
           routes: {
             '/signin': (context) => SignInScreen(),
             '/verifyphone': (context) => VerifySuccess(),
             '/setage': (context) => AgeScreen(),
-            '/main': (context) => MainNavigation(),
+            '/mainNavigation': (context) => MainNavigation(),
           }
       ),
     );
@@ -56,7 +58,15 @@ class MyApp extends StatelessWidget {
 //https://medium.com/@cavdy/flutter-tutorial-phone-verification-and-authentication-b8ea5ddea18d
 
 //Scroll pagination
-// https://www.c-sharpcorner.com/article/pagination-in-flutter-using-firebase-cloud-firestore/
+//https://www.c-sharpcorner.com/article/pagination-in-flutter-using-firebase-cloud-firestore/
 
 //Chat
 //https://www.c-sharpcorner.com/article/chat-app-in-flutter-using-google-firebase/
+
+//Firestore pagination
+//https://www.c-sharpcorner.com/article/pagination-in-flutter-using-firebase-cloud-firestore/
+
+
+//Bloc pattern firestore
+//https://medium.com/flutterpub/when-firebase-meets-bloc-pattern-fb5c405597e0
+//https://github.com/SAGARSURI/Goals/blob/master/lib/src/ui/widgets/people_goals_list.dart

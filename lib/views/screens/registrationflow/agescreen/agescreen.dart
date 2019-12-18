@@ -58,7 +58,7 @@ class _AgeScreenState extends State<AgeScreen> {
               Text(Strings.age_title, style: TextStyle(color: Colors.white, fontSize: 35),),
               Flexible(child: SizedBox(height: 50,),),
               _selectAgeButton(context),
-              Flexible(child: SizedBox(height: 50,),),
+              Flexible(child: SizedBox(height: 40,),),
               _nextButton(context)
             ],
           ),
@@ -165,7 +165,9 @@ class _AgeScreenState extends State<AgeScreen> {
     if(Platform.isAndroid) {
       _selectDate(context).then((DateTime selectedDate){
         _parseDate(selectedDate);
-        setState(() {});
+        setState(() {
+          _selectedDate = selectedDate;
+        });
       });
     } else {
       _showIosDateBottomDialog(context);
@@ -195,9 +197,9 @@ class _AgeScreenState extends State<AgeScreen> {
 
     final DateTime birthDate = await showDatePicker(
         context: context,
-        initialDate: nowDate,
+        initialDate: DateTime(nowDate.year - 16),
         firstDate: DateTime(1920, 8),
-        lastDate: DateTime(nowDate.year - 16));
+        lastDate: nowDate);
 
     return birthDate;
   }
@@ -287,8 +289,8 @@ class _AgeScreenState extends State<AgeScreen> {
       return;
     }
 
-    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
-    var newUser = arguments['newUser'] as UserModel;
+    final newUser = ModalRoute.of(context).settings.arguments as UserModel;
+
     newUser.birthday = _selectedDate.millisecond;
     newUser.sex = isFemale == false ? "Male" : "Female";
 

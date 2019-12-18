@@ -32,36 +32,63 @@ class UserModel {
   List<String> photos = [];
 
   UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '', this.state = -1,
-    this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = 0.0, this.lng = 0.0,
+    this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = -1.0, this.lng = -1.0,
     this.sex = '', this.description = '', this.isVerify = false, this.isHide = false, this.isOnline = false,
     this.createdAt = -1, this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
     this.phone = '', this.country = '', this.countryCode = ''});
 
 
-  UserModel.fromMap(Map snapshot, String id) :
-        id = id ?? '',
+  UserModel.fromMap(Map snapshot) :
+        id = snapshot['id'] ?? '',
         name = snapshot['name'] ?? '',
         city = snapshot['city'] ?? '',
         imageUrl = snapshot['imageUrl'] ?? '',
-        state = snapshot['state'] ?? -1,
+        state = snapshot['state'] as int ?? -1,
         status = snapshot['status'] ?? '',
-        dateCreated = snapshot['dateCreated'] ?? 0,
-        lastTimeOnline = snapshot['lastTimeOnline'] ?? 0.0,
-        lat = snapshot['lat'] ?? 0.0,
-        lng = snapshot['lng'] ?? 0.0,
+        dateCreated = snapshot['dateCreated'] as int ?? 0,
+        lastTimeOnline = snapshot['lastTimeOnline'] as int ?? 0,
+        lat = snapshot['lat'] as double ?? 0.0,
+        lng = snapshot['lng'] as double ?? 0.0,
         sex = snapshot['sex'] ?? '',
         description = snapshot['description'] ?? '',
-        isVerify = snapshot['isVerify'] ?? false,
-        isHide = snapshot['lng'] ?? false,
-        isOnline = snapshot['lng'] ?? false,
-        createdAt = snapshot['createdAt'] ?? 0.0,
-        lastVisitedAt = snapshot['lastVisitedAt'] ?? 0.0,
-        birthday = snapshot['birthday'] ?? 0.0,
+        isVerify = snapshot['isVerify'] as bool ?? false,
+        isHide = snapshot['isHide'] as bool ?? false,
+        isOnline = snapshot['isOnline'] as bool ?? false,
+        createdAt = snapshot['createdAt'] as int ?? 0,
+        lastVisitedAt = snapshot['lastVisitedAt'] as int ?? 0,
+        birthday = snapshot['birthday'] as int ?? 0,
         email = snapshot['email'] ?? '',
         password = snapshot['password'] ?? '',
         phone = snapshot['phone'] ?? '',
         country = snapshot['country'] ?? '',
         countryCode = snapshot['countryCode'] ?? '';
+
+//  UserModel.fromMap1(Map snapshot) {
+//    id = snapshot['id'] ?? '';
+//    name = snapshot['name'] ?? '';
+//    city = snapshot['city'] ?? '';
+//    imageUrl = snapshot['imageUrl'] ?? '';
+//    state = snapshot['state'] as int ?? -1;
+//    status = snapshot['status'] ?? '';
+//    dateCreated = snapshot['dateCreated'] as int ?? 0;
+//    lastTimeOnline = snapshot['lastTimeOnline'] as int ?? 0;
+//    lat = snapshot['lat'] as double ?? 0.0;
+//    lng = snapshot['lng'] as double ?? 0.0;
+//    sex = snapshot['sex'] ?? '';
+//    description = snapshot['description'] ?? '';
+//    isVerify = snapshot['isVerify'] as bool ?? false;
+//    isHide = snapshot['isHide'] as bool ?? false;
+//    isOnline = snapshot['isOnline'] as bool ?? false;
+//    createdAt = snapshot['createdAt'] as int ?? 0;
+//    lastVisitedAt = snapshot['lastVisitedAt'] as int ?? 0;
+//    birthday = snapshot['birthday'] as int ?? 0;
+//    email = snapshot['email'] ?? '';
+//    password = snapshot['password'] ?? '';
+//    phone = snapshot['phone'] ?? '';
+//    country = snapshot['country'] ?? '';
+//    countryCode = snapshot['countryCode'] ?? '';
+//  }
+
 
   toJson() {
     return {
@@ -92,24 +119,28 @@ class UserModel {
 
   //============================================================================
   String calculateAge() {
-    var birthDate = DateTime.fromMillisecondsSinceEpoch(birthday);
+    if(birthday > 0) {
+      var birthDate = DateTime.fromMillisecondsSinceEpoch(birthday);
 
-    DateTime currentDate = DateTime.now();
+      DateTime currentDate = DateTime.now();
 
-    int age = currentDate.year - birthDate.year;
-    int currentMonth = currentDate.month;
-    int birthMonth = birthDate.month;
+      int age = currentDate.year - birthDate.year;
+      int currentMonth = currentDate.month;
+      int birthMonth = birthDate.month;
 
-    if (birthMonth > currentMonth) {
-      age--;
-    } else if (currentMonth == birthMonth) {
-      int currentDay = currentDate.day;
-      int birthDay = birthDate.day;
-      if (birthDay > currentDay) {
+      if (birthMonth > currentMonth) {
         age--;
+      } else if (currentMonth == birthMonth) {
+        int currentDay = currentDate.day;
+        int birthDay = birthDate.day;
+        if (birthDay > currentDay) {
+          age--;
+        }
       }
+      return age.toString();
+    } else {
+      return '';
     }
-    return age.toString();
   }
 
   bool isPhotoEmpty() {
@@ -129,7 +160,7 @@ class UserModel {
   }
 
   String getEmptyPhoto() {
-    if(state == 0) {
+    if(sex == 'Male') {
       return "assets/images/no_image_male.jpg";
     } else {
       return "assets/images/no_image_female.jpg";

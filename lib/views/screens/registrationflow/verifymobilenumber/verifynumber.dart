@@ -193,7 +193,7 @@ class _VerifyMobileNumberScreenState extends State<VerifyMobileNumberScreen> {
     setState(() {
       isProgressLoad = false;
     });
-    Navigator.pushReplacementNamed(context, '/verifyphone', arguments: {'newUser' : widget.newUser});
+    Navigator.pushReplacementNamed(context, '/verifyphone', arguments: widget.newUser);
   }
 
   _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
