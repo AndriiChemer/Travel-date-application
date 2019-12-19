@@ -41,10 +41,8 @@ class UserPreferences {
     await prefs.setString('description', user.description);
     await prefs.setString('email', user.email);
     await prefs.setString('password', user.password);
-    await prefs.setInt('state', user.state);
     await prefs.setInt('dateCreated', user.dateCreated);
     await prefs.setInt('lastTimeOnline', user.lastTimeOnline);
-    await prefs.setInt('createdAt', user.createdAt);
     await prefs.setInt('lastVisitedAt', user.lastVisitedAt);
     await prefs.setInt('birthday', user.birthday);
     await prefs.setDouble('lat', user.lat);
@@ -69,7 +67,6 @@ class UserPreferences {
     int state = prefs.getInt('state');
     int dateCreated = prefs.getInt('dateCreated');
     int lastTimeOnline = prefs.getInt('lastTimeOnline');
-    int createdAt = prefs.getInt('createdAt');
     int lastVisitedAt = prefs.getInt('lastVisitedAt');
     int birthday = prefs.getInt('birthday');
     double lat = prefs.getDouble('lat');
@@ -78,10 +75,10 @@ class UserPreferences {
     bool isHide = prefs.getBool('isHide');
     bool isOnline = prefs.getBool('isOnline');
 
-    var user = UserModel(id: id, name: name, city: city, imageUrl: imageUrl, state: state,
+    var user = UserModel(id: id, name: name, city: city, imageUrl: imageUrl,
         status: status, sex: sex, description: description, dateCreated: dateCreated,
-        lastTimeOnline: lastTimeOnline, createdAt: createdAt, lastVisitedAt: lastVisitedAt,
-        birthday: birthday, lat: lat, lng: lng, isVerify: isVerify, isHide: isHide, isOnline: isOnline, email: email, password: password);
+        lastTimeOnline: lastTimeOnline, lastVisitedAt: lastVisitedAt, birthday: birthday,
+        lat: lat, lng: lng, isVerify: isVerify, isHide: isHide, isOnline: isOnline, email: email, password: password);
 
     return user;
   }

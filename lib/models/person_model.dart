@@ -29,10 +29,10 @@ class UserModel {
 
   List<String> photos = [];
 
-  UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '', this.state = -1,
-    this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = -1.0, this.lng = -1.0,
-    this.sex = '', this.description = '', this.isVerify = false, this.isHide = false, this.isOnline = false,
-    this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
+  UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '',
+    this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = -1.0,
+    this.lng = -1.0, this.sex = '', this.description = '', this.isVerify = false, this.isHide = false,
+    this.isOnline = false, this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
     this.phone = '', this.country = '', this.countryCode = ''});
 
 
