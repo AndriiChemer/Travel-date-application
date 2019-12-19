@@ -12,7 +12,6 @@ class UserModel {
   String phone;
   String country;
   String countryCode;
-  int state;
   String status;
   int dateCreated;
   int lastTimeOnline;
@@ -25,7 +24,6 @@ class UserModel {
   bool isVerify;
   bool isHide;
   bool isOnline;
-  int createdAt;
   int lastVisitedAt;
   int birthday;
 
@@ -34,7 +32,7 @@ class UserModel {
   UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '', this.state = -1,
     this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = -1.0, this.lng = -1.0,
     this.sex = '', this.description = '', this.isVerify = false, this.isHide = false, this.isOnline = false,
-    this.createdAt = -1, this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
+    this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
     this.phone = '', this.country = '', this.countryCode = ''});
 
 
@@ -43,7 +41,6 @@ class UserModel {
         name = snapshot['name'] ?? '',
         city = snapshot['city'] ?? '',
         imageUrl = snapshot['imageUrl'] ?? '',
-        state = snapshot['state'] as int ?? -1,
         status = snapshot['status'] ?? '',
         dateCreated = snapshot['dateCreated'] as int ?? 0,
         lastTimeOnline = snapshot['lastTimeOnline'] as int ?? 0,
@@ -54,7 +51,6 @@ class UserModel {
         isVerify = snapshot['isVerify'] as bool ?? false,
         isHide = snapshot['isHide'] as bool ?? false,
         isOnline = snapshot['isOnline'] as bool ?? false,
-        createdAt = snapshot['createdAt'] as int ?? 0,
         lastVisitedAt = snapshot['lastVisitedAt'] as int ?? 0,
         birthday = snapshot['birthday'] as int ?? 0,
         email = snapshot['email'] ?? '',
@@ -95,7 +91,6 @@ class UserModel {
       "name": name,
       "city": city,
       "imageUrl": imageUrl,
-      "state": state,
       "status": status,
       "dateCreated": dateCreated,
       "lastTimeOnline": lastTimeOnline,
@@ -106,7 +101,6 @@ class UserModel {
       "isVerify": isVerify,
       "isHide": isHide,
       "isOnline": isOnline,
-      "createdAt": createdAt,
       "lastVisitedAt": lastVisitedAt,
       "birthday": birthday,
       "email": email,

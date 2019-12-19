@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
@@ -176,11 +177,13 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       });
 
       widget.newUser.password = passwordController.text;
+      widget.newUser.isOnline = true;
+      widget.newUser.dateCreated = DateTime.now().millisecondsSinceEpoch * 1000;
 
       _auth.signUp(widget.newUser.email, widget.newUser.password).then((firebaseUser) {
         widget.newUser.id = firebaseUser.uid;
 
-        widget.newUser.createdAt = DateTime.now().millisecond;
+
         userPreferences.writeUser(widget.newUser);
         userRepository.addNewUser(widget.newUser).then((value) {
           print("Success");

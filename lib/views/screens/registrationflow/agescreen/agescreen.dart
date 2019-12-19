@@ -291,7 +291,7 @@ class _AgeScreenState extends State<AgeScreen> {
 
     final newUser = ModalRoute.of(context).settings.arguments as UserModel;
 
-    newUser.birthday = _selectedDate.millisecond;
+    newUser.birthday = _selectedDate.millisecondsSinceEpoch * 1000;
     newUser.sex = isFemale == false ? "Male" : "Female";
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => InterestsScreen(newUser: newUser)));
