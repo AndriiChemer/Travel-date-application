@@ -136,7 +136,7 @@ class UserModel {
   }
 
   bool isPhotoEmpty() {
-    if(photos.length == 0 && imageUrl == null) {
+    if(imageUrl.length == 0 || imageUrl == null) {
       return true;
     } else {
       buildPhotoList();

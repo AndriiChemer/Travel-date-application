@@ -111,7 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
         height: 250,
         decoration: BoxDecoration(
             image: DecorationImage(
-              image: widget.user.imageUrl == '' ? AssetImage(widget.user.getEmptyPhoto()) : NetworkImage(widget.user.imageUrl),
+              image: widget.user.isPhotoEmpty() ? AssetImage(widget.user.getEmptyPhoto()) : NetworkImage(widget.user.imageUrl),
               fit: BoxFit.cover,
             )
         ),

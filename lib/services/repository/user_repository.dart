@@ -28,6 +28,21 @@ class UserRepository {
 
     return true;
   }
+
+  Future<void> updateUser(UserModel userModel) async {
+    print("UserRepository");
+    print("updateUser");
+
+    _firestore.collection(USER_COLUMN)
+        .document(userModel.id)
+        .updateData(userModel.toJson())
+        .then((onValue) {
+          print('User has been updated successful');
+        }).catchError((onError) {
+          print("UserRepository updateUser");
+          print('onError: ' + onError.toString());
+        });
+  }
   
   Future<void> handleOnlineState(String userID, bool isOnline) async {
     print('User id: $userID');
@@ -36,11 +51,11 @@ class UserRepository {
     _firestore.collection(USER_COLUMN)
         .document(userID)
         .updateData({
-      'isOnline': isOnline,
-      'lastVisitedAt': date
-    }).then((onValue) {
-      print("Update user online state.");
-    });
+          'isOnline': isOnline,
+          'lastVisitedAt': date
+        }).then((onValue) {
+          print("Update user online state.");
+        });
   }
 
   Future<UserModel> getUsersById(String id) async {

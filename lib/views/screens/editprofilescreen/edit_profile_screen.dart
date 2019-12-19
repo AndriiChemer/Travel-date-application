@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 
@@ -21,7 +23,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   var _nameController = TextEditingController();
   var _ageController = TextEditingController();
+  var _locationController = TextEditingController();
   var _describeController = TextEditingController();
+
+  UserRepository _userRepository = UserRepository();
+  UserPreferences _userPreferences = UserPreferences();
 
   @override
   void initState() {
@@ -29,7 +35,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     _nameController.text = widget.user.name;
     _ageController.text = widget.user.calculateAge();
+    _locationController.text = widget.user.city;
     _describeController.text = widget.user.description;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
+    _locationController.dispose();
+    _describeController.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,14 +108,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _editDescription(),
         _instagramButton(context),
         _snapchatButton(context),
-        _nextButton(context)
+        _saveButton(context)
       ],
     );
   }
 
-  Widget _nextButton(BuildContext context) {
+  Widget _saveButton(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.fromLTRB(20, 20, 20, widget.user.isVerify ? 20 : 40),
       child: ButtonTheme(
         minWidth: MediaQuery.of(context).size.width,
         height: 50,
@@ -107,9 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           color: Colors.yellow[800],
           textColor: Colors.white,
           child: Text(Strings.save_button.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
-          onPressed: () {
-            // TODO set save event
-          },
+          onPressed: onSaveButtonClick,
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(30.0),
           ),
@@ -194,6 +208,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 filled: true,
                 fillColor: CustomColors.secondaryBackground,
                 hintText: Strings.name,
+                hintStyle: TextStyle(color: Colors.yellow[800].withOpacity(0.40)),
                 prefixIcon: Icon(Icons.person, color: Colors.yellow[800],),
                 contentPadding: const EdgeInsets.only(left: 25.0, bottom: 12.0, top: 12.0),
                 focusedBorder: OutlineInputBorder(
@@ -227,6 +242,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 filled: true,
                 fillColor: CustomColors.secondaryBackground,
                 hintText: Strings.age,
+                hintStyle: TextStyle(color: Colors.yellow[800].withOpacity(0.40)),
                 prefixIcon: Icon(Icons.calendar_today, color: Colors.yellow[800],),
                 contentPadding: const EdgeInsets.only(left: 25.0, bottom: 12.0, top: 12.0),
                 focusedBorder: OutlineInputBorder(
@@ -255,6 +271,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           TextFormField(
             autofocus: false,
             style: TextStyle(fontSize: 18.0, color: Colors.yellow[800]),
+            controller: _locationController,
             decoration: InputDecoration(
                 filled: true,
                 fillColor: CustomColors.secondaryBackground,
@@ -336,7 +353,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           builder: (BuildContext context) {
             return Container(
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(color: Colors.amber),
               child: GestureDetector(
                 child: Image.network(photoUrl, fit: BoxFit.cover,),
                 onTap: () {
@@ -354,7 +370,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String image = widget.user.getEmptyPhoto();
     return Container(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(color: Colors.amber),
+      height: 250,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(image),
+            fit: BoxFit.cover,
+          )
+      ),
       child: GestureDetector(
         child: Image.asset(image, fit: BoxFit.cover,),
         onTap: () {
@@ -394,5 +416,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  onSaveButtonClick() {
+    String name = _nameController.text;
+    String city = _locationController.text;
+    String description = _describeController.text;
+
+    if(name.isNotEmpty && name.length > 2) {
+      widget.user.name = name;
+    }
+
+    if(city.isNotEmpty && city.length > 2) {
+      widget.user.city = city;
+    }
+
+    if(description.isNotEmpty && description.length > 2) {
+      widget.user.description = description;
+    }
+
+    if((name.isNotEmpty && name.length > 2) &&
+        (city.isNotEmpty && city.length > 2) &&
+        (description.isNotEmpty && description.length > 2)) {
+      _userPreferences.writeUser(widget.user);
+      _userRepository.updateUser(widget.user);
+      Navigator.pop(context);
+    }
   }
 }
