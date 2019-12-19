@@ -14,7 +14,6 @@ class UserModel {
   String countryCode;
   String status;
   int dateCreated;
-  int lastTimeOnline;
   double lat;
   double lng;
   String sex;
@@ -30,7 +29,7 @@ class UserModel {
   List<String> photos = [];
 
   UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '',
-    this.status = '', this.dateCreated = -1, this.lastTimeOnline = -1, this.lat = -1.0,
+    this.status = '', this.dateCreated = -1, this.lat = -1.0,
     this.lng = -1.0, this.sex = '', this.description = '', this.isVerify = false, this.isHide = false,
     this.isOnline = false, this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
     this.phone = '', this.country = '', this.countryCode = ''});
@@ -43,7 +42,6 @@ class UserModel {
         imageUrl = snapshot['imageUrl'] ?? '',
         status = snapshot['status'] ?? '',
         dateCreated = snapshot['dateCreated'] as int ?? 0,
-        lastTimeOnline = snapshot['lastTimeOnline'] as int ?? 0,
         lat = snapshot['lat'] as double ?? 0.0,
         lng = snapshot['lng'] as double ?? 0.0,
         sex = snapshot['sex'] ?? '',
@@ -88,12 +86,12 @@ class UserModel {
 
   toJson() {
     return {
+      "id": id,
       "name": name,
       "city": city,
       "imageUrl": imageUrl,
       "status": status,
       "dateCreated": dateCreated,
-      "lastTimeOnline": lastTimeOnline,
       "lat": lat,
       "lng": lng,
       "sex": sex,

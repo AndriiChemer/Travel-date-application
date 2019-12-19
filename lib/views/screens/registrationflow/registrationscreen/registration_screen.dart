@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:location/location.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
@@ -12,6 +14,7 @@ import 'package:travel_date_app/views/screens/registrationflow/verifymobilenumbe
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
+import 'package:flutter/services.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -27,6 +30,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
 
+  Address userAddress;
+
   bool _autoValidate = false;
   bool isTermsChecked = false;
   CountryCode _selectedCountry;
@@ -37,6 +42,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _selectedCountry.name = "Polska";
     _selectedCountry.code = "PL";
     _selectedCountry.dialCode = "+48";
+
+    print("initState");
+    getUserLocation();
     super.initState();
   }
 
@@ -382,6 +390,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     var newUser = UserModel(name: nameController.text, email: emailController.text, phone: phoneController.text,
                             country: _selectedCountry.name, countryCode: _selectedCountry.code);
 
+    if(userAddress != null) {
+      newUser.lat = userAddress.coordinates.latitude;
+      newUser.lng = userAddress.coordinates.longitude;
+      newUser.city = userAddress.locality;
+    }
+
     Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyMobileNumberScreen(newUser: newUser)));
+  }
+
+  getUserLocation() async {
+    print("getUserLocation");
+    LocationData currentLocation;
+    String error;
+    Location location = new Location();
+
+    try {
+      currentLocation = await location.getLocation();
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        error = 'please grant permipermissionssion';
+        print(error);
+        //TODO show dialog error
+      }
+      if (e.code == 'PERMISSION_DENIED_NEVER_ASK') {
+        error = 'permission denied- please enable it from app settings';
+        //TODO show dialog error
+        print(error);
+      }
+      currentLocation = null;
+    }
+
+    if(currentLocation != null) {
+      final coordinates = new Coordinates(
+          currentLocation.latitude, currentLocation.longitude);
+      var addresses = await Geocoder.local.findAddressesFromCoordinates(
+          coordinates);
+      var address = addresses.first;
+      userAddress = address;
+
+      print('coordinates = ${address.coordinates.toString()},\ncountryName = ${address.countryName},\nlocality = ${address.locality},\nadminArea = ${address.adminArea},\nsubLocality = ${address.subLocality},\nsubAdminArea = ${address.subAdminArea},\naddressLine = ${address.addressLine},\nfeatureName = ${address.featureName},\nthoroughfare = ${address.thoroughfare},\nsubThoroughfare = ${address.subThoroughfare}');
+    }
   }
 }

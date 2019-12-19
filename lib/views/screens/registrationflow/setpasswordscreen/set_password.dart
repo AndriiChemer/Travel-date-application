@@ -181,12 +181,12 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       widget.newUser.dateCreated = DateTime.now().millisecondsSinceEpoch * 1000;
 
       _auth.signUp(widget.newUser.email, widget.newUser.password).then((firebaseUser) {
-        widget.newUser.id = firebaseUser.uid;
 
+        widget.newUser.id = firebaseUser.uid;
 
         userPreferences.writeUser(widget.newUser);
         userRepository.addNewUser(widget.newUser).then((value) {
-          print("Success");
+          print("Successfully creating user in remote Database");
           print(value.toString());
 
           if(value) {

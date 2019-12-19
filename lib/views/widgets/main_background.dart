@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/views/widgets/lifecycle.dart';
 
 class MainBackground extends StatefulWidget {
 

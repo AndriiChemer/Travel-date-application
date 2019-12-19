@@ -28,35 +28,20 @@ class UserRepository {
 
     return true;
   }
+  
+  Future<void> handleOnlineState(String userID, bool isOnline) async {
+    print('User id: $userID');
+    int date = DateTime.now().millisecondsSinceEpoch * 1000;
 
-//  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {
-//    print("UserRepository");
-//    print("getUsersByLocation");
-//
-//    Stream<QuerySnapshot> querySnapshot;
-//    if(lastDocument == null) {
-//
-//      querySnapshot = _firestore
-//          .collection(USER_COLUMN)
-//          .where('city', isEqualTo: city)
-//          .orderBy('dateCreated')
-//          .limit(documentLimit)
-//          .snapshots();
-//
-//    } else {
-//
-//      querySnapshot = _firestore
-//          .collection(USER_COLUMN)
-//          .where('city', isEqualTo: city)
-//          .orderBy('dateCreated')
-//          .startAfterDocument(lastDocument)
-//          .limit(documentLimit)
-//          .snapshots();
-//
-//    }
-//    return querySnapshot;
-//  }
-
+    _firestore.collection(USER_COLUMN)
+        .document(userID)
+        .updateData({
+      'isOnline': isOnline,
+      'lastVisitedAt': date
+    }).then((onValue) {
+      print("Update user online state.");
+    });
+  }
 
   Future<UserModel> getUsersById(String id) async {
     print("UserRepository");
@@ -99,4 +84,32 @@ class UserRepository {
     }
     return querySnapshot;
   }
+
+//  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {
+//    print("UserRepository");
+//    print("getUsersByLocation");
+//
+//    Stream<QuerySnapshot> querySnapshot;
+//    if(lastDocument == null) {
+//
+//      querySnapshot = _firestore
+//          .collection(USER_COLUMN)
+//          .where('city', isEqualTo: city)
+//          .orderBy('dateCreated')
+//          .limit(documentLimit)
+//          .snapshots();
+//
+//    } else {
+//
+//      querySnapshot = _firestore
+//          .collection(USER_COLUMN)
+//          .where('city', isEqualTo: city)
+//          .orderBy('dateCreated')
+//          .startAfterDocument(lastDocument)
+//          .limit(documentLimit)
+//          .snapshots();
+//
+//    }
+//    return querySnapshot;
+//  }
 }

@@ -10,13 +10,19 @@ import 'package:travel_date_app/views/screens/registrationflow/registrationscree
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
+import 'package:travel_date_app/views/widgets/lifecycle.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler());
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profile.dart';
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
@@ -32,9 +33,13 @@ class _MainNavigationState extends State<MainNavigation> {
 
   List<Widget> navigationScreens;
 
+  UserRepository _userRepository = UserRepository();
+
   @override
   void initState() {
     super.initState();
+    _userRepository.handleOnlineState(widget.userModel.id, true);
+
     navigationScreens = [
       DiscoverScreen(),
       Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),

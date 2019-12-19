@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
@@ -22,8 +23,9 @@ class _AccountScreenState extends State<AccountScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  UserPreferences _userPreferences = UserPreferences();
   Auth _auth = Auth();
+  UserRepository _userRepository = UserRepository();
+  UserPreferences _userPreferences = UserPreferences();
 
   @override
   Widget build(BuildContext context) {
@@ -224,6 +226,10 @@ class _AccountScreenState extends State<AccountScreen> {
   void logout() {
     _userPreferences.logout();
     _auth.signOut();
+    _userPreferences.getUserId().then((userId) {
+      _userRepository.handleOnlineState(userId, false);
+    });
+
     Navigator.pushNamedAndRemoveUntil(context, '/signin', (Route<dynamic> route) => false);
   }
 }
