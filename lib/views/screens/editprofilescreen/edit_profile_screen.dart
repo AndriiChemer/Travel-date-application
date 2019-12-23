@@ -6,6 +6,7 @@ import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/screens/editimages/edit_images.dart';
 
 class EditProfileScreen extends StatefulWidget {
 
@@ -394,6 +395,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: FloatingActionButton(
           backgroundColor: Colors.yellow[800],
           child: Icon(Icons.edit, color: Colors.white,),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => EditImageScreen()));
+          },
         ),
       ),
     );

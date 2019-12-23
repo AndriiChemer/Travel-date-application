@@ -76,3 +76,7 @@ class MyApp extends StatelessWidget {
 //Bloc pattern firestore
 //https://medium.com/flutterpub/when-firebase-meets-bloc-pattern-fb5c405597e0
 //https://github.com/SAGARSURI/Goals/blob/master/lib/src/ui/widgets/people_goals_list.dart
+
+
+// Save image to Firestorage
+// https://www.youtube.com/watch?v=Ze5A_sRL6ww

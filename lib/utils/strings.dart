@@ -86,4 +86,8 @@ class Strings {
   static const String emailPassword = "Email / Phone password";
   static const String dontHaveAccount = "Don't have an account?";
 
+  //Edit Images Screen
+  static const String add_images = "Add Images";
+
+
 }

@@ -1,0 +1,192 @@
+import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/utils/colors.dart';
+import 'package:travel_date_app/utils/strings.dart';
+
+class EditImageScreen extends StatefulWidget {
+  @override
+  _EditImageScreenState createState() => _EditImageScreenState();
+}
+
+class _EditImageScreenState extends State<EditImageScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<String> images = [
+    'https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C',
+    'https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50',
+    'https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/60457709_864772787189123_3743945282803466240_n.jpg?_nc_cat=110&_nc_ohc=gTZApKPcEbUAQna2UNk3Y74FrmCtU4BXI59vVWQL5heNWY6W8pwYqyetA&_nc_ht=scontent-waw1-1.xx&oh=5b7fbf84f77bdc0aa18fe91f2da610c0&oe=5E83FAD9',
+    'https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/71813070_910727249327783_222159086056112128_n.jpg?_nc_cat=102&_nc_ohc=tGhwApO27W8AQkF9rJH620wLDEERszzT1hw-EUiHuCjkoJ-QvA-1YfSPQ&_nc_ht=scontent-waw1-1.xx&oh=08296a0a54da03239131e4693e36c617&oe=5E7CD684',
+    ''
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: _appBar(context),
+      backgroundColor: CustomColors.lightBackground,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        margin: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            _gridImageList(context),
+            Container(width: MediaQuery.of(context).size.height, height: 50, color: Colors.yellow[800],),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: CustomColors.secondaryBackground,
+      automaticallyImplyLeading: false,
+      actions: <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(left: 20, right: 20),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
+              )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _arrowBack(),
+              Text(Strings.add_images, style: TextStyle(color: Colors.white, fontSize: 20),),
+              Container(width: 30, height: 30,)
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _arrowBack() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
+    );
+  }
+
+  Widget _gridImageList(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final double itemWidth = size.width / 3;
+    final double itemHeight = (size.width / 2);
+
+    return Expanded(
+      child: GridView.count(
+        crossAxisCount: 3,
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        childAspectRatio: (itemWidth / itemHeight),
+        padding: const EdgeInsets.all(10),
+        children: images.map((String image) {
+          return image == '' ? _addImage(itemWidth, itemHeight) : _imageItem(image, itemWidth, itemHeight);
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _addImage(double itemWidth, double itemHeight) {
+    return Container(
+      margin: EdgeInsets.all(5),
+      child: Stack(
+        children: <Widget>[
+          DottedBorder(
+            color: Colors.white,
+            borderType: BorderType.RRect,
+            radius: Radius.circular(10),
+            dashPattern: [8, 4],
+            padding: EdgeInsets.all(0),
+            child: Container(
+              width: itemWidth - 40,
+              height: itemHeight - 45,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+            ),
+          ),
+
+          Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: _addImageButtonClick,
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  child: Icon(Icons.add, size: 20,),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.yellow[800]
+                  ),
+                ),
+              )
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _imageItem(String image, double itemWidth, double itemHeight) {
+    return Container(
+      margin: EdgeInsets.all(5),
+
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: itemWidth - 40,
+            height: itemHeight - 45,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              image: DecorationImage(
+                image: NetworkImage(image, ),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: FractionalOffset.topCenter,
+                  end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
+                  colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
+                  tileMode: TileMode.repeated, // repeats the gradient over the canvas
+                ),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10),  bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+              ),
+            ),
+          ),
+
+          Align(
+            alignment: Alignment.bottomRight,
+            child: GestureDetector(
+              onTap: _editButtonClick,
+              child: Container(
+                width: 25,
+                height: 25,
+                child: Icon(Icons.edit, size: 20,),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.yellow[800]
+                ),
+              ),
+            )
+          )
+        ],
+      ),
+    );
+  }
+
+  _editButtonClick() {
+
+  }
+
+  _addImageButtonClick() {
+
+  }
+}
