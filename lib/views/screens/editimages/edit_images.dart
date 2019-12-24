@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:path/path.dart' as Path;
+import 'package:travel_date_app/utils/validatop.dart';
 
 class EditImageScreen extends StatefulWidget {
   @override
@@ -10,7 +17,12 @@ class EditImageScreen extends StatefulWidget {
 }
 
 class _EditImageScreenState extends State<EditImageScreen> {
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  UserPreferences _userPreferences = UserPreferences();
+
+  List<File> localImageFiles = [];
+
   List<String> images = [
     'https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/11039096_131093853921083_6660331166421982710_n.jpg?_nc_cat=105&_nc_ohc=9jTzqURUehAAQlFEkgY43DnXphv7njdmTviZd_kXWJOPc5ObcvoCqOwSA&_nc_ht=scontent-waw1-1.xx&oh=2bda72df6d9d225e7874a37c2ea9a158&oe=5E86847C',
     'https://scontent-waw1-1.xx.fbcdn.net/v/t31.0-8/p960x960/22712153_813002642194857_7976803065891309368_o.jpg?_nc_cat=110&_nc_ohc=ObRDDb7hqhUAQmkFU99Yg7BW7hXCFXc9mhguWRGQanQdaE10rqQAsj4NA&_nc_ht=scontent-waw1-1.xx&oh=4c828c7399871db1b5018b8d95807343&oe=5E8BFE50',
@@ -18,6 +30,8 @@ class _EditImageScreenState extends State<EditImageScreen> {
     'https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/71813070_910727249327783_222159086056112128_n.jpg?_nc_cat=102&_nc_ohc=tGhwApO27W8AQkF9rJH620wLDEERszzT1hw-EUiHuCjkoJ-QvA-1YfSPQ&_nc_ht=scontent-waw1-1.xx&oh=08296a0a54da03239131e4693e36c617&oe=5E7CD684',
     ''
   ];
+
+  List<Strings> allImages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +101,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
         childAspectRatio: (itemWidth / itemHeight),
         padding: const EdgeInsets.all(10),
         children: images.map((String image) {
-          return image == '' ? _addImage(itemWidth, itemHeight) : _imageItem(image, itemWidth, itemHeight);
+          return ValidateFields.isStringUrl(image) ? _imageItem(image, itemWidth, itemHeight) : image != '' ? _localImage(image, itemWidth, itemHeight) : _addImage(itemWidth, itemHeight);
         }).toList(),
       ),
     );
@@ -182,11 +196,90 @@ class _EditImageScreenState extends State<EditImageScreen> {
     );
   }
 
+  Widget _localImage(String image, double itemWidth, double itemHeight) {
+    return Container(
+      margin: EdgeInsets.all(5),
+
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: itemWidth - 40,
+            height: itemHeight - 45,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              image: DecorationImage(
+                image: AssetImage(image,),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: FractionalOffset.topCenter,
+                  end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
+                  colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
+                  tileMode: TileMode.repeated, // repeats the gradient over the canvas
+                ),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10),  bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+              ),
+            ),
+          ),
+
+          Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: _editButtonClick,
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  child: Icon(Icons.edit, size: 20,),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.yellow[800]
+                  ),
+                ),
+              )
+          )
+        ],
+      ),
+    );
+  }
+
   _editButtonClick() {
 
   }
 
-  _addImageButtonClick() {
+  Future _addImageButtonClick() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((imageFile){
+      setState(() {
+        print("Selected image path: ${imageFile.path}");
+        localImageFiles.add(imageFile);
+        images.removeLast();
+        images.add(imageFile.path);
+        images.add('');
+      });
+    });
+  }
+
+  Future saveAndUploadFiles() async {
+    _userPreferences.getUserId().then((userId) async {
+      StorageReference storageReference = FirebaseStorage.instance.ref();
+
+      for(File file in localImageFiles) {
+        storageReference.child('profiles/$userId/${file.path}');
+        StorageUploadTask uploadTask = storageReference.putFile(file);
+        await uploadTask.onComplete;
+        print('File: ${file.path} uploaded');
+        storageReference.getDownloadURL().then((fileUrl) {
+          setState(() {
+            images.removeLast();
+            images.add(fileUrl);
+            images.add('');
+          });
+        });
+      }
+
+    });
 
   }
 }

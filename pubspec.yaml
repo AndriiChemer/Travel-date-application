@@ -45,9 +45,11 @@ dependencies:
 #  firebase_crashlytics: ^0.1.1+2
 #  firebase_ml_vision: ^0.9.3+3
   cloud_firestore: ^0.12.9+5
+  firebase_storage: ^3.0.3
   geocoder: ^0.2.1
   location: ^2.3.5
   dotted_border: ^1.0.4
+  image_picker: ^0.6.0+17
 
 dev_dependencies:
   flutter_test:

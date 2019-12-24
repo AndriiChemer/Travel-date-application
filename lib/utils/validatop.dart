@@ -4,6 +4,10 @@ import 'package:email_validator/email_validator.dart';
 
 class ValidateFields {
 
+  static bool isStringUrl(String str) {
+    return Uri.parse(str).isAbsolute;
+  }
+
   static String isNameValid(String name) {
     if(name != null && name.isNotEmpty) {
       return null;
@@ -56,6 +60,8 @@ class ValidateFields {
       return "Please enter name";
     }
   }
+
+
 
 //  static int getPercentageStrength(String s) {
 //    switch (calculateStrength(s)) {
