@@ -1,5 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:path/path.dart' as path;
 
 class UserRepository {
 
@@ -98,6 +104,23 @@ class UserRepository {
 
     }
     return querySnapshot;
+  }
+
+  Future<String> uploadImageProfile(File image, String userId) async {
+    var fileName = path.basename(image.path);
+    Uint8List fileBytes = image.readAsBytesSync();
+
+    StorageReference storageReference = FirebaseStorage.instance.ref().child('profiles/').child(userId).child(fileName);
+    StorageUploadTask uploadTask = storageReference.putData(fileBytes);
+
+    final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
+      print('EVENT ${event.type}');
+    });
+
+    await uploadTask.onComplete;
+    streamSubscription.cancel();
+
+    return storageReference.getDownloadURL();
   }
 
 //  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {

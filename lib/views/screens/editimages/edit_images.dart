@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:travel_date_app/services/blocs/image_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
@@ -24,6 +28,9 @@ class _EditImageScreenState extends State<EditImageScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   UserPreferences _userPreferences = UserPreferences();
 
+  ImageBloc _imageBloc;
+
+  bool isLoading = false;
   List<File> localImageFiles = [];
 
   List<String> images = [
@@ -34,10 +41,31 @@ class _EditImageScreenState extends State<EditImageScreen> {
     ''
   ];
 
-  List<Strings> allImages = [];
+    @override
+  void didChangeDependencies() {
+      _imageBloc = ImageBlocProvider.of(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _imageBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    _imageBloc.image.listen((imageUrl) {
+      print("CHEMER");
+      print("ImageUrl: $imageUrl");
+      setState(() {
+        images.removeLast();
+        images.add(imageUrl);
+        images.add('');
+      });
+    });
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: _appBar(context),
@@ -126,6 +154,12 @@ class _EditImageScreenState extends State<EditImageScreen> {
               height: itemHeight - 45,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: StreamBuilder(
+                stream: _imageBloc.showProgress,
+                builder: (context, snapshot){
+                  return !snapshot.hasData ? Container() : snapshot.data ? _loadingProgress() : Container();
+                }
               ),
             ),
           ),
@@ -253,13 +287,10 @@ class _EditImageScreenState extends State<EditImageScreen> {
   }
 
   Future _addImageButtonClick() async {
+
     await ImagePicker.pickImage(source: ImageSource.gallery).then((imageFile){
-      setState(() {
-        print("Selected image path: ${imageFile.path}");
-        localImageFiles.add(imageFile);
-        images.removeLast();
-        images.add(imageFile.path);
-        images.add('');
+      _userPreferences.getUserId().then((userId) async {
+        _imageBloc.uploadImage(imageFile, userId);
       });
     });
   }
@@ -290,10 +321,6 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
   Future saveAndUploadFiles() async {
     _userPreferences.getUserId().then((userId) async {
-
-
-
-
       for(File file in localImageFiles) {
         var fileName = Path.basename(file.path);
         Uint8List fileBytes = localImageFiles[0].readAsBytesSync();
@@ -314,6 +341,15 @@ class _EditImageScreenState extends State<EditImageScreen> {
       }
     });
 
+  }
+
+  Widget _loadingProgress() {
+    return Center(
+      child: SpinKitFadingCube(
+        color: Colors.yellow[800],
+        size: 50,
+      ),
+    );
   }
 
   Widget _saveButton(BuildContext context) {
