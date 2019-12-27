@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
@@ -46,7 +49,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _gridImageList(context),
-            Container(width: MediaQuery.of(context).size.height, height: 50, color: Colors.yellow[800],),
+            _saveButton(context),
           ],
         ),
       ),
@@ -261,25 +264,74 @@ class _EditImageScreenState extends State<EditImageScreen> {
     });
   }
 
+//  Future saveAndUploadFiles() async {
+//    _userPreferences.getUserId().then((userId) async {
+//
+//      var fileName = Path.basename(localImageFiles[0].path);
+//      StorageReference storageReference = FirebaseStorage.instance.ref().child('profiles/').child(userId).child(fileName);
+//
+//      Uint8List bytes = localImageFiles[0].readAsBytesSync();
+//      StorageUploadTask uploadTask = storageReference.putData(bytes);
+//
+//      final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
+//        print('EVENT ${event.type}');
+//      });
+//
+//      await uploadTask.onComplete;
+//      streamSubscription.cancel();
+//
+//      storageReference.getDownloadURL().then((imageUrl) {
+//        print("imageUrl = $imageUrl");
+//      });
+//
+//    });
+//
+//  }
+
   Future saveAndUploadFiles() async {
     _userPreferences.getUserId().then((userId) async {
-      StorageReference storageReference = FirebaseStorage.instance.ref();
+
+
+
 
       for(File file in localImageFiles) {
-        storageReference.child('profiles/$userId/${file.path}');
-        StorageUploadTask uploadTask = storageReference.putFile(file);
+        var fileName = Path.basename(file.path);
+        Uint8List fileBytes = localImageFiles[0].readAsBytesSync();
+
+        StorageReference storageReference = FirebaseStorage.instance.ref().child('profiles/').child(userId).child(fileName);
+        StorageUploadTask uploadTask = storageReference.putData(fileBytes);
+
+        final StreamSubscription<StorageTaskEvent> streamSubscription = uploadTask.events.listen((event) {
+          print('EVENT ${event.type}');
+        });
+
         await uploadTask.onComplete;
-        print('File: ${file.path} uploaded');
-        storageReference.getDownloadURL().then((fileUrl) {
-          setState(() {
-            images.removeLast();
-            images.add(fileUrl);
-            images.add('');
-          });
+        streamSubscription.cancel();
+
+        storageReference.getDownloadURL().then((imageUrl) {
+          print("imageUrl = $imageUrl");
         });
       }
-
     });
 
+  }
+
+  Widget _saveButton(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(20),
+      child: ButtonTheme(
+        minWidth: MediaQuery.of(context).size.width,
+        height: 50,
+        child: RaisedButton(
+          color: Colors.yellow[800],
+          textColor: Colors.white,
+          child: Text(Strings.save_button.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
+          onPressed: saveAndUploadFiles,
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30.0),
+          ),
+        ),
+      ),
+    );
   }
 }
