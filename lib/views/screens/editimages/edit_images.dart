@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/blocs/image_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
@@ -25,18 +26,35 @@ class EditImageScreen extends StatefulWidget {
 class _EditImageScreenState extends State<EditImageScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  var _userPreferences = UserPreferences();
   ImageBloc _imageBloc;
   List<String> images = [];
 
   @override
   void initState() {
-    images.add(widget.user.imageUrl);
-    widget.user.images.map((image) {
-      images.add(image);
-    });
-    images.add('');
+    buildImageList();
 
     super.initState();
+  }
+
+  buildImageList() {
+    _userPreferences.getGalleryImages().then((imageList) {
+
+      if(imageList != null) {
+        imageList.map((image) {
+          images.add(image);
+        }).toList();
+      }
+
+      widget.user.images.addAll(images);
+
+      if(widget.user.imageUrl != '') {
+        images.insert(0, widget.user.imageUrl);
+      }
+      setState(() {
+        images.add('');
+      });
+    });
   }
 
     @override
@@ -101,7 +119,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
   Widget _arrowBack() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop({'user' : widget.user});
       },
       child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
     );
@@ -197,18 +215,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
           Align(
             alignment: Alignment.bottomRight,
-            child: GestureDetector(
-              onTap: _editButtonClick,
-              child: Container(
-                width: 25,
-                height: 25,
-                child: Icon(Icons.edit, size: 20,),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.yellow[800]
-                ),
-              ),
-            )
+            child: _popupImageMenu(image),
           )
         ],
       ),
@@ -235,33 +242,21 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
           Align(
               alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: _editButtonClick,
-                child: Container(
-                  width: 25,
-                  height: 25,
-                  child: Icon(Icons.edit, size: 20,),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.yellow[800]
-                  ),
-                ),
-              )
+              child: _popupImageMenu(image)
           )
         ],
       ),
     );
   }
 
-  _editButtonClick() {
-
+  _editButtonClick(int value, String image) {
+    // TODO task add functions
   }
 
   Future _addImageButtonClick() async {
     await ImagePicker.pickImage(source: ImageSource.gallery).then((imageFile){
       _imageBloc.uploadImage(imageFile, widget.user);
       showLocalImage(imageFile);
-
     });
   }
 
@@ -274,7 +269,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
   }
 
   onSaveClick() {
-    Navigator.pop(context);
+    Navigator.pop(context, {'user' : widget.user});
   }
 
   Widget _saveButton(BuildContext context) {
@@ -290,6 +285,40 @@ class _EditImageScreenState extends State<EditImageScreen> {
           onPressed: onSaveClick,
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(30.0),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _popupImageMenu(String image) {
+    return PopupMenuButton<int>(
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 1,
+          child: Text("Menu 1", style: TextStyle(fontWeight: FontWeight.w700),),
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: Text("Menu 2", style: TextStyle(fontWeight: FontWeight.w700),),
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: Text("Menu 3", style: TextStyle(fontWeight: FontWeight.w700),),
+        )
+      ],
+      padding: EdgeInsets.all(0),
+      onSelected: (value) {
+        _editButtonClick(value, image);
+      },
+      child: GestureDetector(
+        child: Container(
+          width: 25,
+          height: 25,
+          child: Icon(Icons.edit, size: 20,),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.yellow[800]
           ),
         ),
       ),

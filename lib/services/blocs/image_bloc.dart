@@ -23,9 +23,9 @@ class ImageBloc {
         _userPreferences.setUserImage(imageUrl);
         _userRepository.uploadUserImage(imageUrl, user.id);
       } else {
-        _userRepository.addGalleryImage(imageUrl, user);
-        _userPreferences.addGalleryImage(imageUrl);
         user.images.add(imageUrl);
+        _userRepository.addGalleryImage(user);
+        _userPreferences.addGalleryImage(imageUrl);
       }
     }).catchError((onError){
       //TODO task show error for user

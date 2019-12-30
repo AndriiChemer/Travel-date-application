@@ -10,7 +10,7 @@ import 'package:travel_date_app/views/screens/editimages/edit_images.dart';
 
 class EditProfileScreen extends StatefulWidget {
 
-  final UserModel user;
+  UserModel user;
 
   EditProfileScreen({@required this.user});
 
@@ -395,8 +395,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: FloatingActionButton(
           backgroundColor: Colors.yellow[800],
           child: Icon(Icons.edit, color: Colors.white,),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EditImageScreen(user: widget.user)));
+          onPressed: () async {
+            var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EditImageScreen(user: widget.user)));
+            setState(() {
+              widget.user = result['user'] as UserModel;
+            });
           },
         ),
       ),

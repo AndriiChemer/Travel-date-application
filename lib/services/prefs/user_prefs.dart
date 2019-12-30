@@ -49,6 +49,7 @@ class UserPreferences {
     await prefs.setBool('isVerify', user.isVerify);
     await prefs.setBool('isHide', user.isHide);
     await prefs.setBool('isOnline', user.isOnline);
+    await prefs.setStringList('images', user.images);
   }
 
   Future<UserModel> getUser() async {
@@ -71,11 +72,12 @@ class UserPreferences {
     bool isVerify = prefs.getBool('isVerify');
     bool isHide = prefs.getBool('isHide');
     bool isOnline = prefs.getBool('isOnline');
+    List<String> images = prefs.getStringList('images');
 
     var user = UserModel(id: id, name: name, city: city, imageUrl: imageUrl,
         status: status, sex: sex, description: description, dateCreated: dateCreated,
         lastVisitedAt: lastVisitedAt, birthday: birthday, lat: lat, lng: lng, isVerify: isVerify,
-        isHide: isHide, isOnline: isOnline, email: email, password: password);
+        isHide: isHide, isOnline: isOnline, email: email, password: password, images: images);
 
     return user;
   }
@@ -96,7 +98,12 @@ class UserPreferences {
     prefs = await SharedPreferences.getInstance();
 
     List<String> images = prefs.getStringList("images");
-    images.add(imageUrl);
+    print("ANDRII imageList = ${images == null ? 'empty' : images.toString()}");
+    if(images != null) {
+      images.add(imageUrl);
+    } else {
+      images = [imageUrl];
+    }
 
     await prefs.setStringList("images", images);
   }

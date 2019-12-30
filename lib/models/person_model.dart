@@ -29,7 +29,7 @@ class UserModel {
     this.status = '', this.dateCreated = -1, this.lat = -1.0,
     this.lng = -1.0, this.sex = '', this.description = '', this.isVerify = false, this.isHide = false,
     this.isOnline = false, this.lastVisitedAt = -1, this.birthday = -1, this.email = '', this.password = '',
-    this.phone = '', this.country = '', this.countryCode = ''});
+    this.phone = '', this.country = '', this.countryCode = '', this.images});
 
 
   UserModel.fromMap(Map snapshot) :
@@ -52,6 +52,7 @@ class UserModel {
         password = snapshot['password'] ?? '',
         phone = snapshot['phone'] ?? '',
         country = snapshot['country'] ?? '',
+        images = snapshot['images'] == null ? [] : List.from(snapshot['images']),
         countryCode = snapshot['countryCode'] ?? '';
 
 //  UserModel.fromMap1(Map snapshot) {
@@ -103,6 +104,7 @@ class UserModel {
       "phone": phone,
       "country": country,
       "countryCode": countryCode,
+      "images": images
     };
   }
 

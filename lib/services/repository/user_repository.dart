@@ -140,17 +140,15 @@ class UserRepository {
     });
   }
 
-  Future<void> addGalleryImage(String imageUrl, UserModel user) {
+  Future<void> addGalleryImage(UserModel user) {
     print("UserRepository");
     print("uploadUserImage");
-
-    user.images.add(imageUrl);
 
     _firestore.collection(USER_COLUMN)
         .document(user.id)
         .updateData({'images' : FieldValue.arrayUnion(user.images)})
         .then((onValue) {
-      print('User\'s avatar  been updated successful');
+      print('User\'s gallery has been updated successful');
     }).catchError((onError) {
       print("UserRepository uploadUserImage");
       print('onError: ' + onError.toString());
