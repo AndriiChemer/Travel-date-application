@@ -1,6 +1,8 @@
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -223,12 +225,17 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void logout() {
+//    BottomNavBloc bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
+
+
     _userPreferences.logout();
     _auth.signOut();
     _userPreferences.getUserId().then((userId) {
       _userRepository.handleOnlineState(userId, false);
     });
 
+//    bottomNavBloc.setNavIndexPage(0);
+//    bottomNavBloc.dispose();
     Navigator.pushNamedAndRemoveUntil(context, '/signin', (Route<dynamic> route) => false);
   }
 }

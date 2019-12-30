@@ -195,7 +195,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
             });
 
             //TODO task clean stack screen
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+            Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: widget.newUser);
           } else {
             isLoading = false;
             // TODO task show error

@@ -323,7 +323,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation()));
+                  // TODO task add terms
                 },
                 child: Text(textContent),
               ),

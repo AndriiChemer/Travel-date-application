@@ -16,10 +16,6 @@ import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
 
-  final UserModel userModel;
-
-  MainNavigation({this.userModel});
-
   @override
   _MainNavigationState createState() => _MainNavigationState();
 }
@@ -28,28 +24,37 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  int _viewCounterNotification = MockServer.peopleList.length;
+  UserModel userModel;
+
   int _kissCounterNotification = 3;
+  int _viewCounterNotification = MockServer.peopleList.length;
 
   List<Widget> navigationScreens;
-
   UserRepository _userRepository = UserRepository();
 
   @override
   void initState() {
     super.initState();
-    _userRepository.handleOnlineState(widget.userModel.id, true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(userModel == null) {
+      userModel = ModalRoute.of(context).settings.arguments as UserModel;
+    }
 
     navigationScreens = [
       DiscoverScreen(),
       Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
-      ChatListScreen(yourAccount: widget.userModel),
-      AccountScreen(user: widget.userModel)
+      ChatListScreen(yourAccount: userModel),
+      AccountScreen(user: userModel)
     ];
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    _userRepository.handleOnlineState(userModel.id, true);
     BottomNavBloc bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
 
     return Scaffold(
@@ -58,6 +63,7 @@ class _MainNavigationState extends State<MainNavigation> {
       body: StreamBuilder(
         stream: bottomNavBloc.navStream,
         builder: (context, snapshot) {
+          print("ANDRII nav menu item = ${snapshot.data}");
           return snapshot.data != null && navigationScreens.length > 0 ?
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },

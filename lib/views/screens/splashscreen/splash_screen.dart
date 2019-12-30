@@ -93,6 +93,6 @@ class _SplashState extends State<Splash> {
   }
 
   openMainScreen(UserModel userModel) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: userModel)));
+    Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: userModel);
   }
 }

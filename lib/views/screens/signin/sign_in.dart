@@ -248,7 +248,8 @@ class _SignInScreenState extends State<SignInScreen> {
           _userPreferences.writeUser(user);
 
           _userPreferences.saveLoggedIn();
-          Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: user)));
+//          Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: user)));
+          Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: user);
         }).catchError((onError) {
           print("error: " + onError.toString());
           // TODO task set Server Error
