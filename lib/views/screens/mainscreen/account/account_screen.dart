@@ -29,7 +29,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("ANDRII AccountScreen build");
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: CustomColors.mainBackground,
@@ -198,7 +197,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   onSingOutClick() {
-    // TODO fix android (create dialog for ios)
+    // TODO task fix android (create dialog for ios)
     var dialog = CupertinoAlertDialog(
       title: Text(Strings.sign_out, style: TextStyle(color: Colors.yellow[800], fontSize: 25),),
       content: Container(

@@ -120,7 +120,41 @@ class UserRepository {
     await uploadTask.onComplete;
     streamSubscription.cancel();
 
-    return storageReference.getDownloadURL();
+    var imageUrl = await storageReference.getDownloadURL();
+
+    return imageUrl;
+  }
+
+  Future<void> uploadUserImage(String imageUrl, String id) {
+    print("UserRepository");
+    print("uploadUserImage");
+
+    _firestore.collection(USER_COLUMN)
+        .document(id)
+        .updateData({'imageUrl' : imageUrl})
+        .then((onValue) {
+      print('User\'s avatar  been updated successful');
+    }).catchError((onError) {
+      print("UserRepository uploadUserImage");
+      print('onError: ' + onError.toString());
+    });
+  }
+
+  Future<void> addGalleryImage(String imageUrl, UserModel user) {
+    print("UserRepository");
+    print("uploadUserImage");
+
+    user.images.add(imageUrl);
+
+    _firestore.collection(USER_COLUMN)
+        .document(user.id)
+        .updateData({'images' : FieldValue.arrayUnion(user.images)})
+        .then((onValue) {
+      print('User\'s avatar  been updated successful');
+    }).catchError((onError) {
+      print("UserRepository uploadUserImage");
+      print('onError: ' + onError.toString());
+    });
   }
 
 //  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {

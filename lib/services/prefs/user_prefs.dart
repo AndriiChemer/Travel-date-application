@@ -80,9 +80,30 @@ class UserPreferences {
     return user;
   }
 
+  setUserImage(String imageUrl) async {
+    prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('imageUrl', imageUrl);
+  }
+
   Future<String> getUserId() async {
     prefs = await SharedPreferences.getInstance();
 
     return prefs.getString('id');
+  }
+
+  void addGalleryImage(String imageUrl) async {
+    prefs = await SharedPreferences.getInstance();
+
+    List<String> images = prefs.getStringList("images");
+    images.add(imageUrl);
+
+    await prefs.setStringList("images", images);
+  }
+
+  Future<List<String>> getGalleryImages() async {
+    prefs = await SharedPreferences.getInstance();
+
+    return prefs.getStringList("images");
   }
 }

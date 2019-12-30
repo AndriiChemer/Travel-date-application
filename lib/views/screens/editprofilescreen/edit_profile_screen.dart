@@ -349,7 +349,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _imageSlider(BuildContext context) {
     return widget.user.isPhotoEmpty() ? _emptyImage(context) : CarouselSlider(
       height: 250,
-      items: widget.user.photos.map((photoUrl) {
+      items: widget.user.images.map((photoUrl) {
         return Builder(
           builder: (BuildContext context) {
             return Container(
@@ -381,7 +381,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: GestureDetector(
         child: Image.asset(image, fit: BoxFit.cover,),
         onTap: () {
-          //TODO add opening image screen
+          //TODO task add opening image screen
         },
       ),
     );
@@ -396,7 +396,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           backgroundColor: Colors.yellow[800],
           child: Icon(Icons.edit, color: Colors.white,),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EditImageScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => EditImageScreen(user: widget.user)));
           },
         ),
       ),

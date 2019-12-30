@@ -1,6 +1,3 @@
-
-import 'package:intl/intl.dart';
-
 class UserModel {
   // DateFormat("dd/MM/yyyy HH:mm:ss").parse("10/02/2000 15:13:09")
   // String, description
@@ -26,7 +23,7 @@ class UserModel {
   int lastVisitedAt;
   int birthday;
 
-  List<String> photos = [];
+  List<String> images = [];
 
   UserModel({this.id = '', this.name = '', this.city = '', this.imageUrl = '',
     this.status = '', this.dateCreated = -1, this.lat = -1.0,
@@ -147,7 +144,7 @@ class UserModel {
 
   void buildPhotoList() {
     if(imageUrl != null) {
-      photos.insert(0, imageUrl);
+      images.insert(0, imageUrl);
     }
   }
 
