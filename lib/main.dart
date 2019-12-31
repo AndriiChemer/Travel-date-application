@@ -14,6 +14,8 @@ import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 import 'package:travel_date_app/views/widgets/lifecycle.dart';
 
+import 'services/blocs/providers/users_by_location_bloc_provider.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -37,20 +39,22 @@ class MyApp extends StatelessWidget {
         Bloc((i)=> MessageListBloc()),
         Bloc((i)=> UsersByLocationBloc()),
       ],
-      child: ImageBlocProvider(
-        child: MaterialApp(
-            title: 'Date App',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-                canvasColor: Colors.transparent
-            ),
-            home: Splash(),
-            routes: {
-              '/signin': (context) => SignInScreen(),
-              '/verifyphone': (context) => VerifySuccess(),
-              '/setage': (context) => AgeScreen(),
-              '/mainNavigation': (context) => MainNavigation(),
-            }
+      child: UsersByLocationBlocProvider(
+        child: ImageBlocProvider(
+          child: MaterialApp(
+              title: 'Date App',
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                  canvasColor: Colors.transparent
+              ),
+              home: Splash(),
+              routes: {
+                '/signin': (context) => SignInScreen(),
+                '/verifyphone': (context) => VerifySuccess(),
+                '/setage': (context) => AgeScreen(),
+                '/mainNavigation': (context) => MainNavigation(),
+              }
+          ),
         ),
       ),
     );
