@@ -138,7 +138,7 @@ class _UserGridItemState extends State<UserGridItem> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
               image: DecorationImage(
-                image: NetworkImage(model.imageUrl, ),
+                image: model.imageUrl == '' ? AssetImage(model.getEmptyPhoto()) : NetworkImage(model.imageUrl, ),
                 fit: BoxFit.cover,
               )
           ),
@@ -160,6 +160,10 @@ class _UserGridItemState extends State<UserGridItem> {
   }
 
   Widget _nameCityColumn() {
+    String name = widget.model.name;
+    String age = widget.model.calculateAge();
+    String city = widget.model.city;
+
     return Positioned.fill(
         child: Align(
           alignment: Alignment.bottomLeft,
@@ -169,8 +173,8 @@ class _UserGridItemState extends State<UserGridItem> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("Andrii Chemer, 23", style: TextStyle(color: Colors.white),),
-                Text("Wroclaw", style: TextStyle(color: Colors.grey),),
+                Text("$name, $age", style: TextStyle(color: Colors.white),),
+                Text(city, style: TextStyle(color: Colors.grey),),
               ],
             ),
           ),

@@ -88,7 +88,7 @@ class UserRepository {
       querySnapshot = await _firestore
           .collection(USER_COLUMN)
           .where('city', isEqualTo: city)
-          .orderBy('dateCreated')
+          .orderBy('lastVisitedAt')
           .limit(documentLimit)
           .getDocuments();
 
@@ -97,7 +97,33 @@ class UserRepository {
       querySnapshot = await _firestore
           .collection(USER_COLUMN)
           .where('city', isEqualTo: city)
-          .orderBy('dateCreated')
+          .orderBy('lastVisitedAt')
+          .startAfterDocument(lastDocument)
+          .limit(documentLimit)
+          .getDocuments();
+
+    }
+    return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getUsers(DocumentSnapshot lastDocument, int documentLimit) async {
+    print("UserRepository");
+    print("getUsers");
+
+    QuerySnapshot querySnapshot;
+    if(lastDocument == null) {
+
+      querySnapshot = await _firestore
+          .collection(USER_COLUMN)
+          .orderBy('lastVisitedAt')
+          .limit(documentLimit)
+          .getDocuments();
+
+    } else {
+
+      querySnapshot = await _firestore
+          .collection(USER_COLUMN)
+          .orderBy('lastVisitedAt')
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .getDocuments();

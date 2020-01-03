@@ -16,7 +16,7 @@ class DiscoverScreen extends StatefulWidget {
 // TODO  _mainContent to _buildGrid
 class _DiscoverScreenState extends State<DiscoverScreen> {
 
-//  UsersByLocationBloc usersByLocationBlock;
+  UsersByLocationBloc usersByLocationBloc;
   UserPreferences _userPreferences = UserPreferences();
 
   bool isLoading = true;
@@ -36,38 +36,34 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 //      usersByLocationBlock.getUsers(userModel.city);
 //    });
 
-//    _scrollController.addListener(() {
-//      double maxScroll = _scrollController.position.maxScrollExtent;
-//      double currentScroll = _scrollController.position.pixels;
-//      double delta = MediaQuery.of(context).size.height * 0.2;
-//      if(maxScroll - currentScroll <= delta) {
-//        usersByLocationBlock.getUsers(ownModel.city);
-//      }
-//    });
+
 //
 //    usersByLocationBlock.users.listen((usersList) {
 //      people.addAll(usersList);
 //      setState(() {});
 //    });
+    addScrollListener();
 
 
-    MockServer.getPeoplesForDiscoversScreen().then((List<UserModel> loadedPeople) {
-      _userPreferences.getUser().then((user){
-        setState(() {
-          ownModel = user;
-          people = loadedPeople;
-          isLoading = false;
-        });
-      });
 
-    });
+//    MockServer.getPeoplesForDiscoversScreen().then((List<UserModel> loadedPeople) {
+//      _userPreferences.getUser().then((user){
+//        setState(() {
+//          ownModel = user;
+//          people = loadedPeople;
+//          isLoading = false;
+//        });
+//      });
+//
+//    });
   }
 
-//  @override
-//  void didChangeDependencies() {
-//    usersByLocationBlock = UsersByLocationBlocProvider.of(context);
-//    super.didChangeDependencies();
-//  }
+  @override
+  void didChangeDependencies() {
+    usersByLocationBloc = UsersByLocationBlocProvider.of(context);
+    getUserPreferences();
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +74,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     final double itemWidth = size.width / 2;
 
     return Container(
+      width: size.width,
+      height: size.height,
       color: CustomColors.mainBackground,
-      child: isLoading ? _loading() : _mainContent(itemWidth, itemHeight),
+      child: isLoading ? _loading() : _buildGrid(itemWidth, itemHeight)//_mainContent(itemWidth, itemHeight),
     );
   }
 
@@ -96,17 +94,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
   
   Widget _buildGrid(double itemWidth, double itemHeight) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: (itemWidth / itemHeight)
-      ),
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(10),
-      itemCount: people.length,
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        return UserGridItem(model: people[index], itemWidth: itemWidth, itemHeight: itemHeight,);
+    return StreamBuilder(
+      initialData: [],
+      stream: usersByLocationBloc.users,
+      builder: (context, snapshot) {
+
+        return snapshot.hasData ? GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: (itemWidth / itemHeight)
+          ),
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(10),
+          itemCount: snapshot.data.length,
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            return UserGridItem(model: snapshot.data[index], itemWidth: itemWidth, itemHeight: itemHeight,);
+          },
+        ) : Container();
       },
     );
   }
@@ -119,4 +124,26 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
+  addScrollListener() {
+      _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.2;
+      if(maxScroll - currentScroll <= delta) {
+        usersByLocationBloc.getUsersByLocation(ownModel.city);
+      }
+    });
+  }
+
+  void getUserPreferences() {
+    _userPreferences.getUser().then((user){
+      usersByLocationBloc.getUsersByLocation(user.city);
+      setState(() {
+        ownModel = user;
+        isLoading = false;
+      });
+    });
+  }
+
 }

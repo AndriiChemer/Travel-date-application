@@ -1,6 +1,7 @@
 
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -25,9 +26,9 @@ class UsersByLocationBloc extends BlocBase {
 
   Function(bool) get showProgressBar => _showProgress.sink.add;
 
-  void getUsers(String city) {
+  void getUsersByLocation(String city) {
     print("UsersByLocationBloc");
-    print("getUsers");
+    print("getUsersByLocation");
 
     if(!_hasMore) {
       print('No More Users');
@@ -41,6 +42,8 @@ class UsersByLocationBloc extends BlocBase {
     _handleProgress(_isLoading);
 
     _userRepository.getUsersByLocation(city, lastDocument, documentLimit).then((querySnapshot) {
+      print("getUsersByLocation Success");
+
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
 
@@ -58,6 +61,42 @@ class UsersByLocationBloc extends BlocBase {
     }).catchError((onError) {
       _handleProgress(false);
 
+
+      if(onError is PlatformException) {
+        getUsers();
+      }
+
+      _handleProgress(false);
+
+      print("getUsersByLocation onError = ${onError.toString()}");
+      _usersQuerySnapshot.addError(onError);
+    });
+  }
+
+  void getUsers() {
+    print("UsersByLocationBloc");
+    print("getUsers");
+
+    _userRepository.getUsers(lastDocument, documentLimit).then((querySnapshot) {
+      print("_getUsers  Success");
+      List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
+      List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
+
+      _users.add(usersList);
+      _usersQuerySnapshot.add(usersListDocumentSnapshot);
+
+      int documentsLength = usersListDocumentSnapshot.length;
+      lastDocument = usersListDocumentSnapshot[documentsLength - 1];
+
+      if (documentsLength < documentLimit) {
+        _hasMore = false;
+      }
+
+      _handleProgress(false);
+    }).then((onError) {
+      _handleProgress(false);
+
+      print("getUsers onError = ${onError.toString()}");
       _usersQuerySnapshot.addError(onError);
     });
   }
@@ -67,16 +106,16 @@ class UsersByLocationBloc extends BlocBase {
     _isLoading = isLoading;
   }
 
-//  Stream<QuerySnapshot> getUsers(String city) {
-//    return _userRepository.getUsersByLocation(city, lastDocument, documentLimit);
-//  }
-
   List<UserModel> usersConverter(List<DocumentSnapshot> listDocumentSnapshot) {
     List<UserModel> users = [];
     listDocumentSnapshot.forEach((document) {
+      UserModel user = UserModel.fromMap(document.data);
 
-      users.add(UserModel.fromMap(document.data));
+      print("user = ${user.toJson().toString()}");
+
+      users.add(user);
     });
+
     return users;
   }
 
