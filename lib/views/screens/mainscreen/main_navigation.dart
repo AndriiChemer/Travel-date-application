@@ -44,6 +44,7 @@ class _MainNavigationState extends State<MainNavigation> {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
     }
     usersByLocationBloc.getUsersByLocation(userModel.city);
+    usersByLocationBloc.getChats(userModel.id);
     usersByLocationBloc.isEmptyUsersByLocation.listen((onValue) {
       usersByLocationBloc.getUsers();
     });

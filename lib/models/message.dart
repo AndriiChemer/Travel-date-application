@@ -36,3 +36,22 @@ class MessageModel {
     };
   }
 }
+
+class MessageModelTest {
+  List<String> ids;
+  String status;
+
+  MessageModelTest(this.ids, this.status);
+
+  MessageModelTest.fromMap(Map snapshot) :
+        ids = snapshot['ids'] == null ? [] : List.from(snapshot['ids']),
+        status = snapshot['status'] ?? '';
+
+  toJson() {
+    return {
+      "status": status,
+      "ids": ids,
+    };
+  }
+
+}

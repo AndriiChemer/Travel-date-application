@@ -18,18 +18,22 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   UsersByLocationBloc usersByLocationBloc;
   UserPreferences _userPreferences = UserPreferences();
 
-  bool isLoading = true;
   bool isEmptyUsersByLocation = false;
   UserModel ownModel;
 
   ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    getUserPreferences();
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     print("didChangeDependencies");
     usersByLocationBloc = UsersByLocationBlocProvider.of(context);
     addScrollListener();
-    getUserPreferences();
 
     super.didChangeDependencies();
   }
@@ -45,7 +49,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       width: size.width,
       height: size.height,
       color: CustomColors.mainBackground,
-      child: isLoading ? _loading() : _buildGrid(itemWidth, itemHeight)//_mainContent(itemWidth, itemHeight),
+      child: _buildGrid(itemWidth, itemHeight)
     );
   }
   
@@ -100,7 +104,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _userPreferences.getUser().then((user){
       setState(() {
         ownModel = user;
-        isLoading = false;
       });
     });
   }

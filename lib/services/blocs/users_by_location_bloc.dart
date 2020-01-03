@@ -3,7 +3,9 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 
 class UsersByLocationBloc extends BlocBase {
@@ -15,6 +17,7 @@ class UsersByLocationBloc extends BlocBase {
   DocumentSnapshot lastDocument;
 
   final _userRepository = UserRepository();
+  final _chatRepository = ChatRepository();
 
   final _showProgress = BehaviorSubject<bool>();
   final _isEmptyUsersByLocation = BehaviorSubject<bool>();
@@ -100,6 +103,30 @@ class UsersByLocationBloc extends BlocBase {
 
       print("getUsers onError = ${onError.toString()}");
       _usersQuerySnapshot.addError(onError);
+    });
+  }
+
+  void getChats(String id) {
+    print("UsersByLocationBloc");
+    print("getUsers");
+
+    _chatRepository.getChatByUserId(id).then((querySnapshot) {
+      print("getUsers  Success");
+      List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
+
+
+      List<MessageModelTest> models = [];
+      usersListDocumentSnapshot.forEach((document) {
+        MessageModelTest model = MessageModelTest.fromMap(document.data);
+
+        print("model = ${model.toJson().toString()}");
+
+        models.add(model);
+      });
+
+    }).then((onError) {
+
+      print("getChats onError = ${onError.toString()}");
     });
   }
   

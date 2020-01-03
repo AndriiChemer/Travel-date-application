@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 
 class UserRepository {
 
+  // ignore: non_constant_identifier_names
   var USER_COLUMN = 'users_dt';
 
   final Firestore _firestore =  Firestore.instance;
