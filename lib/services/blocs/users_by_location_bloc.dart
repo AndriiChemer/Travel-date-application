@@ -17,10 +17,12 @@ class UsersByLocationBloc extends BlocBase {
   final _userRepository = UserRepository();
 
   final _showProgress = BehaviorSubject<bool>();
+  final _isEmptyUsersByLocation = BehaviorSubject<bool>();
   final _usersQuerySnapshot = BehaviorSubject<List<DocumentSnapshot>>();
   final _users = BehaviorSubject<List<UserModel>>();
 
   Observable<bool> get showProgress => _showProgress.stream;
+  Observable<bool> get isEmptyUsersByLocation => _isEmptyUsersByLocation.stream;
   Stream<List<DocumentSnapshot>> get usersQuerySnapshot => _usersQuerySnapshot.stream;
   Stream<List<UserModel>> get users => _users.stream;
 
@@ -63,7 +65,8 @@ class UsersByLocationBloc extends BlocBase {
 
 
       if(onError is PlatformException) {
-        getUsers();
+        _isEmptyUsersByLocation.add(true);
+//        getUsers();
       }
 
       _handleProgress(false);
