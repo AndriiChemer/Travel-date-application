@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/users_by_location_bloc_provider.dart';
+import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
@@ -23,6 +25,7 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  UsersByLocationBloc usersByLocationBloc;
 
   UserModel userModel;
 
@@ -32,16 +35,18 @@ class _MainNavigationState extends State<MainNavigation> {
   List<Widget> navigationScreens;
   UserRepository _userRepository = UserRepository();
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
+    usersByLocationBloc = UsersByLocationBlocProvider.of(context);
+
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
     }
+    usersByLocationBloc.getUsersByLocation(userModel.city);
+    usersByLocationBloc.isEmptyUsersByLocation.listen((onValue) {
+      usersByLocationBloc.getUsers();
+    });
 
     navigationScreens = [
       DiscoverScreen(),

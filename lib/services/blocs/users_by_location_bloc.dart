@@ -66,7 +66,6 @@ class UsersByLocationBloc extends BlocBase {
 
       if(onError is PlatformException) {
         _isEmptyUsersByLocation.add(true);
-//        getUsers();
       }
 
       _handleProgress(false);
@@ -81,7 +80,7 @@ class UsersByLocationBloc extends BlocBase {
     print("getUsers");
 
     _userRepository.getUsers(lastDocument, documentLimit).then((querySnapshot) {
-      print("_getUsers  Success");
+      print("getUsers  Success");
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
 

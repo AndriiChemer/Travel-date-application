@@ -21,27 +21,22 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   bool isLoading = true;
   bool isEmptyUsersByLocation = false;
   UserModel ownModel;
-  List<UserModel> people = [];
 
   ScrollController _scrollController = ScrollController();
 
   @override
   void didChangeDependencies() {
+    print("didChangeDependencies");
     usersByLocationBloc = UsersByLocationBlocProvider.of(context);
     addScrollListener();
     getUserPreferences();
 
-    usersByLocationBloc.isEmptyUsersByLocation.listen((onValue) {
-      usersByLocationBloc.getUsers();
-      setState(() {
-        isEmptyUsersByLocation = onValue;
-      });
-    });
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("build");
     var size = MediaQuery.of(context).size;
     final double itemHeight = (size.width / 1.5) + 15;
     final double itemWidth = size.width / 2;
@@ -103,7 +98,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   void getUserPreferences() {
     _userPreferences.getUser().then((user){
-      usersByLocationBloc.getUsersByLocation(user.city);
       setState(() {
         ownModel = user;
         isLoading = false;
