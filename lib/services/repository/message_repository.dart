@@ -18,6 +18,15 @@ class MessageRepository {
     return querySnapshot;
   }
 
+  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int documentLimit) {
+    return _firestore
+        .collection(MESSAGE_COLUMN)
+        .where('groupChatId', isEqualTo: groupChatId)
+        .orderBy('createdAt')
+        .limit(documentLimit)
+        .snapshots();
+  }
+
   Future<QuerySnapshot> getMessagesByGroupChatId(
       String groupChatId,
       DocumentSnapshot lastDocument,
