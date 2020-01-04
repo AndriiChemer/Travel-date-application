@@ -55,33 +55,6 @@ class UserModel {
         images = snapshot['images'] == null ? [] : List.from(snapshot['images']),
         countryCode = snapshot['countryCode'] ?? '';
 
-//  UserModel.fromMap1(Map snapshot) {
-//    id = snapshot['id'] ?? '';
-//    name = snapshot['name'] ?? '';
-//    city = snapshot['city'] ?? '';
-//    imageUrl = snapshot['imageUrl'] ?? '';
-//    state = snapshot['state'] as int ?? -1;
-//    status = snapshot['status'] ?? '';
-//    dateCreated = snapshot['dateCreated'] as int ?? 0;
-//    lastTimeOnline = snapshot['lastTimeOnline'] as int ?? 0;
-//    lat = snapshot['lat'] as double ?? 0.0;
-//    lng = snapshot['lng'] as double ?? 0.0;
-//    sex = snapshot['sex'] ?? '';
-//    description = snapshot['description'] ?? '';
-//    isVerify = snapshot['isVerify'] as bool ?? false;
-//    isHide = snapshot['isHide'] as bool ?? false;
-//    isOnline = snapshot['isOnline'] as bool ?? false;
-//    createdAt = snapshot['createdAt'] as int ?? 0;
-//    lastVisitedAt = snapshot['lastVisitedAt'] as int ?? 0;
-//    birthday = snapshot['birthday'] as int ?? 0;
-//    email = snapshot['email'] ?? '';
-//    password = snapshot['password'] ?? '';
-//    phone = snapshot['phone'] ?? '';
-//    country = snapshot['country'] ?? '';
-//    countryCode = snapshot['countryCode'] ?? '';
-//  }
-
-
   toJson() {
     return {
       "id": id,

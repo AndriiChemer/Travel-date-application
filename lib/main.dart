@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_list_block.dart';
-import 'package:travel_date_app/services/blocs/image_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
+import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
 import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
-import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
@@ -40,20 +40,24 @@ class MyApp extends StatelessWidget {
         Bloc((i)=> UsersByLocationBloc()),
       ],
       child: UsersByLocationBlocProvider(
-        child: ImageBlocProvider(
-          child: MaterialApp(
-              title: 'Date App',
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                  canvasColor: Colors.transparent
+        child: ChatBlocProvider(
+          child: MessageBlocProvider(
+            child: ImageBlocProvider(
+              child: MaterialApp(
+                  title: 'Date App',
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(
+                      canvasColor: Colors.transparent
+                  ),
+                  home: Splash(),
+                  routes: {
+                    '/signin': (context) => SignInScreen(),
+                    '/verifyphone': (context) => VerifySuccess(),
+                    '/setage': (context) => AgeScreen(),
+                    '/mainNavigation': (context) => MainNavigation(),
+                  }
               ),
-              home: Splash(),
-              routes: {
-                '/signin': (context) => SignInScreen(),
-                '/verifyphone': (context) => VerifySuccess(),
-                '/setage': (context) => AgeScreen(),
-                '/mainNavigation': (context) => MainNavigation(),
-              }
+            ),
           ),
         ),
       ),
@@ -87,3 +91,4 @@ class MyApp extends StatelessWidget {
 
 // Save image to Firestorage
 // https://www.youtube.com/watch?v=Ze5A_sRL6ww
+// https://www.c-sharpcorner.com/article/upload-image-file-to-firebase-storage-using-flutter/

@@ -89,5 +89,4 @@ class Strings {
   //Edit Images Screen
   static const String add_images = "Add Images";
 
-
 }

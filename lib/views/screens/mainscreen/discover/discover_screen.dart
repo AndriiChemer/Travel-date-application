@@ -69,7 +69,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           itemCount: snapshot.data.length,
           controller: _scrollController,
           itemBuilder: (context, index) {
-            return UserGridItem(model: snapshot.data[index], itemWidth: itemWidth, itemHeight: itemHeight,);
+            return UserGridItem(model: snapshot.data[index], itemWidth: itemWidth, itemHeight: itemHeight);
           },
         ) : Container();
       },

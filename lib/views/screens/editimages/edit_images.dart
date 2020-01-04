@@ -83,7 +83,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _gridImageList(context),
-            _saveButton(context),
+            _saveButton(context)
           ],
         ),
       ),

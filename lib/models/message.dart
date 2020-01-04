@@ -2,6 +2,8 @@ class MessageModel {
   String userId;
 
   String chatId;
+
+  String groupChatId;
   //Date in milliseconds
   int createdAt;
   //Main message or image or sticker
@@ -9,27 +11,21 @@ class MessageModel {
   //Type : 0 - message, 1 - image, 2 - sticker
   int type;
 
-  MessageModel(this.userId, this.chatId, this.createdAt, this.content, this.type);
-
-  MessageModel.map(dynamic obj) {
-    userId = obj["userId"];
-    chatId = obj["chatId"];
-    createdAt = obj["createdAt"];
-    content = obj["content"];
-    type = obj["type"];
-  }
+  MessageModel(this.userId, this.chatId, this.groupChatId, this.createdAt, this.content, this.type);
 
   MessageModel.fromMap(Map snapshot) :
         userId = snapshot['userId'] ?? '',
         chatId = snapshot['chatId'] ?? '',
-        createdAt = snapshot['createdAt'] ?? 0,
+        groupChatId = snapshot['groupChatId'] ?? '',
+        createdAt = snapshot['createdAt'] as int ?? 0,
         content = snapshot['content'] ?? '',
-        type = snapshot['type'] ?? -1;
+        type = snapshot['type'] as int ?? -1;
 
   toJson() {
     return {
       "userId": userId,
       "chatId": chatId,
+      "groupChatId": groupChatId,
       "createdAt": createdAt,
       "content": content,
       "type": type,

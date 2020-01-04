@@ -11,8 +11,8 @@ import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 
 class ChatItem extends StatefulWidget {
 
-  ChatModel chatModel;
-  UserModel yourModel;
+  final ChatModel chatModel;
+  final UserModel yourModel;
 
 
   ChatItem(this.chatModel, this.yourModel);
@@ -31,20 +31,13 @@ class _ChatItemState extends State<ChatItem> {
   @override
   void initState() {
     super.initState();
-    chatUserInfo = getUserModel();
     chatName = chatUserInfo.chatName;
     chatImage = chatUserInfo.imageUrl;
 
     MockServer.getUserById(chatUserInfo.userId).then((user){
       setState(() {
         userModel = user;
-        setUsers(widget.yourModel);
-        setUsers(userModel);
       });
-    });
-
-    MockServer.getMessagesByChatId(widget.chatModel.chatId).then((messages) {
-      widget.chatModel.messages = messages;
     });
   }
 
@@ -145,19 +138,6 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  ChatUserInfo getUserModel() {
-    if(widget.chatModel.usersInfo.length == 2) {
-      if(widget.chatModel.usersInfo[0].userId != widget.yourModel.id) {
-        return widget.chatModel.usersInfo[0];
-      } else {
-        return widget.chatModel.usersInfo[1];
-      }
-    } else {
-      //TODO check for 3 and more person
-      return null;
-    }
-  }
-
   String readTimestamp(int timestamp) {
     var now = new DateTime.now();
     var format = new DateFormat('HH:mm');
@@ -191,14 +171,5 @@ class _ChatItemState extends State<ChatItem> {
       height: 1,
       color: Colors.grey,
     );
-  }
-
-  setUsers(UserModel user) {
-    for(ChatUserInfo chatInfo in widget.chatModel.usersInfo) {
-      if(chatInfo.userId == user.id) {
-        chatInfo.user = user;
-        break;
-      }
-    }
   }
 }

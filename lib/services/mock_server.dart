@@ -28,24 +28,6 @@ class MockServer {
     });
   }
 
-  static Future<ChatModel> getChatById(String chatId) {
-    ChatModel chat;
-    for(ChatModel model in chatsAndrii) {
-      if(model.chatId == chatId) {
-        chat = model;
-        break;
-      }
-    }
-
-    for(ChatUserInfo chatUserInfo in chat.usersInfo) {
-      chatUserInfo.user = userById(chatUserInfo.userId);
-    }
-
-    return Future.delayed(Duration(seconds: 2), () {
-      return chat;
-    });
-  }
-
   static Future<UserModel> getUserById(String id) async {
     UserModel userModel;
 
@@ -55,7 +37,7 @@ class MockServer {
       }
     }
 
-    return Future.delayed(Duration(milliseconds: 500), () {
+    return Future.delayed(Duration(milliseconds: 1), () {
       return userModel;
     });
   }
@@ -129,9 +111,9 @@ class MockServer {
   ];
 
   static List<ChatModel> chatsAndrii = [
-    ChatModel("1", "1", chatAndriiViktoriia, 1575536725137, 1575536751106, messagesAndriiViktoriia, true, 0, "Fine, thanks:)"),
-    ChatModel("2", "2", chatVolodymyrAndrii, 1575542888763, 1575542900405, messagesVolodymyrAndrii, true, 0, "Where are you?"),
-    ChatModel("3", "1", chatAndriiMariya, 1575542909316, 1575561488144, messagesAndriiMariya, true, 0, "Fine, thanks:)"),
+    ChatModel("1", "1", ['001', '002', '003'], 1575536725137, 1575536751106, true, 0, "Fine, thanks:)", '1'),
+    ChatModel("2", "2", ['001', '002', '003'], 1575542888763, 1575542900405, true, 0, "Where are you?", '2'),
+    ChatModel("3", "1", ['001', '002', '003'], 1575542909316, 1575561488144, true, 0, "Fine, thanks:)", '2'),
   ];
 
   static List<ChatUserInfo> chatAndriiViktoriia = [
@@ -151,22 +133,20 @@ class MockServer {
 
 
   static List<MessageModel> messagesAndriiViktoriia = [
-    MessageModel("1", "1", 1575536737137, "Fine, thanks:)", 0),
-    MessageModel("2", "1", 1575536736137, "Hi, fine:) And y?", 0),
-    MessageModel("1", "1", 1575536726137, "Hello, how are you?", 0),
-
-
+    MessageModel("1", "1", "1", 1575536737137, "Fine, thanks:)", 0),
+    MessageModel("2", "1", "1", 1575536736137, "Hi, fine:) And y?", 0),
+    MessageModel("1", "1", "1", 1575536726137, "Hello, how are you?", 0),
   ];
 
   static List<MessageModel> messagesVolodymyrAndrii = [
-    MessageModel("2", "2", 1575536726137, "Hello, how are you?", 0),
-    MessageModel("2", "2", 1575536736137, "Where are you?", 0),
+    MessageModel("2", "2", "1", 1575536726137, "Hello, how are you?", 0),
+    MessageModel("2", "2", "1", 1575536736137, "Where are you?", 0),
   ];
 
   static List<MessageModel> messagesAndriiMariya = [
-    MessageModel("1", "3", 1575536726137, "Hello, how are you?", 0),
-    MessageModel("2", "3", 1575536736137, "Hi, fine:) And y?", 0),
-    MessageModel("1", "3", 1575536737137, "Fine, thanks:)", 0),
+    MessageModel("1", "3", "1", 1575536726137, "Hello, how are you?", 0),
+    MessageModel("2", "3", "1", 1575536736137, "Hi, fine:) And y?", 0),
+    MessageModel("1", "3", "1", 1575536737137, "Fine, thanks:)", 0),
   ];
 
 

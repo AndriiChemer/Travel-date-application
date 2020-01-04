@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import '../users_by_location_bloc.dart';
 
-class UsersByLocationBlocProvider extends InheritedWidget{
+class UsersByLocationBlocProvider extends InheritedWidget {
 
   final bloc = UsersByLocationBloc();
 

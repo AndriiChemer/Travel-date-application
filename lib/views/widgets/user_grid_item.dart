@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/blocs/message_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
+import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
+import 'package:travel_date_app/views/widgets/new_chat_widget.dart';
 
 class UserGridItem extends StatefulWidget {
 
@@ -12,13 +16,23 @@ class UserGridItem extends StatefulWidget {
   final double itemHeight;
 
 
-  UserGridItem({@required this.model, @required this.itemWidth, @required this.itemHeight});
+  UserGridItem({@required this.model, @required this.itemWidth, @required this.itemHeight, });
 
   @override
   _UserGridItemState createState() => _UserGridItemState();
 }
 
 class _UserGridItemState extends State<UserGridItem> {
+
+  final _userPreferences = UserPreferences();
+  MessageBloc _messageBloc;
+
+  @override
+  void didChangeDependencies() {
+    _messageBloc = MessageBlocProvider.of(context);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,9 +86,7 @@ class _UserGridItemState extends State<UserGridItem> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-
-            },
+            onTap: onMessageButtonClick,
             child: Container(
               margin: EdgeInsets.only(right: 20, top: 5, bottom: 5),
               child: Icon(Icons.message, size: 30, color: Colors.yellow[800],),
@@ -201,7 +213,29 @@ class _UserGridItemState extends State<UserGridItem> {
     );
   }
 
+  onMessageButtonClick() async {
+    _userPreferences.getUser().then((currentUser) {
+      String groupCharId = buildGroupChatId(currentUser.id);
+      _messageBloc.getMessages(groupCharId);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: widget.model, groupCharId: groupCharId)));
+    }).catchError((onError) {
+      //TODO task show toast "You can not write message"
+    });
+
+  }
+
   onVerifyVideoClick() {
 
+  }
+
+  String buildGroupChatId(String currentId) {
+    String groupChatId;
+    if (currentId.hashCode <= widget.model.id.hashCode) {
+      groupChatId = '$currentId-${widget.model.id}';
+    } else {
+      groupChatId = '${widget.model.id}-$currentId';
+    }
+
+    return groupChatId;
   }
 }
