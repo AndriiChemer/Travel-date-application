@@ -95,3 +95,4 @@ class MyApp extends StatelessWidget {
 
 //Chat
 // https://www.davidanaya.io/flutter/architect-flutter.html
+// https://stackoverflow.com/questions/54021134/streambuilder-firestore-pagination

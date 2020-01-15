@@ -54,6 +54,7 @@ class MessageBloc extends BlocBase {
       List<MessageModel> usersList = messagesConverter(querySnapshot.documents);
       _messages.add(usersList);
 
+
       int documentsLength = querySnapshot.documents.length;
       lastDocument = querySnapshot.documents[documentsLength - 1];
 

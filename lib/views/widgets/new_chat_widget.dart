@@ -38,7 +38,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   bool isLoading = false;
   String imageUrl = '';
 
-  List<MessageModel> listMessage;
+  List<MessageModel> listMessage = [];
 
   @override
   void didChangeDependencies() {
@@ -291,30 +291,32 @@ class _NewChatScreenState extends State<NewChatScreen> {
   Widget buildListMessage() {
     return Flexible(
       child: StreamBuilder(
-        stream: _messageBloc.messages,
-        initialData: [],
+        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
+        initialData: null,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
                 child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
           } else {
 
+            List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
             print("ANDRII 1");
-            if(snapshot.data.length == 0) {
+            if(messages.length == 0) {
               isChatNew = true;
             } else {
               isChatNew = false;
             }
-            var listMessages = snapshot.data;
             print("==============================");
-            print(listMessages.toString());
-            print("length = ${listMessages.length}");
+            print(messages.toString());
+            print("length = ${messages.length}");
             print("==============================");
+
+            listMessage.insertAll(0, messages);
 
             return ListView.builder(
               padding: EdgeInsets.all(10.0),
-              itemBuilder: (context, index) => buildItem(index, snapshot.data[index]),
-              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) => buildItem(index, listMessage[index]),
+              itemCount: listMessage.length,
               reverse: true,
               controller: listScrollController,
             );
