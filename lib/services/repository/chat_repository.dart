@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_date_app/models/chat.dart';
 
 class ChatRepository {
   // ignore: non_constant_identifier_names
@@ -15,6 +16,43 @@ class ChatRepository {
         .getDocuments();
 
     return querySnapshot;
+  }
+
+  Future<bool> createChat(ChatModel chatModel) async {
+    print("ChatRepository");
+    print("createChat");
+
+    final QuerySnapshot result = await _firestore.collection(CHAT_COLUMN).where('groupChatId', isEqualTo: chatModel.groupChatId).getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+
+    if (documents.length == 0) {
+      _firestore.collection(CHAT_COLUMN)
+          .document(chatModel.groupChatId)
+          .setData(chatModel.toJson());
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> updateChat(String groupChatId, String lastMessage, int lastMessageAt, int lastContentType) async {
+    print("ChatRepository");
+    print("updateChat");
+
+    _firestore.collection(CHAT_COLUMN)
+        .document(groupChatId)
+        .updateData({
+      "lastMessage" : lastMessage,
+      "lastMessageAt" : lastMessageAt,
+      "lastContentType" : lastContentType,
+    })
+        .then((onValue) {
+      print('Chat has been updated successful');
+    }).catchError((onError) {
+      print("ChatRepository updateChat");
+      print('onError: ' + onError.toString());
+    });
   }
 
 }

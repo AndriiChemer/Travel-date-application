@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_date_app/models/message.dart';
 
 class MessageRepository {
   // ignore: non_constant_identifier_names
@@ -58,5 +59,9 @@ class MessageRepository {
 
     }
     return querySnapshot;
+  }
+
+  Future<DocumentReference> sendMessage(MessageModel messageModel) async {
+    return _firestore.collection(MESSAGE_COLUMN).add(messageModel.toJson());
   }
 }

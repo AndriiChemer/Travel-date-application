@@ -147,9 +147,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
       textEditingController.clear();
 
       if(isChatNew) {
-        // TODO task create chat
+        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
       } else {
-        //TODO task update chat
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type);
       }
 
 //      var documentReference = Firestore.instance
@@ -172,6 +172,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 //      });
       listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
+      print("Nothing to send");
       //TODO show message
 //      Fluttertoast.showToast(msg: 'Nothing to send');
     }
@@ -298,14 +299,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
                 child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
           } else {
 
+            print("ANDRII 1");
             if(snapshot.data.length == 0) {
-              setState(() {
-                isChatNew = true;
-              });
+              isChatNew = true;
             } else {
-              setState(() {
-                isChatNew = false;
-              });
+              isChatNew = false;
             }
             var listMessages = snapshot.data;
             print("==============================");
@@ -643,5 +641,16 @@ class _NewChatScreenState extends State<NewChatScreen> {
       },
       child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
     );
+  }
+
+  addScrollListener() {
+    listScrollController.addListener(() {
+      double maxScroll = listScrollController.position.maxScrollExtent;
+      double currentScroll = listScrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.2;
+      if(maxScroll - currentScroll <= delta) {
+        _messageBloc.getMessages(widget.groupCharId);
+      }
+    });
   }
 }

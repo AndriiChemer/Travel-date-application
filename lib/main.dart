@@ -92,3 +92,6 @@ class MyApp extends StatelessWidget {
 // Save image to Firestorage
 // https://www.youtube.com/watch?v=Ze5A_sRL6ww
 // https://www.c-sharpcorner.com/article/upload-image-file-to-firebase-storage-using-flutter/
+
+//Chat
+// https://www.davidanaya.io/flutter/architect-flutter.html

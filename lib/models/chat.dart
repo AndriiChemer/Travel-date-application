@@ -21,9 +21,11 @@ class ChatModel {
 
   String lastMessage;
 
+  int lastContentType;
+
 
   ChatModel(this.chatId, this.adminId, this.ids, this.createdAt,
-      this.lastMessageAt, this.isChatActive, this.messageModify, this.lastMessage, this.groupChatId);
+      this.lastMessageAt, this.isChatActive, this.messageModify, this.lastMessage, this.groupChatId, this.lastContentType);
 
   ChatModel.fromMap(Map snapshot) :
         chatId = snapshot['chatId'] ?? '',
@@ -34,6 +36,7 @@ class ChatModel {
         isChatActive = snapshot['isChatActive'] as bool ?? false,
         messageModify = snapshot['messageModify'] as int ?? 0,
         ids = snapshot['ids'] == null ? [] : List.from(snapshot['ids']),
+        lastContentType = snapshot['lastContentType'] as int ?? -1,
         lastMessage = snapshot['lastMessage'] ?? '';
 
   toJson() {
@@ -47,6 +50,7 @@ class ChatModel {
       "createdAt": createdAt,
       "ids": ids,
       "groupChatId": groupChatId,
+      "lastContentType": lastContentType,
     };
   }
   // Think about it
