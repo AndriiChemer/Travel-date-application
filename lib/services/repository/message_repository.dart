@@ -23,7 +23,7 @@ class MessageRepository {
     return _firestore
         .collection(MESSAGE_COLUMN)
         .where('groupChatId', isEqualTo: groupChatId)
-        .orderBy('createdAt')
+        .orderBy('createdAt', descending: true)
         .limit(documentLimit)
         .snapshots();
   }
@@ -43,7 +43,7 @@ class MessageRepository {
       querySnapshot = await _firestore
           .collection(MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
-          .orderBy('createdAt')
+          .orderBy('createdAt', descending: true)
           .limit(documentLimit)
           .getDocuments();
 
@@ -52,7 +52,7 @@ class MessageRepository {
       querySnapshot = await _firestore
           .collection(MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
-          .orderBy('createdAt')
+          .orderBy('createdAt', descending: true)
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .getDocuments();

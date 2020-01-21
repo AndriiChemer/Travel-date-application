@@ -19,9 +19,8 @@ class MessageBloc extends BlocBase {
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<MessageModel>> get messages => _messages.stream;
 
-  //TODO use stream
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-    return _messageRepository.getStreamMessagesByGroupChatId(groupChatId, documentLimit);
+    return _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
   }
   Stream<QuerySnapshot> getMess() {
     return Firestore.instance

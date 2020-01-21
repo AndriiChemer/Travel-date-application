@@ -81,6 +81,7 @@ class UserRepository {
     return UserModel.fromMap(querySnapshot.data);
   }
 
+  //TODO task uncomment where
   Future<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) async {
     print("UserRepository");
     print("getUsersByLocation");
@@ -90,7 +91,7 @@ class UserRepository {
 
       querySnapshot = await _firestore
           .collection(USER_COLUMN)
-          .where('city', isEqualTo: city)
+//          .where('city', isEqualTo: city)
           .orderBy('lastVisitedAt')
           .limit(documentLimit)
           .getDocuments();
@@ -99,7 +100,7 @@ class UserRepository {
 
       querySnapshot = await _firestore
           .collection(USER_COLUMN)
-          .where('city', isEqualTo: city)
+//          .where('city', isEqualTo: city)
           .orderBy('lastVisitedAt')
           .startAfterDocument(lastDocument)
           .limit(documentLimit)

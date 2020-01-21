@@ -15,6 +15,8 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   UsersByLocationBloc usersByLocationBloc;
   UserPreferences _userPreferences = UserPreferences();
 
@@ -45,11 +47,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     final double itemHeight = (size.width / 1.5) + 15;
     final double itemWidth = size.width / 2;
 
-    return Container(
-      width: size.width,
-      height: size.height,
-      color: CustomColors.mainBackground,
-      child: _buildGrid(itemWidth, itemHeight)
+    return Scaffold(
+      key: _scaffoldKey,
+      body: Container(
+          width: size.width,
+          height: size.height,
+          color: CustomColors.mainBackground,
+          child: _buildGrid(itemWidth, itemHeight)
+      ),
     );
   }
   

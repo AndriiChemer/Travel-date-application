@@ -50,6 +50,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    listMessage = [];
+
+    print("groupCharId = ${widget.groupCharId}");
     return Scaffold(
       key: _scaffoldKey,
       appBar: _appBar(context),
@@ -296,7 +299,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
+                child: Container());//CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
           } else {
 
             List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
@@ -315,8 +318,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
             return ListView.builder(
               padding: EdgeInsets.all(10.0),
-              itemBuilder: (context, index) => buildItem(index, listMessage[index]),
-              itemCount: listMessage.length,
+              itemBuilder: (context, index) => buildItem(index, messages[index]),
+              itemCount: messages.length,
               reverse: true,
               controller: listScrollController,
             );
