@@ -43,6 +43,7 @@ class MessageRepository {
       querySnapshot = await _firestore
           .collection(MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
+          .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
           .limit(documentLimit)
           .getDocuments();
@@ -52,6 +53,7 @@ class MessageRepository {
       querySnapshot = await _firestore
           .collection(MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
+          .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
           .startAfterDocument(lastDocument)
           .limit(documentLimit)

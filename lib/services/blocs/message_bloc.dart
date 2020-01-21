@@ -20,7 +20,13 @@ class MessageBloc extends BlocBase {
   Stream<List<MessageModel>> get messages => _messages.stream;
 
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-    return _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+    Stream<QuerySnapshot> stream = tempStream;
+    tempStream.listen((querySnapshot) {
+      int documentsLength = querySnapshot.documents.length;
+      lastDocument = querySnapshot.documents[documentsLength - 1];
+    });
+    return stream;
   }
   Stream<QuerySnapshot> getMess() {
     return Firestore.instance
@@ -51,7 +57,10 @@ class MessageBloc extends BlocBase {
       print("getMessages Success");
 
       List<MessageModel> usersList = messagesConverter(querySnapshot.documents);
-      _messages.add(usersList);
+      if(usersList.length > 0) {
+        _messages.add(usersList);
+      }
+
 
 
       int documentsLength = querySnapshot.documents.length;

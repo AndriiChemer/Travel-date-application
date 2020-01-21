@@ -216,7 +216,6 @@ class _UserGridItemState extends State<UserGridItem> {
   onMessageButtonClick() async {
     _userPreferences.getUser().then((currentUser) {
       String groupCharId = buildGroupChatId(currentUser.id);
-      _messageBloc.getMessages(groupCharId);
       Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: widget.model, groupCharId: groupCharId)));
     }).catchError((onError) {
       //TODO task show toast "You can not write message"

@@ -45,12 +45,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
+    addScrollListener();
+    addStreamListener();
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    listMessage = [];
 
     print("groupCharId = ${widget.groupCharId}");
     return Scaffold(
@@ -303,23 +305,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
           } else {
 
             List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
-            print("ANDRII 1");
             if(messages.length == 0) {
               isChatNew = true;
             } else {
               isChatNew = false;
             }
-            print("==============================");
-            print(messages.toString());
-            print("length = ${messages.length}");
-            print("==============================");
 
-            listMessage.insertAll(0, messages);
+            addToMainMessageList(messages, true);
 
             return ListView.builder(
               padding: EdgeInsets.all(10.0),
-              itemBuilder: (context, index) => buildItem(index, messages[index]),
-              itemCount: messages.length,
+              itemBuilder: (context, index) => buildItem(index, listMessage[index]),
+              itemCount: listMessage.length,
               reverse: true,
               controller: listScrollController,
             );
@@ -648,7 +645,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
   }
 
-  addScrollListener() {
+  void addStreamListener() {
+    _messageBloc.messages.listen((messages) {
+      addToMainMessageList(messages, false);
+    });
+  }
+
+  void addScrollListener() {
     listScrollController.addListener(() {
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
@@ -657,5 +660,44 @@ class _NewChatScreenState extends State<NewChatScreen> {
         _messageBloc.getMessages(widget.groupCharId);
       }
     });
+  }
+
+  void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
+    print("==============================");
+    print(messages.toString());
+    print("length = ${messages.length}");
+    print("==============================");
+
+    List<MessageModel> sorted = [];
+    print("addToMainMessageList");
+    print("size = ${listMessage.length}");
+    messages.forEach((message) {
+
+      if(!contains(listMessage, message)) {
+        print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
+        print("Message = ${message.toJson().toString()}");
+        sorted.add(message);
+      }
+    });
+
+    if(isFromStream) {
+      listMessage.insertAll(0, sorted);
+    } else {
+      setState(() {
+        listMessage.addAll(sorted);
+      });
+    }
+  }
+
+  bool contains(List<MessageModel> list, MessageModel message) {
+    String compareObject = message.toJson().toString();
+
+    for(MessageModel m in list) {
+      if(m.toJson().toString() == compareObject) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
