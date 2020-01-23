@@ -18,6 +18,17 @@ class ChatRepository {
     return querySnapshot;
   }
 
+  Stream<QuerySnapshot> getStreamChatListByUserId(String userId, int documentLimit) {
+    print("ChatRepository");
+    print("getStreamChatListByUserId");
+    return _firestore
+        .collection(CHAT_COLUMN)
+//        .where('ids', arrayContains: userId)
+        .orderBy('createdAt', descending: true)
+        .limit(documentLimit)
+        .snapshots();
+  }
+
   Future<bool> createChat(ChatModel chatModel) async {
     print("ChatRepository");
     print("createChat");

@@ -28,6 +28,7 @@ class MessageBloc extends BlocBase {
     });
     return stream;
   }
+
   Stream<QuerySnapshot> getMess() {
     return Firestore.instance
         .collection('messages')
@@ -87,6 +88,7 @@ class MessageBloc extends BlocBase {
 
   List<MessageModel> messagesConverter(List<DocumentSnapshot> documents) {
     List<MessageModel> messages = [];
+
     documents.forEach((document) {
       MessageModel message = MessageModel.fromMap(document.data);
 

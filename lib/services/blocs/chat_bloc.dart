@@ -1,13 +1,30 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/message_repository.dart';
+import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
 class ChatBloc extends BlocBase {
 
+  bool _hasMore = true;
+  bool _isLoading = false;
+  int documentLimit = 10;
+  DocumentSnapshot lastDocument;
+
   final _chatRepository = ChatRepository();
   final _messageRepository = MessageRepository();
+
+  Stream<QuerySnapshot> getStreamChatListByUserId(String userId) {
+    Stream<QuerySnapshot> tempStream = _chatRepository.getStreamChatListByUserId(userId, 20);
+    Stream<QuerySnapshot> stream = tempStream;
+    tempStream.listen((querySnapshot) {
+      int documentsLength = querySnapshot.documents.length;
+      lastDocument = querySnapshot.documents[documentsLength - 1];
+    });
+    return stream;
+  }
 
   void createChat(String yourId, String userId, String grpChtId, String content, int contentType) {
     print("ChatBloc createChat");
@@ -53,5 +70,19 @@ class ChatBloc extends BlocBase {
       print('onError: ' + onError.toString());
     });
 
+  }
+
+  List<ChatModel> chatsConverter(List<DocumentSnapshot> documents) {
+    List<ChatModel> chats = [];
+
+    documents.forEach((document){
+      ChatModel chat = ChatModel.fromMap(document.data);
+
+      print("chat = ${chat.toJson().toString()}");
+
+      chats.add(chat);
+    });
+
+    return chats;
   }
 }

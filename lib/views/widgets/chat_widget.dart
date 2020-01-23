@@ -23,7 +23,7 @@ class ChatItem extends StatefulWidget {
 
 class _ChatItemState extends State<ChatItem> {
 
-  ChatUserInfo chatUserInfo;
+//  ChatUserInfo chatUserInfo;
   String chatImage;
   String chatName;
   UserModel userModel;
@@ -31,10 +31,10 @@ class _ChatItemState extends State<ChatItem> {
   @override
   void initState() {
     super.initState();
-    chatName = chatUserInfo.chatName;
-    chatImage = chatUserInfo.imageUrl;
+    chatName = "Chat";
+    chatImage = '';
 
-    MockServer.getUserById(chatUserInfo.userId).then((user){
+    MockServer.getUserById('').then((user){
       setState(() {
         userModel = user;
       });
@@ -48,13 +48,14 @@ class _ChatItemState extends State<ChatItem> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
       },
       child: Container(
-        height: 101,
+        height: 120,
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(left: 20, right: 20, top: 10),
         child: Column(
           children: <Widget>[
             _divider(context),
             SizedBox(height: 10,),
+            _chatDetail(),
             Row(
               children: <Widget>[
                 _circleImage(),
@@ -66,6 +67,11 @@ class _ChatItemState extends State<ChatItem> {
         ),
       ),
     );
+  }
+
+  //TODO get user by id and show chat detail
+  Widget _chatDetail() {
+    return StreamBuilder();
   }
 
   Widget _chatInfo() {

@@ -27,21 +27,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var searchTextFieldController = TextEditingController();
+  final ScrollController listScrollController = new ScrollController();
 
   ChatBloc _chatBloc;
-
   List<ChatModel> chatModels = [];
 
   @override
   void didChangeDependencies() {
     _chatBloc = ChatBlocProvider.of(context);
-
-    MockServer.getChats().then((chatList) {
-      setState(() {
-        chatModels.addAll(chatList);
-      });
-    });
-
+    addScrollListener();
     super.didChangeDependencies();
   }
 
@@ -56,21 +50,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
           children: <Widget>[
             _searchTextField(),
             _divider(context),
-            _listItems(context),
+            _usersInChat(),
+            _chatList(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _listItems(BuildContext context) {
-    return Expanded(
-      child: ListView(
-        children: <Widget>[
-          _usersInChat(),
-        for(ChatModel chat in chatModels)
-          ChatItem(chat, widget.yourAccount),
-        ],
       ),
     );
   }
@@ -136,6 +119,32 @@ class _ChatListScreenState extends State<ChatListScreen> {
           );
         }
       },
+    );
+  }
+
+  Widget _chatList() {
+    return Flexible(
+      child: StreamBuilder(
+        stream: _chatBloc.getStreamChatListByUserId(widget.yourAccount.id),
+        initialData: null,
+        builder: (context, snapshot) {
+          print("snapshot.hasData = ${snapshot.hasData}");
+          if(!snapshot.hasData) {
+            return _loading();
+          } else {
+
+            List<ChatModel> chats = _chatBloc.chatsConverter(snapshot.data.documents);
+            addToMainChatList(chats, true);
+
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemBuilder: (context, index) => ChatItem(chatModels[index], widget.yourAccount),
+              itemCount: chatModels.length,
+              controller: listScrollController,
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -208,5 +217,59 @@ class _ChatListScreenState extends State<ChatListScreen> {
       height: 1,
       color: Colors.grey,
     );
+  }
+
+  void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
+    print("==============================");
+    print(chats.toString());
+    print("length = ${chats.length}");
+    print("==============================");
+
+    List<ChatModel> sorted = [];
+    print("addToMainChatList");
+    print("size = ${chats.length}");
+    chats.forEach((chat) {
+
+      if(!contains(chatModels, chat)) {
+        print("!listMessage.contains(message) = ${!chatModels.contains(chat)}");
+        print("Message = ${chat.toJson().toString()}");
+        sorted.add(chat);
+      }
+    });
+
+    if(isFromStream) {
+      chatModels.insertAll(0, sorted);
+    } else {
+      setState(() {
+        chatModels.addAll(sorted);
+      });
+    }
+  }
+
+  bool contains(List<ChatModel> list, ChatModel chat) {
+    String compareObject = chat.toJson().toString();
+
+    for(ChatModel m in list) {
+      if(m.toJson().toString() == compareObject) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void addScrollListener() {
+    listScrollController.addListener(() {
+      print("addScrollListener");
+      double maxScroll = listScrollController.position.maxScrollExtent;
+      double currentScroll = listScrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.2;
+      print("maxScroll = $maxScroll");
+      print("currentScroll = $currentScroll");
+      print("delta = $delta");
+      if(maxScroll - currentScroll <= delta) {
+//        _messageBloc.getMessages(widget.groupCharId);
+      }
+    });
   }
 }

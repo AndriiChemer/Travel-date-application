@@ -38,7 +38,7 @@ class MockServer {
     }
 
     return Future.delayed(Duration(milliseconds: 1), () {
-      return userModel;
+      return peopleList[0];
     });
   }
 
