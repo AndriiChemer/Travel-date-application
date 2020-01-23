@@ -370,6 +370,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   Widget buildItem(int index, MessageModel messageModel) {
+    double maxScroll = listScrollController.position.maxScrollExtent;
+    double currentScroll = listScrollController.position.pixels;
+    double delta = MediaQuery.of(context).size.height * 0.2;
+
+    print("maxScroll = $maxScroll");
+    print("currentScroll = $currentScroll");
+    print("delta = $delta");
+
     if (messageModel.userId == widget.yourModel.id) {
       // Right (my message)
       return Row(
@@ -653,9 +661,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void addScrollListener() {
     listScrollController.addListener(() {
+      print("addScrollListener");
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.2;
+      print("maxScroll = $maxScroll");
+      print("currentScroll = $currentScroll");
+      print("delta = $delta");
       if(maxScroll - currentScroll <= delta) {
         _messageBloc.getMessages(widget.groupCharId);
       }

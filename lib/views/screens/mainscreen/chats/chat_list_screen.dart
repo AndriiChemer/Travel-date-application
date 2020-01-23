@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/blocs/chat_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
@@ -13,7 +15,7 @@ import 'package:travel_date_app/views/widgets/chat_widget.dart';
 //TODO add Bloc stream for getting chat by id
 class ChatListScreen extends StatefulWidget {
 
- UserModel yourAccount;
+ final UserModel yourAccount;
 
  ChatListScreen({@required this.yourAccount});
 
@@ -26,16 +28,21 @@ class _ChatListScreenState extends State<ChatListScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var searchTextFieldController = TextEditingController();
 
+  ChatBloc _chatBloc;
+
   List<ChatModel> chatModels = [];
 
   @override
-  void initState() {
+  void didChangeDependencies() {
+    _chatBloc = ChatBlocProvider.of(context);
+
     MockServer.getChats().then((chatList) {
       setState(() {
         chatModels.addAll(chatList);
       });
     });
-    super.initState();
+
+    super.didChangeDependencies();
   }
 
   @override

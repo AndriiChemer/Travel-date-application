@@ -6,7 +6,7 @@ import 'package:travel_date_app/services/blocs/message_list_block.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
-import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
@@ -14,7 +14,7 @@ import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 import 'package:travel_date_app/views/widgets/lifecycle.dart';
 
-import 'services/blocs/providers/users_by_location_bloc_provider.dart';
+import 'services/blocs/providers/users_provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -37,9 +37,9 @@ class MyApp extends StatelessWidget {
       blocs: [
         Bloc((i)=> BottomNavBloc()),
         Bloc((i)=> MessageListBloc()),
-        Bloc((i)=> UsersByLocationBloc()),
+        Bloc((i)=> UsersBloc()),
       ],
-      child: UsersByLocationBlocProvider(
+      child: UsersBlocProvider(
         child: ChatBlocProvider(
           child: MessageBlocProvider(
             child: ImageBlocProvider(

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/person_model.dart';
-import 'package:travel_date_app/services/blocs/providers/users_by_location_bloc_provider.dart';
-import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/widgets/user_grid_item.dart';
@@ -17,7 +17,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  UsersByLocationBloc usersByLocationBloc;
+  UsersBloc usersByLocationBloc;
   UserPreferences _userPreferences = UserPreferences();
 
   bool isEmptyUsersByLocation = false;
@@ -34,7 +34,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   void didChangeDependencies() {
     print("didChangeDependencies");
-    usersByLocationBloc = UsersByLocationBlocProvider.of(context);
+    usersByLocationBloc = UsersBlocProvider.of(context);
     addScrollListener();
 
     super.didChangeDependencies();

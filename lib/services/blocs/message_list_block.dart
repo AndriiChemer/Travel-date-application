@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/message.dart';
 
+//TODO task delete
 class MessageListBloc extends BlocBase {
   MessageListBloc();
 

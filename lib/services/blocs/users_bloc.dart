@@ -8,8 +8,8 @@ import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 
-class UsersByLocationBloc extends BlocBase {
-  UsersByLocationBloc();
+class UsersBloc extends BlocBase {
+  UsersBloc();
 
   bool _hasMore = true;
   bool _isLoading = false;

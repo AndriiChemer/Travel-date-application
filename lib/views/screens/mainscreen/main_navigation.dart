@@ -4,8 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/person_model.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/users_by_location_bloc_provider.dart';
-import 'package:travel_date_app/services/blocs/users_by_location_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
@@ -13,7 +13,7 @@ import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profi
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
 
 import 'account/account_screen.dart';
-import 'chats/chatsscreen.dart';
+import 'chats/chat_list_screen.dart';
 import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -25,7 +25,7 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  UsersByLocationBloc usersByLocationBloc;
+  UsersBloc usersByLocationBloc;
 
   UserModel userModel;
 
@@ -38,7 +38,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   void didChangeDependencies() {
-    usersByLocationBloc = UsersByLocationBlocProvider.of(context);
+    usersByLocationBloc = UsersBlocProvider.of(context);
 
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
