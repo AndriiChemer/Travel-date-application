@@ -157,29 +157,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
         _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type);
       }
 
-//      var documentReference = Firestore.instance
-//          .collection('messages')
-//          .document(groupChatId)
-//          .collection(groupChatId)
-//          .document(DateTime.now().millisecondsSinceEpoch.toString());
-
-//      Firestore.instance.runTransaction((transaction) async {
-//        await transaction.set(
-//          documentReference,
-//          {
-//            'idFrom': id,
-//            'idTo': peerId,
-//            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-//            'content': content,
-//            'type': type
-//          },
-//        );
-//      });
       listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
       print("Nothing to send");
       //TODO show message
-//      Fluttertoast.showToast(msg: 'Nothing to send');
     }
   }
 
