@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/chat_user_info.dart';
 import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/views/screens/chat/chatscreen.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
@@ -23,58 +25,71 @@ class ChatItem extends StatefulWidget {
 
 class _ChatItemState extends State<ChatItem> {
 
-//  ChatUserInfo chatUserInfo;
-  String chatImage;
-  String chatName;
   UserModel userModel;
+  UsersBloc _usersBloc;
 
   @override
-  void initState() {
-    super.initState();
-    chatName = "Chat";
-    chatImage = '';
+  void didChangeDependencies() {
+    _usersBloc = UsersBlocProvider.of(context);
 
-    MockServer.getUserById('').then((user){
-      setState(() {
-        userModel = user;
-      });
-    });
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    String userId = _getUserIs(widget.yourModel.id);
+    print("$userId == ${widget.yourModel.id} = ${userId == widget.yourModel.id}" );
+
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
-      },
+      onTap: _openChat,
       child: Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Column(
-          children: <Widget>[
-            _divider(context),
-            SizedBox(height: 10,),
-            _chatDetail(),
-            Row(
-              children: <Widget>[
-                _circleImage(),
-                _chatInfo(),
-                _dateLastMessage(),
-              ],
-            ),
-          ],
+        child: StreamBuilder(
+          stream: _usersBloc.getUserByIdStream(userId),
+          initialData: null,
+          builder: (context, snapshot) {
+
+            if (!snapshot.hasData) {
+
+              return _bindItem('', '', false);
+            } else {
+
+              userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
+              print("User model = ${userModel.toJson().toString()}");
+
+              return _bindItem(userModel.name, userModel.imageUrl, userModel.isOnline);
+            }
+          },
         ),
       ),
     );
   }
 
-  //TODO get user by id and show chat detail
-  Widget _chatDetail() {
-    return StreamBuilder();
+  Widget _bindItem(String chatName, String chatImageUrl, bool isOnline) {
+    return Column(
+      children: <Widget>[
+        _divider(context),
+        SizedBox(height: 10,),
+        _chatDetail(),
+        Row(
+          children: <Widget>[
+            _circleImage(chatImageUrl, isOnline),
+            _chatInfo(chatName),
+            _lastMessageAt(),
+          ],
+        ),
+      ],
+    );
   }
 
-  Widget _chatInfo() {
+  //TODO get user by id and show chat detail
+  Widget _chatDetail() {
+    return Container();
+  }
+
+  Widget _chatInfo(String chatName) {
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10),
       child: Center(
@@ -90,7 +105,7 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  Widget _circleImage() {
+  Widget _circleImage(String chatImageUrl, bool isOnline) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
@@ -107,11 +122,11 @@ class _ChatItemState extends State<ChatItem> {
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(chatImage)
+                      image: NetworkImage(chatImageUrl)
                   )
               ),
             ),
-            _goldCircle(userModel == null ? false : userModel.isOnline)
+            _goldCircle(isOnline)
           ],
         ),
       ),
@@ -133,7 +148,7 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  Widget _dateLastMessage() {
+  Widget _lastMessageAt() {
     String lastMessage = readTimestamp(widget.chatModel.lastMessageAt);
 
     return Expanded(
@@ -177,5 +192,23 @@ class _ChatItemState extends State<ChatItem> {
       height: 1,
       color: Colors.grey,
     );
+  }
+
+  _openChat() {
+    if(userModel != null) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
+    }
+  }
+
+  String _getUserIs(String yourId) {
+    String anotherId = '';
+    for(String id in widget.chatModel.ids) {
+      if(yourId != id) {
+        anotherId = id;
+        break;
+      }
+    }
+
+    return anotherId;
   }
 }

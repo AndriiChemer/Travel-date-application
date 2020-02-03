@@ -81,6 +81,13 @@ class UserRepository {
     return UserModel.fromMap(querySnapshot.data);
   }
 
+  Stream<QuerySnapshot> getUserByIdStream(String id) {
+    return _firestore
+        .collection(USER_COLUMN)
+        .where('id', isEqualTo: id)
+        .snapshots();
+  }
+
   //TODO task uncomment where
   Future<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) async {
     print("UserRepository");
@@ -184,6 +191,15 @@ class UserRepository {
       print('onError: ' + onError.toString());
     });
   }
+
+//  Future<QuerySnapshot> getUserById(String userId) async {
+//    print("UserRepository");
+//    print("getUserById userId = $userId");
+//
+//    return await _firestore.collection(USER_COLUMN)
+//        .where('id', isEqualTo: userId)
+//        .getDocuments();
+//  }
 
 //  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {
 //    print("UserRepository");

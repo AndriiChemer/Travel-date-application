@@ -148,6 +148,15 @@ class UsersBloc extends BlocBase {
     return users;
   }
 
+  Future<UserModel> getUserById(String id) async {
+    return await _userRepository.getUsersById(id);
+  }
+
+  Stream<QuerySnapshot> getUserByIdStream(String id) {
+    return _userRepository.getUserByIdStream(id);
+
+  }
+
   @override
   void dispose() async {
     await _users.drain();
