@@ -30,7 +30,7 @@ class ChatBloc extends BlocBase {
     print("ChatBloc createChat");
     var chatId = grpChtId;
     var adminId = yourId;
-    var ids = [yourId, userId];
+    var ids = [Ids(yourId, 0, true), Ids(userId, 0, false)];
     int createdAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     var isChatActive = true;
@@ -41,27 +41,28 @@ class ChatBloc extends BlocBase {
 
     _chatRepository.createChat(chat).then((isCreated) {
 
-      updateChat(yourId, grpChtId, content, contentType);
+      updateChat(yourId, grpChtId, content, contentType, false);
     }).catchError((onError) {
 
     });
 
   }
 
-  void updateChat(String yourId, String grpChtId, String content, int contentType) {
+  void updateChat(String yourId, String grpChtId, String content, int contentType, bool isUserInChat) {
     print("ChatBloc updateChat");
     var lastMessageAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     _chatRepository.updateChat(grpChtId, content, lastMessageAt, contentType);
 
-    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt);
+    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt, isUserInChat);
 
   }
 
-  void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt) {
+   void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt, bool isUserInChat) {
     print("ChatBloc sendMessage");
+    //TODO increment value
 
-    MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType);
+    MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
     _messageRepository.sendMessage(message)
         .then((onValue) {
       print("Message has been sent successful");

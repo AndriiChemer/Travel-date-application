@@ -162,9 +162,9 @@ class _ChatItemState extends State<ChatItem> {
 
   String _getUserIs(String yourId) {
     String anotherId = '';
-    for(String id in widget.chatModel.ids) {
-      if(yourId != id) {
-        anotherId = id;
+    for(Ids id in widget.chatModel.ids) {
+      if(yourId != id.userId) {
+        anotherId = id.userId;
         break;
       }
     }

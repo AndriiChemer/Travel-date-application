@@ -11,7 +11,7 @@ class ChatModel {
   //Date in milliseconds
   int lastMessageAt;
   // users id
-  List<String> ids;
+  List<Ids> ids;
   //false if chat deleted
   bool isChatActive;
   // If message modify than messageModify++
@@ -35,7 +35,7 @@ class ChatModel {
         lastMessageAt = snapshot['lastMessageAt'] as int ?? 0,
         isChatActive = snapshot['isChatActive'] as bool ?? false,
         messageModify = snapshot['messageModify'] as int ?? 0,
-        ids = snapshot['ids'] == null ? [] : List.from(snapshot['ids']),
+        ids = snapshot['ids'] == null ? [] : parseListIds(snapshot),
         lastContentType = snapshot['lastContentType'] as int ?? -1,
         lastMessage = snapshot['lastMessage'] ?? '';
 
@@ -53,7 +53,37 @@ class ChatModel {
       "lastContentType": lastContentType,
     };
   }
-  // Think about it
+
+  static List<Ids> parseListIds(Map snapshot) {
+    return snapshot['ids'].map<Ids>((item) {
+      return Ids.fromMap(item);
+    }).toList();
+  }
+
+  //TODO Think about it
   UserModel adminModel;
   List<UserModel> users;
+}
+
+class Ids {
+  String userId;
+  int newMessageCount;
+  bool isInRoom;
+
+  Ids(this.userId, this.newMessageCount, this.isInRoom);
+
+  Ids.fromMap(Map snapshot) :
+        userId = snapshot['userId'] ?? '',
+        isInRoom = snapshot['isInRoom'] as bool ?? 0,
+        newMessageCount = snapshot['newMessageCount'] as int ?? 0;
+
+
+  toJson() {
+    return {
+      "userId": userId,
+      "isInRoom": isInRoom,
+      "newMessageCount": newMessageCount,
+    };
+  }
+
 }

@@ -11,7 +11,9 @@ class MessageModel {
   //Type : 0 - message, 1 - image, 2 - sticker
   int type;
 
-  MessageModel(this.userId, this.chatId, this.groupChatId, this.createdAt, this.content, this.type);
+  bool isWatched;
+
+  MessageModel(this.userId, this.chatId, this.groupChatId, this.createdAt, this.content, this.type, this.isWatched);
 
   MessageModel.fromMap(Map snapshot) :
         userId = snapshot['userId'] ?? '',
@@ -19,6 +21,7 @@ class MessageModel {
         groupChatId = snapshot['groupChatId'] ?? '',
         createdAt = snapshot['createdAt'] as int ?? 0,
         content = snapshot['content'] ?? '',
+        isWatched = snapshot['isWatched'] as bool ?? false,
         type = snapshot['type'] as int ?? -1;
 
   toJson() {
@@ -29,6 +32,7 @@ class MessageModel {
       "createdAt": createdAt,
       "content": content,
       "type": type,
+      "isWatched": isWatched,
     };
   }
 }

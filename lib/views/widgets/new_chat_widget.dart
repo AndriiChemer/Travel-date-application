@@ -36,6 +36,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   bool isShowSticker = false;
   bool isChatNew = false;
   bool isLoading = false;
+  bool isUserInChat = false;
   String imageUrl = '';
 
   List<MessageModel> listMessage = [];
@@ -154,7 +155,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       if(isChatNew) {
         _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
       } else {
-        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type);
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, isUserInChat);
       }
 
       listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);

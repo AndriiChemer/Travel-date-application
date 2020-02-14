@@ -111,9 +111,9 @@ class MockServer {
   ];
 
   static List<ChatModel> chatsAndrii = [
-    ChatModel("1", "1", ['001', '002', '003'], 1575536725137, 1575536751106, true, 0, "Fine, thanks:)", '1', -1),
-    ChatModel("2", "2", ['001', '002', '003'], 1575542888763, 1575542900405, true, 0, "Where are you?", '2', -1),
-    ChatModel("3", "1", ['001', '002', '003'], 1575542909316, 1575561488144, true, 0, "Fine, thanks:)", '2', -1),
+    ChatModel("1", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575536725137, 1575536751106, true, 0, "Fine, thanks:)", '1', -1),
+    ChatModel("2", "2", [Ids('001', 0, true), Ids('002', 0, false)], 1575542888763, 1575542900405, true, 0, "Where are you?", '2', -1),
+    ChatModel("3", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575542909316, 1575561488144, true, 0, "Fine, thanks:)", '2', -1),
   ];
 
   static List<ChatUserInfo> chatAndriiViktoriia = [
@@ -133,20 +133,20 @@ class MockServer {
 
 
   static List<MessageModel> messagesAndriiViktoriia = [
-    MessageModel("1", "1", "1", 1575536737137, "Fine, thanks:)", 0),
-    MessageModel("2", "1", "1", 1575536736137, "Hi, fine:) And y?", 0),
-    MessageModel("1", "1", "1", 1575536726137, "Hello, how are you?", 0),
+    MessageModel("1", "1", "1", 1575536737137, "Fine, thanks:)", 0, true),
+    MessageModel("2", "1", "1", 1575536736137, "Hi, fine:) And y?", 0, true),
+    MessageModel("1", "1", "1", 1575536726137, "Hello, how are you?", 0, true),
   ];
 
   static List<MessageModel> messagesVolodymyrAndrii = [
-    MessageModel("2", "2", "1", 1575536726137, "Hello, how are you?", 0),
-    MessageModel("2", "2", "1", 1575536736137, "Where are you?", 0),
+    MessageModel("2", "2", "1", 1575536726137, "Hello, how are you?", 0, true),
+    MessageModel("2", "2", "1", 1575536736137, "Where are you?", 0, true),
   ];
 
   static List<MessageModel> messagesAndriiMariya = [
-    MessageModel("1", "3", "1", 1575536726137, "Hello, how are you?", 0),
-    MessageModel("2", "3", "1", 1575536736137, "Hi, fine:) And y?", 0),
-    MessageModel("1", "3", "1", 1575536737137, "Fine, thanks:)", 0),
+    MessageModel("1", "3", "1", 1575536726137, "Hello, how are you?", 0, true),
+    MessageModel("2", "3", "1", 1575536736137, "Hi, fine:) And y?", 0, true),
+    MessageModel("1", "3", "1", 1575536737137, "Fine, thanks:)", 0, true),
   ];
 
 
