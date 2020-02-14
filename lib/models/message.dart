@@ -31,6 +31,11 @@ class MessageModel {
       "type": type,
     };
   }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 class MessageModelTest {
