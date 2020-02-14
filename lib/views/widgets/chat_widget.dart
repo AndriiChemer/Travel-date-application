@@ -94,7 +94,7 @@ class _ChatItemState extends State<ChatItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text(widget.chatModel.lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text("${widget.chatModel.lastMessage.substring(0, 17)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
           ],
         ),
       ),

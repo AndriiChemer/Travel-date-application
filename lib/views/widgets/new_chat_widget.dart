@@ -34,6 +34,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   final TextEditingController textEditingController = new TextEditingController();
 
   bool isShowSticker = false;
+  bool isLogsShow = false;
   bool isChatNew = false;
   bool isLoading = false;
   bool isUserInChat = false;
@@ -46,8 +47,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-    addScrollListener();
+//    addScrollListener();
     addStreamListener();
+//    scrollListenerWithItemCount();
 
     super.didChangeDependencies();
   }
@@ -643,44 +645,92 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void addScrollListener() {
     listScrollController.addListener(() {
-      print("addScrollListener");
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.2;
-      print("maxScroll = $maxScroll");
-      print("currentScroll = $currentScroll");
-      print("delta = $delta");
+
+      if(isLogsShow) {
+        print("addScrollListener");
+        print("maxScroll = $maxScroll");
+        print("currentScroll = $currentScroll");
+        print("delta = $delta");
+      }
+
       if(maxScroll - currentScroll <= delta) {
         _messageBloc.getMessages(widget.groupCharId);
       }
     });
   }
 
-  void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
-    print("==============================");
-    print(messages.toString());
-    print("length = ${messages.length}");
-    print("==============================");
+  void scrollListenerWithItemCount() {
+    listScrollController.addListener(() {
+      double scrollOffset = listScrollController.position.pixels;
+      double viewportHeight = listScrollController.position.viewportDimension;
+      double scrollRange = listScrollController.position.maxScrollExtent -
+          listScrollController.position.minScrollExtent;
+      int firstVisibleItemIndex =
+      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+      print("firstVisibleItemIndex = $firstVisibleItemIndex");
+    });
 
+
+  }
+
+  void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
+    if(isLogsShow) {
+      print("==============================");
+      print(messages.toString());
+      print("length = ${messages.length}");
+      print("==============================");
+      print("addToMainMessageList");
+      print("size = ${listMessage.length}");
+    }
     List<MessageModel> sorted = [];
-    print("addToMainMessageList");
-    print("size = ${listMessage.length}");
+
+    int messagesCount = 0;
+    int stickersCount = 0;
+    int picturesCount = 0;
+
     messages.forEach((message) {
 
       if(!contains(listMessage, message)) {
-        print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
-        print("Message = ${message.toJson().toString()}");
+        if(isLogsShow) {
+          print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
+          print("Message = ${message.toJson().toString()}");
+        }
+
+        switch(message.type) {
+          case 0: messagesCount++ ; break;
+          case 1: picturesCount++ ; break;
+          case 2: stickersCount++ ; break;
+        }
+
         sorted.add(message);
       }
     });
 
     if(isFromStream) {
       listMessage.insertAll(0, sorted);
+//      scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+
     } else {
       setState(() {
         listMessage.addAll(sorted);
       });
     }
+  }
+
+  void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
+    Future.delayed(Duration(seconds: 1), () {
+
+      int height = messagesCount * 25 + stickersCount * 100 + picturesCount * 200;
+      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+      Future.delayed(Duration(seconds: 2), () {
+        addScrollListener();
+        scrollListenerWithItemCount();
+      });
+
+    });
   }
 
   bool contains(List<MessageModel> list, MessageModel message) {

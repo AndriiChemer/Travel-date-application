@@ -35,6 +35,11 @@ class MessageModel {
       "isWatched": isWatched,
     };
   }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 class MessageModelTest {
