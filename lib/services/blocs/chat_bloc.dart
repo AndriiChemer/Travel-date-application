@@ -41,25 +41,27 @@ class ChatBloc extends BlocBase {
 
     _chatRepository.createChat(chat).then((isCreated) {
 
-      updateChat(yourId, grpChtId, content, contentType, false);
+      updateChat(yourId, grpChtId, content, contentType, userId, false);
     }).catchError((onError) {
 
     });
 
   }
 
-  void updateChat(String yourId, String grpChtId, String content, int contentType, bool isUserInChat) {
+  void updateChat(String yourId, String grpChtId, String content, int contentType, String userId, bool isUserInChat) {
     print("ChatBloc updateChat");
     var lastMessageAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     _chatRepository.updateChat(grpChtId, content, lastMessageAt, contentType);
+    _chatRepository.incrementNewMessageInChat(grpChtId, userId);
 
-    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt, isUserInChat);
+    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt, false);
 
   }
 
    void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt, bool isUserInChat) {
     print("ChatBloc sendMessage");
+    //TODO task remove isUserInChat from parameter
     //TODO increment value
 
     MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
@@ -85,5 +87,9 @@ class ChatBloc extends BlocBase {
     });
 
     return chats;
+  }
+
+  void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) {
+    _chatRepository.updateUserInRoom(isUserInRoom, yourId, groupCharId);
   }
 }

@@ -157,7 +157,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
       if(isChatNew) {
         _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
       } else {
-        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, isUserInChat);
+//        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id, isUserInChat);
       }
 
       listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
@@ -287,12 +288,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
             return Center(
                 child: Container());//CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
           } else {
+            print("CHEMER stream");
 
             List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
             if(messages.length == 0) {
               isChatNew = true;
             } else {
               isChatNew = false;
+              _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
             }
 
             addToMainMessageList(messages, true);
@@ -744,4 +747,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
     return false;
   }
+
+  @override
+  void dispose() {
+    _chatBloc.updateUserInRoom(false, widget.yourModel.id, widget.groupCharId);
+    super.dispose();
+  }
+
 }

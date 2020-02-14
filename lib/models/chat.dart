@@ -48,10 +48,25 @@ class ChatModel {
       "messageModify": messageModify,
       "lastMessage": lastMessage,
       "createdAt": createdAt,
-      "ids": ids,
+      "ids": convertListToMap(ids),
       "groupChatId": groupChatId,
       "lastContentType": lastContentType,
     };
+  }
+
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+
+  static List<Map> convertListToMap(List<Ids> ids) {
+    List<Map> steps = [];
+    ids.forEach((Ids id) {
+      Map step = id.toJson();
+      steps.add(step);
+    });
+    return steps;
   }
 
   static List<Ids> parseListIds(Map snapshot) {

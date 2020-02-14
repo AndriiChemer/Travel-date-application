@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_date_app/models/message.dart';
 
+import 'columns.dart';
+
 class MessageRepository {
-  // ignore: non_constant_identifier_names
-  var MESSAGE_COLUMN = 'message_dt';
 
   final Firestore _firestore =  Firestore.instance;
 
@@ -11,7 +11,7 @@ class MessageRepository {
     QuerySnapshot querySnapshot;
 
     querySnapshot = await _firestore
-        .collection(MESSAGE_COLUMN)
+        .collection(Columns.MESSAGE_COLUMN)
         .where('ids', arrayContains: id)
         .where('ids', arrayContains: 'gsfdgdfsgdfsg')
         .getDocuments();
@@ -21,7 +21,7 @@ class MessageRepository {
 
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int documentLimit) {
     return _firestore
-        .collection(MESSAGE_COLUMN)
+        .collection(Columns.MESSAGE_COLUMN)
         .where('groupChatId', isEqualTo: groupChatId)
         .orderBy('createdAt', descending: true)
         .limit(documentLimit)
@@ -41,7 +41,7 @@ class MessageRepository {
     if(lastDocument == null) {
 
       querySnapshot = await _firestore
-          .collection(MESSAGE_COLUMN)
+          .collection(Columns.MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
           .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
@@ -51,7 +51,7 @@ class MessageRepository {
     } else {
 
       querySnapshot = await _firestore
-          .collection(MESSAGE_COLUMN)
+          .collection(Columns.MESSAGE_COLUMN)
           .where('groupChatId', isEqualTo: groupChatId)
           .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
@@ -64,6 +64,6 @@ class MessageRepository {
   }
 
   Future<DocumentReference> sendMessage(MessageModel messageModel) async {
-    return _firestore.collection(MESSAGE_COLUMN).add(messageModel.toJson());
+    return _firestore.collection(Columns.MESSAGE_COLUMN).add(messageModel.toJson());
   }
 }
