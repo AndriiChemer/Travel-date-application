@@ -4,6 +4,7 @@ import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/message_repository.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
 class ChatBloc extends BlocBase {
@@ -15,6 +16,7 @@ class ChatBloc extends BlocBase {
 
   final _chatRepository = ChatRepository();
   final _messageRepository = MessageRepository();
+  final _newMessageRepository = NewMessagesRepository();
 
   Stream<QuerySnapshot> getStreamChatListByUserId(String userId) {
     Stream<QuerySnapshot> tempStream = _chatRepository.getStreamChatListByUserId(userId, 20);
@@ -53,7 +55,7 @@ class ChatBloc extends BlocBase {
     var lastMessageAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     _chatRepository.updateChat(grpChtId, content, lastMessageAt, contentType);
-    _chatRepository.incrementNewMessageInChat(grpChtId, userId);
+    _newMessageRepository.incrementCounter(userId);
 
     sendMessage(yourId, grpChtId, content, contentType, lastMessageAt, false);
 
@@ -61,8 +63,7 @@ class ChatBloc extends BlocBase {
 
    void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt, bool isUserInChat) {
     print("ChatBloc sendMessage");
-    //TODO task remove isUserInChat from parameter
-    //TODO increment value
+    //TODO task remove ц from parameter
 
     MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
     _messageRepository.sendMessage(message)

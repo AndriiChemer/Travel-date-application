@@ -5,7 +5,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/image_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';

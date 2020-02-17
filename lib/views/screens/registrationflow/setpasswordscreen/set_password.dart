@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
@@ -28,6 +29,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   Auth _auth = Auth();
   UserPreferences userPreferences = UserPreferences();
   UserRepository userRepository = UserRepository();
+  NewMessagesRepository newMessageRepository = NewMessagesRepository();
 
   bool _autoValidate = false;
   bool isLoading = false;
@@ -168,6 +170,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
     }
   }
 
+  // TODO task add block
   _onButtonNextClick() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
@@ -185,6 +188,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         widget.newUser.id = firebaseUser.uid;
 
         userPreferences.writeUser(widget.newUser);
+        newMessageRepository.addNewUser(widget.newUser.id);
         userRepository.addNewUser(widget.newUser).then((value) {
           print("Successfully creating user in remote Database");
           print(value.toString());

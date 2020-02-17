@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/chat.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/message_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/utils/time.dart';
@@ -26,10 +29,12 @@ class _ChatItemState extends State<ChatItem> {
 
   UserModel userModel;
   UsersBloc _usersBloc;
+  MessageBloc _messageBloc;
 
   @override
   void didChangeDependencies() {
     _usersBloc = UsersBlocProvider.of(context);
+    _messageBloc = MessageBlocProvider.of(context);
 
     super.didChangeDependencies();
   }
@@ -49,15 +54,17 @@ class _ChatItemState extends State<ChatItem> {
           initialData: null,
           builder: (context, snapshot) {
 
+
+
             if (!snapshot.hasData) {
 
-              return _bindItem('', '', false);
+              return Container();
             } else {
 
               userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
               print("User model = ${userModel.toJson().toString()}");
 
-              return _bindItem(userModel.name, userModel.imageUrl, userModel.isOnline);
+              return _bindItem(userId, userModel.name, userModel.imageUrl, userModel.isOnline);
             }
           },
         ),
@@ -65,27 +72,29 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  Widget _bindItem(String chatName, String chatImageUrl, bool isOnline) {
+  Widget _bindItem(String id, String chatName, String chatImageUrl, bool isOnline) {
     return Column(
       children: <Widget>[
         _divider(context),
         SizedBox(height: 10,),
-        _chatDetail(chatName, chatImageUrl, isOnline)
+        _chatDetail(id, chatName, chatImageUrl, isOnline)
       ],
     );
   }
 
-  Widget _chatDetail(String chatName, String chatImageUrl, bool isOnline) {
+  Widget _chatDetail(String id, String chatName, String chatImageUrl, bool isOnline) {
     return Row(
       children: <Widget>[
         _circleImage(chatImageUrl, isOnline),
         _chatInfo(chatName),
+        _newMessageCount(id),
         _lastMessageAt(),
       ],
     );
   }
 
   Widget _chatInfo(String chatName) {
+    int valueEnd = widget.chatModel.lastMessage.length > 17 ? 17 : widget.chatModel.lastMessage.length;
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10),
       child: Center(
@@ -94,7 +103,7 @@ class _ChatItemState extends State<ChatItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text("${widget.chatModel.lastMessage.substring(0, 17)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
           ],
         ),
       ),
@@ -182,5 +191,24 @@ class _ChatItemState extends State<ChatItem> {
 
   _openUserDetails() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+  }
+
+  //TODO task show new messages count in dialog
+  Widget _newMessageCount(String id) {
+    return id != '' ? StreamBuilder(
+      stream: _messageBloc.getNewMessageCounter(id),
+      initialData: null,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+
+          var newMessageCount = snapshot.data.documents.length;
+          print("ANDRII new messages = $newMessageCount");
+          return newMessageCount > 0 ? Text(newMessageCount.toString(), style: TextStyle(fontSize: 18),) : Container();
+        } else {
+
+          return Container();
+        }
+      }
+    ) : Container();
   }
 }

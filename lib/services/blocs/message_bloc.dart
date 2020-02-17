@@ -39,6 +39,10 @@ class MessageBloc extends BlocBase {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getNewMessageCounter(String userId) {
+    return _messageRepository.getStreamNewMessageCount(userId);
+  }
+
   void getMessages(String groupChatId) {
     print("MessageBloc");
     print("getMessages groupChatId = $groupChatId");

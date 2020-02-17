@@ -1,7 +1,7 @@
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/chat_user_info.dart';
 import 'package:travel_date_app/models/message.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 
 class MockServer {
 

@@ -84,16 +84,16 @@ class ChatRepository {
     });
   }
 
-  void incrementNewMessageInChat(String grpChtId, String userId) {
-    print("ChatRepository");
-    print("updatincrementNewMessageInChateUserInRoom");
-    _firestore.collection(Columns.CHAT_COLUMN)
-        .document(grpChtId)
-        .collection("ids")
-        .document(userId)
+//  void incrementNewMessageInChat(String grpChtId, String userId) {
+//    print("ChatRepository");
+//    print("updatincrementNewMessageInChateUserInRoom");
+//    _firestore.collection(Columns.CHAT_COLUMN)
+//        .document(grpChtId)
+//        .collection("ids")
+//        .document(userId)
 //        .where('userId', isEqualTo: userId)
-        .updateData({"newMessageCoun" : FieldValue.increment(1)});
-  }
+//        .updateData({"newMessageCoun" : FieldValue.increment(1)});
+//  }
 
   void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) {
     print("ChatRepository");
@@ -114,6 +114,15 @@ class ChatRepository {
       updateFullChat(model);
 
     });
+
+
+
+//    _firestore.collection(Columns.CHAT_COLUMN)
+//        .document(groupCharId)
+//        .collection("ids")
+//        .where("userId", arrayContains: yourId).orderBy("ids", descending: false).getDocuments().then((onValue) {
+//
+//    });
   }
 
 }

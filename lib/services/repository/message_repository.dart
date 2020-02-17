@@ -66,4 +66,9 @@ class MessageRepository {
   Future<DocumentReference> sendMessage(MessageModel messageModel) async {
     return _firestore.collection(Columns.MESSAGE_COLUMN).add(messageModel.toJson());
   }
+
+  Stream<QuerySnapshot> getStreamNewMessageCount(String userId) {
+    print("getStreamNewMessageCount User id $userId");
+    return _firestore.collection(Columns.MESSAGE_COLUMN).where("isWatched", isEqualTo: false).where('userId', isEqualTo: userId).snapshots();
+  }
 }
