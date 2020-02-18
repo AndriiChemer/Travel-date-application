@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/chat.dart';
@@ -87,8 +86,7 @@ class _ChatItemState extends State<ChatItem> {
       children: <Widget>[
         _circleImage(chatImageUrl, isOnline),
         _chatInfo(chatName),
-        _newMessageCount(id),
-        _lastMessageAt(),
+        _lastMessageAt(id),
       ],
     );
   }
@@ -150,15 +148,21 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  Widget _lastMessageAt() {
+  Widget _lastMessageAt(String id) {
     String lastMessage = TimeUtils.readTimestamp(widget.chatModel.lastMessageAt);
 
-    return Expanded(
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
-      ),
-    );
+     return Container(
+       height: 70,
+       padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+         children: <Widget>[
+         Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
+         _newMessageCount(id)
+         ],
+       ),
+     );
+
   }
 
   Widget _divider(BuildContext context) {
@@ -203,12 +207,28 @@ class _ChatItemState extends State<ChatItem> {
 
           var newMessageCount = snapshot.data.documents.length;
           print("ANDRII new messages = $newMessageCount");
-          return newMessageCount > 0 ? Text(newMessageCount.toString(), style: TextStyle(fontSize: 18),) : Container();
+          return newMessageCount > 0 ? _circleNotification(newMessageCount) : Container();
         } else {
 
           return Container();
         }
       }
     ) : Container();
+  }
+
+  Widget _circleNotification(int newMessageCount) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(5, 5, 7, 5),//EdgeInsets.all(4),
+      child: Text(newMessageCount.toString(), style: TextStyle(fontSize: 16, color: Colors.white),),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+
+          color: Colors.red[900]),
+    );
+
+//    return ClipRRect(
+//      borderRadius: BorderRadius.circular(8.0),
+//      child: Text(170.toString(), style: TextStyle(fontSize: 16, color: Colors.white),),
+//    );
   }
 }
