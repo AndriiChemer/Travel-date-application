@@ -61,7 +61,6 @@ class _ChatItemState extends State<ChatItem> {
             } else {
 
               userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
-              print("User model = ${userModel.toJson().toString()}");
 
               return _bindItem(userId, userModel.name, userModel.imageUrl, userModel.isOnline);
             }

@@ -119,8 +119,6 @@ class UsersBloc extends BlocBase {
       usersListDocumentSnapshot.forEach((document) {
         MessageModelTest model = MessageModelTest.fromMap(document.data);
 
-        print("model = ${model.toJson().toString()}");
-
         models.add(model);
       });
 
@@ -139,8 +137,6 @@ class UsersBloc extends BlocBase {
     List<UserModel> users = [];
     listDocumentSnapshot.forEach((document) {
       UserModel user = UserModel.fromMap(document.data);
-
-      print("user = ${user.toJson().toString()}");
 
       users.add(user);
     });

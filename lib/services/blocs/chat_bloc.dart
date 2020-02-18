@@ -82,8 +82,6 @@ class ChatBloc extends BlocBase {
     documents.forEach((document){
       ChatModel chat = ChatModel.fromMap(document.data);
 
-      print("chat = ${chat.toJson().toString()}");
-
       chats.add(chat);
     });
 

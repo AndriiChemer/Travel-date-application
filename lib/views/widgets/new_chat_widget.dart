@@ -283,11 +283,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
         stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
         initialData: null,
         builder: (context, snapshot) {
+
+          print("Has messages = ${snapshot.hasData}");
           if (!snapshot.hasData) {
             return Center(
                 child: Container());//CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
           } else {
             print("CHEMER stream");
+            int documentsLength = snapshot.data.documents.length;
+            _messageBloc.lastDocument = snapshot.data.documents[documentsLength - 1];
 
             List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
             if(messages.length == 0) {
@@ -681,9 +685,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
   void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
     if(isLogsShow) {
       print("==============================");
-      print(messages.toString());
-      print("length = ${messages.length}");
-      print("==============================");
       print("addToMainMessageList");
       print("size = ${listMessage.length}");
     }
@@ -698,7 +699,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
       if(!contains(listMessage, message)) {
         if(isLogsShow) {
           print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
-          print("Message = ${message.toJson().toString()}");
         }
 
         switch(message.type) {

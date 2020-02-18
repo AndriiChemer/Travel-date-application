@@ -128,7 +128,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         stream: _chatBloc.getStreamChatListByUserId(widget.yourAccount.id),
         initialData: null,
         builder: (context, snapshot) {
-          print("snapshot.hasData = ${snapshot.hasData}");
           if(!snapshot.hasData) {
             return _loading();
           } else {
@@ -220,8 +219,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
-    print("==============================");
-    print(chats.toString());
     print("length = ${chats.length}");
     print("==============================");
 
@@ -247,10 +244,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   bool contains(List<ChatModel> list, ChatModel chat) {
-    String compareObject = chat.toJson().toString();
+    String groupChatId = chat.groupChatId;
 
-    for(ChatModel m in list) {
-      if(m.toJson().toString() == compareObject) {
+    for(ChatModel itemChat in list) {
+      if(itemChat.groupChatId == groupChatId) {
         return true;
       }
     }
