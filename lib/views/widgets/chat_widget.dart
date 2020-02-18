@@ -94,14 +94,14 @@ class _ChatItemState extends State<ChatItem> {
   Widget _chatInfo(String chatName) {
     int valueEnd = widget.chatModel.lastMessage.length > 17 ? 17 : widget.chatModel.lastMessage.length;
     return Container(
-      padding: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22), overflow: TextOverflow.ellipsis),
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20), overflow: TextOverflow.ellipsis)
           ],
         ),
       ),
@@ -134,7 +134,7 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _goldCircle(bool isOnline) {
-    return Align(
+    return Positioned.fill(child: Align(
       alignment: Alignment.bottomRight,
       child: Container(
         width: 16,
@@ -145,24 +145,28 @@ class _ChatItemState extends State<ChatItem> {
             shape: BoxShape.circle
         ),
       ),
-    );
+    ));
   }
 
   Widget _lastMessageAt(String id) {
     String lastMessage = TimeUtils.readTimestamp(widget.chatModel.lastMessageAt);
 
-     return Container(
-       height: 70,
-       padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-       child: Column(
-         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-         children: <Widget>[
-         Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
-         _newMessageCount(id)
-         ],
-       ),
-     );
-
+    return Expanded(
+        child: Align(
+        alignment: Alignment.centerRight,
+            child: Container(
+          height: 70,
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
+              _newMessageCount(id)
+            ],
+          ),
+        ),
+        )
+    );
   }
 
   Widget _divider(BuildContext context) {
@@ -197,7 +201,6 @@ class _ChatItemState extends State<ChatItem> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
   }
 
-  //TODO task show new messages count in dialog
   Widget _newMessageCount(String id) {
     return id != '' ? StreamBuilder(
       stream: _messageBloc.getNewMessageCounter(id),
@@ -222,13 +225,7 @@ class _ChatItemState extends State<ChatItem> {
       child: Text(newMessageCount.toString(), style: TextStyle(fontSize: 16, color: Colors.white),),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
-
           color: Colors.red[900]),
     );
-
-//    return ClipRRect(
-//      borderRadius: BorderRadius.circular(8.0),
-//      child: Text(170.toString(), style: TextStyle(fontSize: 16, color: Colors.white),),
-//    );
   }
 }

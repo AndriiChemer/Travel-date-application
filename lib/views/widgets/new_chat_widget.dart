@@ -713,7 +713,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
     if(isFromStream) {
       listMessage.insertAll(0, sorted);
-//      scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+      scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
 
     } else {
       setState(() {

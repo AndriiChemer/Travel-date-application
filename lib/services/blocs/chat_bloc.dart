@@ -63,7 +63,7 @@ class ChatBloc extends BlocBase {
 
    void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt, bool isUserInChat) {
     print("ChatBloc sendMessage");
-    //TODO task remove ц from parameter
+    //TODO task remove isUserInChat from parameter
 
     MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
     _messageRepository.sendMessage(message)
