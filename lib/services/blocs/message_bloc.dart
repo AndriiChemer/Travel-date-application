@@ -19,18 +19,16 @@ class MessageBloc extends BlocBase {
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<MessageModel>> get messages => _messages.stream;
 
-//  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-//    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
-//    Stream<QuerySnapshot> stream = tempStream;
-//    tempStream.listen((querySnapshot) {
-//      int documentsLength = querySnapshot.documents.length;
-//      lastDocument = querySnapshot.documents[documentsLength - 1];
-//    });
-//    return stream;
-//  }
-
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-    return _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+    Stream<QuerySnapshot> stream = tempStream;
+    tempStream.listen((querySnapshot) {
+      int documentsLength = querySnapshot.documents.length;
+      if(documentsLength > 0) {
+        lastDocument = querySnapshot.documents[documentsLength - 1];
+      }
+    });
+    return stream;
   }
 
   Stream<QuerySnapshot> getMess() {

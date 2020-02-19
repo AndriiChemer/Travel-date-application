@@ -23,7 +23,9 @@ class ChatBloc extends BlocBase {
     Stream<QuerySnapshot> stream = tempStream;
     tempStream.listen((querySnapshot) {
       int documentsLength = querySnapshot.documents.length;
-      lastDocument = querySnapshot.documents[documentsLength - 1];
+      if(documentsLength > 0) {
+        lastDocument = querySnapshot.documents[documentsLength - 1];
+      }
     });
     return stream;
   }

@@ -23,7 +23,6 @@ class ChatRepository {
     print("getStreamChatListByUserId");
     return _firestore
         .collection(Columns.CHAT_COLUMN)
-//        .where('ids', arrayContains: userId)
         .orderBy('createdAt', descending: true)
         .limit(documentLimit)
         .snapshots();

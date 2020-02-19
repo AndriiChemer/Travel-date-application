@@ -47,7 +47,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-//    addScrollListener();
+    addScrollListener();
     addStreamListener();
 //    scrollListenerWithItemCount();
 
@@ -147,24 +147,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
       decoration: new BoxDecoration(
           border: new Border(top: new BorderSide(color: Color(0xff203152), width: 0.5)), color: Colors.white),
     );
-  }
-
-  void onSendMessage(String content, int type) {
-    // type: 0 = text, 1 = image, 2 = sticker
-    if (content.trim() != '') {
-      textEditingController.clear();
-
-      if(isChatNew) {
-        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
-      } else {
-        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id, isUserInChat);
-      }
-
-      listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-    } else {
-      print("Nothing to send");
-      //TODO show message
-    }
   }
 
   Widget buildSticker() {
@@ -277,45 +259,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
   }
 
-  Widget buildListMessage() {
-    return Flexible(
-      child: StreamBuilder(
-        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
-        initialData: null,
-        builder: (context, snapshot) {
-
-          print("Has messages = ${snapshot.hasData}");
-          if (!snapshot.hasData) {
-            return Center(
-                child: Container());//CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
-          } else {
-            print("CHEMER stream");
-            int documentsLength = snapshot.data.documents.length;
-            _messageBloc.lastDocument = snapshot.data.documents[documentsLength - 1];
-
-            List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
-            if(messages.length == 0) {
-              isChatNew = true;
-            } else {
-              isChatNew = false;
-              _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
-            }
-
-            addToMainMessageList(messages, true);
-
-            return ListView.builder(
-              padding: EdgeInsets.all(10.0),
-              itemBuilder: (context, index) => buildItem(index, listMessage[index]),
-              itemCount: listMessage.length,
-              reverse: true,
-              controller: listScrollController,
-            );
-          }
-        },
-      ),
-    );
-  }
-
   Widget buildLoading() {
     return Positioned(
       child: isLoading
@@ -360,13 +303,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   Widget buildItem(int index, MessageModel messageModel) {
-    double maxScroll = listScrollController.position.maxScrollExtent;
-    double currentScroll = listScrollController.position.pixels;
-    double delta = MediaQuery.of(context).size.height * 0.2;
-
-    print("maxScroll = $maxScroll");
-    print("currentScroll = $currentScroll");
-    print("delta = $delta");
+//    double maxScroll = listScrollController.position.maxScrollExtent;
+//    double currentScroll = listScrollController.position.pixels;
+//    double delta = MediaQuery.of(context).size.height * 0.2;
+//
+//    print("maxScroll = $maxScroll");
+//    print("currentScroll = $currentScroll");
+//    print("delta = $delta");
 
     if (messageModel.userId == widget.yourModel.id) {
       // Right (my message)
@@ -643,51 +586,89 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
   }
 
+  void onSendMessage(String content, int type) {
+    // type: 0 = text, 1 = image, 2 = sticker
+    if (content.trim() != '') {
+      textEditingController.clear();
+
+      if(isChatNew) {
+        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
+      } else {
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id, isUserInChat);
+      }
+
+      listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+    } else {
+      print("Nothing to send");
+      //TODO show message
+    }
+  }
+
+  Widget buildListMessage() {
+    print("buildListMessage groupCharId = ${widget.groupCharId}");
+    return Flexible(
+      child: StreamBuilder(
+        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
+        initialData: null,
+        builder: (context, snapshot) {
+
+          switch(snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              print("ConnectionState.waiting = ${ConnectionState.waiting}");
+              return Center(
+                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
+            case ConnectionState.active:
+            default:
+            print("ConnectionState.active = ${ConnectionState.active}");
+            if (!snapshot.hasData) {
+
+              print("Has messages = ${snapshot.hasData}");
+              if(listMessage.length == 0) {
+                print("Chat is new");
+                isChatNew = true;
+              }
+
+              return Center(
+                  child: Container());
+
+            } else {
+              List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
+
+              print("messages size = ${messages.length}");
+              if(messages.length == 0) {
+                print("Chat is new");
+                isChatNew = true;
+              } else {
+                print("Chat is exist");
+                isChatNew = false;
+                _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
+              }
+
+              addToMainMessageList(messages, true);
+
+              return ListView.builder(
+                padding: EdgeInsets.all(10.0),
+                itemBuilder: (context, index) => buildItem(index, listMessage[index]),
+                itemCount: listMessage.length,
+                reverse: true,
+                controller: listScrollController,
+              );
+            }
+
+          }
+        },
+      ),
+    );
+  }
+
   void addStreamListener() {
     _messageBloc.messages.listen((messages) {
       addToMainMessageList(messages, false);
     });
   }
 
-  void addScrollListener() {
-    listScrollController.addListener(() {
-      double maxScroll = listScrollController.position.maxScrollExtent;
-      double currentScroll = listScrollController.position.pixels;
-      double delta = MediaQuery.of(context).size.height * 0.2;
-
-      if(isLogsShow) {
-        print("addScrollListener");
-        print("maxScroll = $maxScroll");
-        print("currentScroll = $currentScroll");
-        print("delta = $delta");
-      }
-
-      if(maxScroll - currentScroll <= delta) {
-        _messageBloc.getMessages(widget.groupCharId);
-      }
-    });
-  }
-
-  void scrollListenerWithItemCount() {
-    listScrollController.addListener(() {
-      double scrollOffset = listScrollController.position.pixels;
-      double viewportHeight = listScrollController.position.viewportDimension;
-      double scrollRange = listScrollController.position.maxScrollExtent -
-          listScrollController.position.minScrollExtent;
-      int firstVisibleItemIndex =
-      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
-      print("firstVisibleItemIndex = $firstVisibleItemIndex");
-    });
-
-
-  }
-
   void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
-    if(isLogsShow) {
-      print("==============================");
-      print("addToMainMessageList");
-      print("size = ${listMessage.length}");
-    }
     List<MessageModel> sorted = [];
 
     int messagesCount = 0;
@@ -697,10 +678,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     messages.forEach((message) {
 
       if(!contains(listMessage, message)) {
-        if(isLogsShow) {
-          print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
-        }
-
         switch(message.type) {
           case 0: messagesCount++ ; break;
           case 1: picturesCount++ ; break;
@@ -723,23 +700,61 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 0), () {
 
-      int height = messagesCount * 25 + stickersCount * 100 + picturesCount * 200;
-      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
-      Future.delayed(Duration(seconds: 2), () {
-        addScrollListener();
+//      int height = messagesCount * 25 + stickersCount * 100 + picturesCount * 200;
+//      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+      Future.delayed(Duration(seconds: 0), () {
+//        addScrollListener();
         scrollListenerWithItemCount();
       });
 
     });
   }
 
-  bool contains(List<MessageModel> list, MessageModel message) {
-    String compareObject = message.toJson().toString();
+  void scrollListenerWithItemCount() {
+    listScrollController.addListener(() {
+      double scrollOffset = listScrollController.position.pixels;
+      double viewportHeight = listScrollController.position.viewportDimension;
+      double scrollRange = listScrollController.position.maxScrollExtent -
+          listScrollController.position.minScrollExtent;
+      int firstVisibleItemIndex =
+      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+      print("firstVisibleItemIndex = $firstVisibleItemIndex");
+    });
 
-    for(MessageModel m in list) {
-      if(m.toJson().toString() == compareObject) {
+
+  }
+
+  void addScrollListener() {
+    listScrollController.addListener(() {
+      double maxScroll = listScrollController.position.maxScrollExtent;
+      double currentScroll = listScrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.2;
+
+      isLogsShow = true;
+      if(isLogsShow) {
+        print("addScrollListener");
+        print("maxScroll = $maxScroll");
+        print("currentScroll = $currentScroll");
+        print("delta = $delta");
+      }
+
+      if(maxScroll - currentScroll <= delta) {
+        double temp = maxScroll - currentScroll;
+        print("maxScroll - currentScroll ======== $maxScroll - $currentScroll = $temp");
+        print("maxScroll - currentScroll <= delta ======== ${temp <= delta}");
+//        _messageBloc.getMessages(widget.groupCharId);
+      }
+    });
+  }
+
+  bool contains(List<MessageModel> list, MessageModel message) {
+
+    for(MessageModel itemMessage in list) {
+      if(itemMessage.content == message.content &&
+          itemMessage.userId == message.userId &&
+            itemMessage.createdAt == message.createdAt) {
         return true;
       }
     }

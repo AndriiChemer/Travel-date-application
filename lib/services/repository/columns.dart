@@ -9,7 +9,8 @@ class Columns {
 
 
   // ignore: non_constant_identifier_names
-  static var CHAT_COLUMN = 'chat_test';
+  static var CHAT_COLUMN = 'chat_test1';
   // ignore: non_constant_identifier_names
-  static var MESSAGE_COLUMN = 'message_test';
+  // added indexing for
+  static var MESSAGE_COLUMN = 'message_test1';
 }

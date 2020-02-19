@@ -133,7 +133,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
           } else {
 
             List<ChatModel> chats = _chatBloc.chatsConverter(snapshot.data.documents);
-            addToMainChatList(chats, true);
+
+            if(chats.length > 0) {
+              addToMainChatList(chats, true);
+            }
 
             return ListView.builder(
               scrollDirection: Axis.vertical,
@@ -224,6 +227,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
     List<ChatModel> sorted = [];
     print("addToMainChatList");
+    print("is from stream = $isFromStream");
     print("size = ${chats.length}");
     chats.forEach((chat) {
 

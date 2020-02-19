@@ -17,7 +17,7 @@ class MockServer {
   }
 
   static Future<List<UserModel>> getPeoplesForDiscoversScreen() async {
-    return Future.delayed(Duration(seconds: 2), () {
+    return Future.delayed(Duration(milliseconds: 500), () {
       return peopleList;
     });
   }
