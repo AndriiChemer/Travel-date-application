@@ -1,4 +1,6 @@
 class MessageModel {
+  String messageId;
+
   String userId;
 
   String chatId;
@@ -16,6 +18,7 @@ class MessageModel {
   MessageModel(this.userId, this.chatId, this.groupChatId, this.createdAt, this.content, this.type, this.isWatched);
 
   MessageModel.fromMap(Map snapshot) :
+        messageId = snapshot['messageId'] ?? '',
         userId = snapshot['userId'] ?? '',
         chatId = snapshot['chatId'] ?? '',
         groupChatId = snapshot['groupChatId'] ?? '',
@@ -26,6 +29,7 @@ class MessageModel {
 
   toJson() {
     return {
+      "messageId": messageId,
       "userId": userId,
       "chatId": chatId,
       "groupChatId": groupChatId,

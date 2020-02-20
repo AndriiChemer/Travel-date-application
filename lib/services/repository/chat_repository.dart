@@ -68,7 +68,7 @@ class ChatRepository {
     });
   }
 
-  Future<void> updateFullChat(ChatModel chatModel) async {
+  void updateFullChat(ChatModel chatModel) async {
     print("ChatRepository");
     print("updateFullChat");
 

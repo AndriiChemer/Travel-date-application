@@ -28,6 +28,18 @@ class MessageRepository {
         .snapshots();
   }
 
+  //TODO use it
+  Stream<QuerySnapshot> getStreamMessagesByGroupChatId1(String groupChatId, int documentLimit) {
+    return _firestore
+        .collection("Message_test_column")
+        .document(groupChatId)
+        .collection(groupChatId)
+        .where('groupChatId', isEqualTo: groupChatId)
+        .orderBy('createdAt', descending: true)
+        .limit(documentLimit)
+        .snapshots();
+  }
+
   Future<QuerySnapshot> getMessagesByGroupChatId(
       String groupChatId,
       DocumentSnapshot lastDocument,
@@ -64,7 +76,35 @@ class MessageRepository {
   }
 
   Future<DocumentReference> sendMessage(MessageModel messageModel) async {
+    sendMessageNewColumn(messageModel);
     return _firestore.collection(Columns.MESSAGE_COLUMN).add(messageModel.toJson());
+  }
+
+  //TODO use it
+  void sendMessageNewColumn(MessageModel messageModel) async {
+    _firestore.collection("Message_test_column")
+        .document(messageModel.groupChatId)
+        .collection(messageModel.groupChatId)
+        .add(messageModel.toJson())
+        .then((onValue) {
+      setMessageIdNewColumn(onValue.documentID, messageModel.groupChatId);
+    });
+  }
+
+  //TODO use it
+  void setMessageIdNewColumn(String messageId, String groupChatId) {
+    _firestore.collection("Message_test_column")
+        .document(groupChatId)
+        .collection(groupChatId)
+        .document(messageId)
+        .updateData({"messageId" : messageId});
+  }
+
+
+
+  void setMessageId(String messageId) {
+    print("messageId = $messageId");
+    _firestore.collection(Columns.MESSAGE_COLUMN).document(messageId).updateData({"messageId" : messageId});
   }
 
   Stream<QuerySnapshot> getStreamNewMessageCount(String userId) {

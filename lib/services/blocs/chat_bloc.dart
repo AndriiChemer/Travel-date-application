@@ -70,6 +70,7 @@ class ChatBloc extends BlocBase {
     MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
     _messageRepository.sendMessage(message)
         .then((onValue) {
+      _messageRepository.setMessageId(onValue.documentID);
       print("Message has been sent successful");
     }).catchError((onError) {
       print("ChatBloc sendMessage");
