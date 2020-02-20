@@ -305,6 +305,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void onSendMessage(String content, int type) {
+    //TODO task set all messages as watched
+
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
       textEditingController.clear();
@@ -353,7 +355,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             } else {
               List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
 
-              print("messages size = ${messages.length}");
+              print("messages size is = ${messages.length}");
               if(messages.length == 0) {
                 print("Chat is new");
                 isChatNew = true;
@@ -403,7 +405,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           case 2: stickersCount++ ; break;
         }
 
-        if(!message.isWatched) {
+        if(!message.isWatched && message.userId != widget.yourModel.id) {
           lastNotWatchedModel = message;
         }
         sorted.add(message);
@@ -457,8 +459,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
       (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
 
       for(int i = firstVisibleItemIndex; i <= _messageBloc.lastVisibleItemIndex; i++) {
-        listMessage[i].isWatched = true;
-        updateMessage(listMessage[i]);
+        if(!listMessage[i].isWatched && widget.yourModel.id != listMessage[i].userId) {
+          listMessage[i].isWatched = true;
+          updateMessage(listMessage[i]);
+        }
       }
 
       Future.delayed(Duration(seconds: 2), (){
