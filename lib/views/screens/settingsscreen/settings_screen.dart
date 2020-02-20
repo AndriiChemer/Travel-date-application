@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/settings_preferences.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/widgets/app_bars.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -44,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(context),
+      appBar: CustomAppBar(title: Strings.settings_toolbar, backgroundColor: CustomColors.secondaryBackground,),
       backgroundColor: CustomColors.lightBackground,
       body: ListView(
         children: <Widget>[
@@ -60,41 +61,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _deleteButton()
         ],
       ),
-    );
-  }
-
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.secondaryBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 20, right: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(),
-              Text(Strings.settings_toolbar, style: TextStyle(color: Colors.white, fontSize: 22),),
-              Container(width: 30, height: 30,)
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
     );
   }
 

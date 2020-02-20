@@ -12,6 +12,7 @@ import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
+import 'package:travel_date_app/views/widgets/app_bars.dart';
 
 class EditImageScreen extends StatefulWidget {
 
@@ -74,7 +75,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(context),
+      appBar: CustomAppBar(title: Strings.add_images, backgroundColor: CustomColors.secondaryBackground, onTapCallback: _arrowBackClick,),
       backgroundColor: CustomColors.lightBackground,
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -90,39 +91,8 @@ class _EditImageScreenState extends State<EditImageScreen> {
     );
   }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.secondaryBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 20, right: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(),
-              Text(Strings.add_images, style: TextStyle(color: Colors.white, fontSize: 20),),
-              Container(width: 30, height: 30,)
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop({'user' : widget.user});
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
-    );
+  _arrowBackClick() {
+    Navigator.of(context).pop({'user' : widget.user});
   }
 
   Widget _gridImageList(BuildContext context) {

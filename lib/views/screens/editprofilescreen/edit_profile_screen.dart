@@ -7,6 +7,7 @@ import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editimages/edit_images.dart';
+import 'package:travel_date_app/views/widgets/app_bars.dart';
 
 class EditProfileScreen extends StatefulWidget {
 
@@ -53,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(context),
+      appBar: CustomAppBar(title: Strings.edit_profile_toolbar, backgroundColor: CustomColors.secondaryBackground,),
       backgroundColor: CustomColors.lightBackground,
       body: Stack(
         children: <Widget>[
@@ -61,41 +62,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _notVerifyRow(context)
         ],
       ),
-    );
-  }
-
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.secondaryBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 20, right: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(),
-              Text(Strings.edit_profile_toolbar, style: TextStyle(color: Colors.white, fontSize: 20),),
-              Container(width: 30, height: 30,)
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
     );
   }
 

@@ -11,6 +11,9 @@ import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/time.dart';
 
+import 'app_bars.dart';
+import 'message_item.dart';
+
 class NewChatScreen extends StatefulWidget {
 
   final UserModel yourModel;
@@ -34,11 +37,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
   final ScrollController listScrollController = new ScrollController();
   final TextEditingController textEditingController = new TextEditingController();
 
-  bool isShowSticker = false;
-  bool isLogsShow = false;
   bool isChatNew = false;
   bool isLoading = false;
+  bool isLogsShow = false;
   bool isUserInChat = false;
+  bool isShowSticker = false;
   String imageUrl = '';
 
   List<MessageModel> listMessage = [];
@@ -48,9 +51,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-//    addScrollListener();
     addStreamListener();
-//    scrollListenerWithItemCount();
 
     super.didChangeDependencies();
   }
@@ -61,7 +62,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     print("groupCharId = ${widget.groupCharId}");
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(context),
+      appBar: CustomAppBar(title: widget.anotherModel.name,),
       backgroundColor: CustomColors.mainBackground,
       body: WillPopScope(
         child: Stack(
@@ -303,348 +304,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return Future.value(false);
   }
 
-  Widget _getChild(int index, MessageModel messageModel){
-    return MetaData(
-      metaData: messageModel,
-      child: buildItem(index, messageModel),
-    );
-  }
-
-  Widget buildItem(int index, MessageModel messageModel) {
-//    double maxScroll = listScrollController.position.maxScrollExtent;
-//    double currentScroll = listScrollController.position.pixels;
-//    double delta = MediaQuery.of(context).size.height * 0.2;
-//
-//    print("maxScroll = $maxScroll");
-//    print("currentScroll = $currentScroll");
-//    print("delta = $delta");
-
-    if (messageModel.userId == widget.yourModel.id) {
-      // Right (my message)
-      return Row(
-        children: <Widget>[
-          messageModel.type == 0
-          // Text
-              ? Container(
-            child: Text(
-              messageModel.content,
-              style: TextStyle(color: Color(0xff203152)),
-            ),
-            padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-            width: 200.0,
-            decoration: BoxDecoration(color: Color(0xffE8E8E8), borderRadius: BorderRadius.circular(8.0)),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          )
-              : messageModel.type == 1
-          // Image
-              ? Container(
-            child: FlatButton(
-              child: Material(
-                child: _loadImageContent(messageModel.content),
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                clipBehavior: Clip.hardEdge,
-              ),
-              onPressed: () {
-                //TODO task add open image full screen
-//                Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(url: messageModel.content)));
-              },
-              padding: EdgeInsets.all(0),
-            ),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          )
-          // Sticker
-              : Container(
-            child: new Image.asset(
-              'images/${messageModel.content}.gif',
-              width: 100.0,
-              height: 100.0,
-              fit: BoxFit.cover,
-            ),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          ),
-        ],
-        mainAxisAlignment: MainAxisAlignment.end,
-      );
-    } else {
-      // Left (peer message)
-      return Container(
-        child: Column(
-          children: <Widget>[
-            StreamBuilder(
-              stream: _messageBloc.newMessageController,
-              builder: (context, snapshot) {
-                return snapshot.data != null && snapshot.data > -1 && snapshot.data == index ? _newMessageDivider() : Container();
-              },
-            ),
-            Row(
-              children: <Widget>[
-                isLastMessageLeft(index)
-                    ? Material(
-                  child: _anotherUserImage(),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(18.0),
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                )
-                    : Container(width: 35.0),
-                messageModel.type == 0
-                    ? Container(
-                  child: Text(
-                    messageModel.content,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
-                  decoration: BoxDecoration(color: Color(0xff203152), borderRadius: BorderRadius.circular(8.0)),
-                  margin: EdgeInsets.only(left: 10.0),
-                )
-                    : messageModel.type == 1
-                    ? Container(
-                  child: FlatButton(
-                    child: Material(
-                      child: _peerImageMessage(messageModel.content),
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      clipBehavior: Clip.hardEdge,
-                    ),
-                    onPressed: () {
-//                        Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
-                    },
-                    padding: EdgeInsets.all(0),
-                  ),
-                  margin: EdgeInsets.only(left: 10.0),
-                )
-                    : Container(
-                  child: new Image.asset(
-                    'images/${messageModel.content}.gif',
-                    width: 100.0,
-                    height: 100.0,
-                    fit: BoxFit.cover,
-                  ),
-                  margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-                ),
-              ],
-            ),
-
-            // Time
-            isLastMessageLeft(index)
-                ? Container(
-              child: Text(
-                TimeUtils.readTimestamp(messageModel.createdAt),
-                style: TextStyle(color: Color(0xffaeaeae), fontSize: 12.0, fontStyle: FontStyle.italic),
-              ),
-              margin: EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
-            )
-                : Container()
-          ],
-          crossAxisAlignment: CrossAxisAlignment.start,
-        ),
-        margin: EdgeInsets.only(bottom: 10.0),
-      );
-    }
-  }
-
-  Widget _newMessageDivider() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 2,
-      margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
-      color: Colors.red[900],
-    );
-  }
-
-  bool isLastMessageLeft(int index) {
-    if ((index > 0 && listMessage != null && listMessage[index - 1].userId == widget.yourModel.id) || index == 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Widget _loadImageContent(String imageUrl) {
-//    return CachedNetworkImage(
-//      imageUrl: imageUrl,
-//      width: 200.0,
-//      height: 200.0,
-//      fit: BoxFit.cover,
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 200.0,
-//        height: 200.0,
-//        padding: EdgeInsets.all(70.0),
-//        decoration: BoxDecoration(
-//          color: Color(0xffE8E8E8),
-//          borderRadius: BorderRadius.all(
-//            Radius.circular(8.0),
-//          ),
-//        ),
-//      ),
-//      errorWidget: (context, url, error) => Material(
-//        child: Image.asset(
-//          'images/img_not_available.jpeg',
-//          width: 200.0,
-//          height: 200.0,
-//          fit: BoxFit.cover,
-//        ),
-//        borderRadius: BorderRadius.all(
-//          Radius.circular(8.0),
-//        ),
-//        clipBehavior: Clip.hardEdge,
-//      ),
-//    );
-    return Container(
-      width: 150,
-      height: 150,
-      color: Colors.red,
-    );
-  }
-
-  bool isLastMessageRight(int index) {
-    if ((index > 0 && listMessage != null && listMessage[index - 1].userId != widget.yourModel.id) || index == 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Widget _anotherUserImage() {
-    return Container(
-      width: 35,
-      height: 35,
-      child: Image(image: NetworkImage(widget.anotherModel.imageUrl),),
-//      imageUrl: widget.anotherUser.imageUrl,
-//      placeholder: (context, url) => CircularProgressIndicator(),
-    );
-//    CachedNetworkImage(
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          strokeWidth: 1.0,
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 35.0,
-//        height: 35.0,
-//        padding: EdgeInsets.all(10.0),
-//      ),
-//      imageUrl: widget.anotherUser.imageUrl,
-//      width: 35.0,
-//      height: 35.0,
-//      fit: BoxFit.cover,
-//    );
-  }
-
-  Widget _peerImageMessage(String imageUrl) {
-//    return CachedNetworkImage(
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 200.0,
-//        height: 200.0,
-//        padding: EdgeInsets.all(70.0),
-//        decoration: BoxDecoration(
-//          color: Color(0xffE8E8E8),
-//          borderRadius: BorderRadius.all(
-//            Radius.circular(8.0),
-//          ),
-//        ),
-//      ),
-//      errorWidget: (context, url, error) => Material(
-//        child: Image.asset(
-//          'images/img_not_available.jpeg',
-//          width: 200.0,
-//          height: 200.0,
-//          fit: BoxFit.cover,
-//        ),
-//        borderRadius: BorderRadius.all(
-//          Radius.circular(8.0),
-//        ),
-//        clipBehavior: Clip.hardEdge,
-//      ),
-//      imageUrl: imageUrl,
-//      width: 200.0,
-//      height: 200.0,
-//      fit: BoxFit.cover,
-//    );
-
-    return Container(
-      height: 200,
-      width: 200,
-      color: Colors.blue,
-    );
-  }
-
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.secondaryBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 20, right: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(), //TODO set chat name
-              Text(Strings.settings_toolbar, style: TextStyle(color: Colors.white, fontSize: 22),),
-              Container(width: 30, height: 30,)
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
-    );
-  }
-
-  //TODO remove
-  Widget _buildNotificateListener(ListView listView) {
-    var notificationListener = NotificationListener(
-      onNotification: (notification) {
-        if (notification is ScrollEndNotification) {
-          Future.microtask((){
-            MessageModel messageModel = getMeta(0, 10);
-          });
-        }
-        return false;
-      },
-      child: listView,
-    );
-
-    return notificationListener;
-  }
-
-  //TODO remove
-  T getMeta<T>(double x,double y){
-    var renderBox = context.findRenderObject() as RenderBox;
-    var offset = renderBox.localToGlobal(Offset(x,y));
-
-    HitTestResult result = HitTestResult();
-    WidgetsBinding.instance.hitTest(result, offset);
-
-    for(var i in result.path){
-      if(i.target is RenderMetaData){
-        var d = i.target as RenderMetaData;
-        if(d.metaData is T) {
-          return d.metaData as T;
-        }
-      }
-    }
-    return null;
-  }
-
   void onSendMessage(String content, int type) {
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
@@ -706,15 +365,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
               addToMainMessageList(messages, true);
 
-              ListView listView = ListView.builder(
+              return ListView.builder(
                 padding: EdgeInsets.all(10.0),
-                itemBuilder: (context, index) => _getChild(index, listMessage[index]),//buildItem(index, listMessage[index]),
+                itemBuilder: (context, index) => MessageItem(index: index, message: listMessage[index], yourModel: widget.yourModel, anotherModel: widget.anotherModel, listMessage: listMessage,),//buildItem(index, listMessage[index]),
                 itemCount: listMessage.length,
                 reverse: true,
                 controller: listScrollController,
               );
-
-              return _buildNotificateListener(listView);
             }
 
           }
@@ -790,9 +447,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void setMessageListWatched() {
     if(_messageBloc.lastVisibleItemIndex > -1) {
-      print("\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-      print("showLogs");
-
       double scrollOffset = listScrollController.position.pixels;
       double viewportHeight = listScrollController.position.viewportDimension;
       double maxScrollExtent = listScrollController.position.maxScrollExtent;
@@ -810,22 +464,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
       Future.delayed(Duration(seconds: 2), (){
         _messageBloc.setNewMessageIndex(firstVisibleItemIndex - 1);
       });
-
-
-
-      print("scrollOffset = $scrollOffset");
-      print("viewportHeight = $viewportHeight");
-      print("maxScrollExtent = $maxScrollExtent");
-      print("minScrollExtent = $minScrollExtent");
-      print("firstVisibleItemIndex = $firstVisibleItemIndex");
     }
   }
 
   void scrollListenerWithItemCount() {
     listScrollController.addListener(() {
-      print("\n\n===================================================");
-      print("scrollListenerWithItemCount");
-
 
       double scrollOffset = listScrollController.position.pixels;
       double viewportHeight = listScrollController.position.viewportDimension;
@@ -846,18 +489,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       } else {
         _messageBloc.setNewMessageIndex(-1);
       }
-
-
-
-      print("_messageBloc.lastVisibleItemIndex = ${_messageBloc.lastVisibleItemIndex}");
-      print("scrollOffset = $scrollOffset");
-      print("viewportHeight = $viewportHeight");
-      print("maxScrollExtent = $maxScrollExtent");
-      print("minScrollExtent = $minScrollExtent");
-      print("firstVisibleItemIndex = $firstVisibleItemIndex");
     });
-
-
   }
 
   void addScrollListener() {
@@ -865,18 +497,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
 
-      if(isLogsShow) {
-        print("addScrollListener");
-        print("maxScroll = $maxScroll");
-        print("currentScroll = $currentScroll");
-
-        double temp = maxScroll - currentScroll;
-        print("maxScroll - currentScroll ======== $maxScroll - $currentScroll = $temp");
-      }
-
       if(maxScroll - currentScroll < -3) {
         // TODO task show progress load more messages
-        print("YEEEEES   _messageBloc.getMessages");
 //        _messageBloc.getMessages(widget.groupCharId);
       }
     });
