@@ -6,6 +6,11 @@ class Strings {
   static const String yes = "Yes";
   static const String no = "No";
 
+  static const String discover_nav = "Discover";
+  static const String search_nav = "Search";
+  static const String message_nav = "Message";
+  static const String profile_nav = "Profile";
+
   // Registration Screen
   static const String name = "Name";
   static const String email = "Email";

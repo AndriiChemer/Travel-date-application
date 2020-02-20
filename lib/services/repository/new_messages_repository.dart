@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'columns.dart';
 
 class NewMessagesRepository {
 
   final Firestore _firestore =  Firestore.instance;
+
+  Stream<QuerySnapshot> getNewMessageCount(String userId) {
+    return _firestore
+        .collection(Columns.NEW_MESSAGES_COLUMN)
+        .snapshots();
+  }
 
   Future<bool> addNewUser(String userId) async {
     print("NewMessagesRepository");

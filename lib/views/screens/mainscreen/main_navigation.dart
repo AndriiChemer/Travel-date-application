@@ -76,7 +76,7 @@ class _MainNavigationState extends State<MainNavigation> {
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },
       ),
-      bottomNavigationBar: CustomBottomNavigation(),
+      bottomNavigationBar: CustomBottomNavigation(userModel: userModel),
     );
   }
 

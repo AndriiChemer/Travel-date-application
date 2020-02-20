@@ -18,6 +18,7 @@ class ChatRepository {
     return querySnapshot;
   }
 
+  //TODO task add orderBy
   Stream<QuerySnapshot> getStreamChatListByUserId(String userId, int documentLimit) {
     print("ChatRepository");
     print("getStreamChatListByUserId");

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_list_block.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
+import 'package:travel_date_app/services/blocs/providers/general_new_message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
@@ -43,19 +44,21 @@ class MyApp extends StatelessWidget {
         child: ChatBlocProvider(
           child: MessageBlocProvider(
             child: ImageBlocProvider(
-              child: MaterialApp(
-                  title: 'Date App',
-                  debugShowCheckedModeBanner: false,
-                  theme: ThemeData(
-                      canvasColor: Colors.transparent
-                  ),
-                  home: Splash(),
-                  routes: {
-                    '/signin': (context) => SignInScreen(),
-                    '/verifyphone': (context) => VerifySuccess(),
-                    '/setage': (context) => AgeScreen(),
-                    '/mainNavigation': (context) => MainNavigation(),
-                  }
+              child: GeneralNewMessageBlocProvider(
+                child: MaterialApp(
+                    title: 'Date App',
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(
+                        canvasColor: Colors.transparent
+                    ),
+                    home: Splash(),
+                    routes: {
+                      '/signin': (context) => SignInScreen(),
+                      '/verifyphone': (context) => VerifySuccess(),
+                      '/setage': (context) => AgeScreen(),
+                      '/mainNavigation': (context) => MainNavigation(),
+                    }
+                )
               ),
             ),
           ),
@@ -64,7 +67,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 //Firebase CRUD tutorial
 //https://www.youtube.com/watch?v=uzkpDEG_4R4

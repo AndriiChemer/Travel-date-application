@@ -133,18 +133,20 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _goldCircle(bool isOnline) {
-    return Positioned.fill(child: Align(
-      alignment: Alignment.bottomRight,
-      child: Container(
-        width: 16,
-        height: 16,
-        margin: EdgeInsets.only(left: 45),
-        decoration: BoxDecoration(
-            color: isOnline ? Colors.yellow[800] : Colors.white,
-            shape: BoxShape.circle
-        ),
-      ),
-    ));
+    return Positioned.fill(
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Container(
+            width: 16,
+            height: 16,
+            margin: EdgeInsets.only(left: 45),
+            decoration: BoxDecoration(
+              color: isOnline ? Colors.yellow[800] : Colors.white,
+              shape: BoxShape.circle
+            ),
+          ),
+        )
+    );
   }
 
   Widget _lastMessageAt(String id) {
@@ -220,11 +222,23 @@ class _ChatItemState extends State<ChatItem> {
 
   Widget _circleNotification(int newMessageCount) {
     return Container(
-      padding: EdgeInsets.fromLTRB(5, 5, 7, 5),//EdgeInsets.all(4),
-      child: Text(newMessageCount.toString(), style: TextStyle(fontSize: 16, color: Colors.white),),
+      padding: EdgeInsets.all(3),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Colors.red[900]),
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(13),
+      ),
+      constraints: BoxConstraints(
+        minWidth: 20,
+        minHeight: 20,
+      ),
+      child: Text(
+        '$newMessageCount',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
