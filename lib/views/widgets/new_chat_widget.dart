@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/models/user_model.dart';
@@ -47,7 +48,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-    addScrollListener();
+//    addScrollListener();
     addStreamListener();
 //    scrollListenerWithItemCount();
 
@@ -302,6 +303,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return Future.value(false);
   }
 
+  Widget _getChild(int index, MessageModel messageModel){
+    return MetaData(
+      metaData: messageModel,
+      child: buildItem(index, messageModel),
+    );
+  }
+
   Widget buildItem(int index, MessageModel messageModel) {
 //    double maxScroll = listScrollController.position.maxScrollExtent;
 //    double currentScroll = listScrollController.position.pixels;
@@ -362,6 +370,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
       return Container(
         child: Column(
           children: <Widget>[
+            StreamBuilder(
+              stream: _messageBloc.newMessageController,
+              builder: (context, snapshot) {
+                return snapshot.data != null && snapshot.data > -1 && snapshot.data == index ? _newMessageDivider() : Container();
+              },
+            ),
             Row(
               children: <Widget>[
                 isLastMessageLeft(index)
@@ -427,6 +441,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
         margin: EdgeInsets.only(bottom: 10.0),
       );
     }
+  }
+
+  Widget _newMessageDivider() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 2,
+      margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
+      color: Colors.red[900],
+    );
   }
 
   bool isLastMessageLeft(int index) {
@@ -586,6 +609,42 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
   }
 
+  //TODO remove
+  Widget _buildNotificateListener(ListView listView) {
+    var notificationListener = NotificationListener(
+      onNotification: (notification) {
+        if (notification is ScrollEndNotification) {
+          Future.microtask((){
+            MessageModel messageModel = getMeta(0, 10);
+          });
+        }
+        return false;
+      },
+      child: listView,
+    );
+
+    return notificationListener;
+  }
+
+  //TODO remove
+  T getMeta<T>(double x,double y){
+    var renderBox = context.findRenderObject() as RenderBox;
+    var offset = renderBox.localToGlobal(Offset(x,y));
+
+    HitTestResult result = HitTestResult();
+    WidgetsBinding.instance.hitTest(result, offset);
+
+    for(var i in result.path){
+      if(i.target is RenderMetaData){
+        var d = i.target as RenderMetaData;
+        if(d.metaData is T) {
+          return d.metaData as T;
+        }
+      }
+    }
+    return null;
+  }
+
   void onSendMessage(String content, int type) {
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
@@ -647,13 +706,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
               addToMainMessageList(messages, true);
 
-              return ListView.builder(
+              ListView listView = ListView.builder(
                 padding: EdgeInsets.all(10.0),
-                itemBuilder: (context, index) => buildItem(index, listMessage[index]),
+                itemBuilder: (context, index) => _getChild(index, listMessage[index]),//buildItem(index, listMessage[index]),
                 itemCount: listMessage.length,
                 reverse: true,
                 controller: listScrollController,
               );
+
+              return _buildNotificateListener(listView);
             }
 
           }
@@ -670,6 +731,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
     List<MessageModel> sorted = [];
+    MessageModel lastNotWatchedModel;
 
     int messagesCount = 0;
     int stickersCount = 0;
@@ -684,11 +746,22 @@ class _NewChatScreenState extends State<NewChatScreen> {
           case 2: stickersCount++ ; break;
         }
 
+        if(!message.isWatched) {
+          lastNotWatchedModel = message;
+        }
         sorted.add(message);
       }
     });
 
     if(isFromStream) {
+
+      if(lastNotWatchedModel != null) {
+        int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+        _messageBloc.setNewMessageIndex(lastVisibleIndex);
+      } else {
+        _messageBloc.setNewMessageIndex(-1);
+      }
+
       listMessage.insertAll(0, sorted);
       scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
 
@@ -700,26 +773,87 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
-    Future.delayed(Duration(seconds: 0), () {
-
-//      int height = messagesCount * 25 + stickersCount * 100 + picturesCount * 200;
-//      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
-      Future.delayed(Duration(seconds: 0), () {
-//        addScrollListener();
-        scrollListenerWithItemCount();
+    Future.delayed(Duration(seconds: 0), (){
+      double height = listScrollController.position.maxScrollExtent;
+      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      Future.delayed(Duration(milliseconds: 700), () {
+        setMessageListWatched();
       });
 
+
+      Future.delayed(Duration(seconds: 2), () {
+        addScrollListener();
+        scrollListenerWithItemCount();
+      });
     });
+  }
+
+  void setMessageListWatched() {
+    if(_messageBloc.lastVisibleItemIndex > -1) {
+      print("\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      print("showLogs");
+
+      double scrollOffset = listScrollController.position.pixels;
+      double viewportHeight = listScrollController.position.viewportDimension;
+      double maxScrollExtent = listScrollController.position.maxScrollExtent;
+      double minScrollExtent = listScrollController.position.minScrollExtent;
+      double scrollRange = maxScrollExtent -
+          minScrollExtent;
+      int firstVisibleItemIndex =
+      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+
+      for(int i = firstVisibleItemIndex; i <= _messageBloc.lastVisibleItemIndex; i++) {
+        listMessage[i].isWatched = true;
+        updateMessage(listMessage[i]);
+      }
+
+      Future.delayed(Duration(seconds: 2), (){
+        _messageBloc.setNewMessageIndex(firstVisibleItemIndex - 1);
+      });
+
+
+
+      print("scrollOffset = $scrollOffset");
+      print("viewportHeight = $viewportHeight");
+      print("maxScrollExtent = $maxScrollExtent");
+      print("minScrollExtent = $minScrollExtent");
+      print("firstVisibleItemIndex = $firstVisibleItemIndex");
+    }
   }
 
   void scrollListenerWithItemCount() {
     listScrollController.addListener(() {
+      print("\n\n===================================================");
+      print("scrollListenerWithItemCount");
+
+
       double scrollOffset = listScrollController.position.pixels;
       double viewportHeight = listScrollController.position.viewportDimension;
-      double scrollRange = listScrollController.position.maxScrollExtent -
-          listScrollController.position.minScrollExtent;
+      double maxScrollExtent = listScrollController.position.maxScrollExtent;
+      double minScrollExtent = listScrollController.position.minScrollExtent;
+      double scrollRange = maxScrollExtent -
+          minScrollExtent;
       int firstVisibleItemIndex =
       (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+
+      if(firstVisibleItemIndex > -1) {
+        MessageModel message = listMessage[firstVisibleItemIndex];
+        if(!message.isWatched) {
+          message.isWatched = true;
+          _messageBloc.updateMessage(message, widget.yourModel.id);
+          _messageBloc.setNewMessageIndex(firstVisibleItemIndex--);
+        }
+      } else {
+        _messageBloc.setNewMessageIndex(-1);
+      }
+
+
+
+      print("_messageBloc.lastVisibleItemIndex = ${_messageBloc.lastVisibleItemIndex}");
+      print("scrollOffset = $scrollOffset");
+      print("viewportHeight = $viewportHeight");
+      print("maxScrollExtent = $maxScrollExtent");
+      print("minScrollExtent = $minScrollExtent");
       print("firstVisibleItemIndex = $firstVisibleItemIndex");
     });
 
@@ -730,20 +864,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
     listScrollController.addListener(() {
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
-      double delta = MediaQuery.of(context).size.height * 0.2;
 
-      isLogsShow = true;
       if(isLogsShow) {
         print("addScrollListener");
         print("maxScroll = $maxScroll");
         print("currentScroll = $currentScroll");
-        print("delta = $delta");
-      }
 
-      if(maxScroll - currentScroll <= delta) {
         double temp = maxScroll - currentScroll;
         print("maxScroll - currentScroll ======== $maxScroll - $currentScroll = $temp");
-        print("maxScroll - currentScroll <= delta ======== ${temp <= delta}");
+      }
+
+      if(maxScroll - currentScroll < -3) {
+        // TODO task show progress load more messages
+        print("YEEEEES   _messageBloc.getMessages");
 //        _messageBloc.getMessages(widget.groupCharId);
       }
     });
@@ -766,6 +899,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
   void dispose() {
     _chatBloc.updateUserInRoom(false, widget.yourModel.id, widget.groupCharId);
     super.dispose();
+  }
+
+  void updateMessage(MessageModel message) {
+    _messageBloc.updateMessage(message, widget.yourModel.id);
   }
 
 }

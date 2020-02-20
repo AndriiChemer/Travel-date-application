@@ -3,21 +3,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/message_repository.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 
 class MessageBloc extends BlocBase {
 
   bool _hasMore = true;
   bool _isLoading = false;
   int documentLimit = 10;
+  int lastVisibleItemIndex = -1;
   DocumentSnapshot lastDocument;
 
   final _messageRepository = MessageRepository();
+  final _newMessageRepository = NewMessagesRepository();
 
   final _showProgress = BehaviorSubject<bool>();
   final _messages = BehaviorSubject<List<MessageModel>>();
+  var newMessageController = BehaviorSubject<int>.seeded(-1);
 
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<MessageModel>> get messages => _messages.stream;
+  Stream<int> get mewMessageIndex => newMessageController.stream;
+
+  setNewMessageIndex(int index) {
+    lastVisibleItemIndex = index;
+    newMessageController.sink.add(index);
+  }
 
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
     Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
@@ -29,16 +39,6 @@ class MessageBloc extends BlocBase {
       }
     });
     return stream;
-  }
-
-  Stream<QuerySnapshot> getMess() {
-    return Firestore.instance
-        .collection('messages')
-        .document("123")
-        .collection('123')
-        .orderBy('timestamp', descending: true)
-        .limit(20)
-        .snapshots();
   }
 
   Stream<QuerySnapshot> getNewMessageCounter(String userId) {
@@ -102,5 +102,10 @@ class MessageBloc extends BlocBase {
     });
 
     return messages;
+  }
+
+  void updateMessage(MessageModel message, String userId) {
+    _messageRepository.updateMessage(message);
+    _newMessageRepository.decrementCounter(userId);
   }
 }

@@ -74,4 +74,12 @@ class MessageRepository {
         .where('userId', isEqualTo: userId)
         .snapshots();
   }
+
+  void updateMessage(MessageModel message) {
+    print("\n\n\n==================================================");
+    print("message has been updated:\n${message.toString()}");
+//    _firestore.collection(Columns.MESSAGE_COLUMN)
+//        .document("")
+//        .updateData(message.toJson());
+  }
 }
