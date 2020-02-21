@@ -42,6 +42,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   bool isLogsShow = false;
   bool isUserInChat = false;
   bool isShowSticker = false;
+  bool isAllMessageUpdated = false;
   String imageUrl = '';
 
   List<MessageModel> listMessage = [];
@@ -305,6 +306,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void onSendMessage(String content, int type) {
+    if(!isAllMessageUpdated) {
+      updateAllNotWatchedMessages();
+    }
     //TODO task set all messages as watched
 
     // type: 0 = text, 1 = image, 2 = sticker
@@ -433,8 +437,16 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
     Future.delayed(Duration(seconds: 0), (){
-      double height = listScrollController.position.maxScrollExtent;
-      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+
+      if(messagesCount == 1 || messagesCount == 0) {
+        double height = listScrollController.position.minScrollExtent;
+        listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      } else {
+        double height = listScrollController.position.maxScrollExtent;
+        listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      }
+
+
       Future.delayed(Duration(milliseconds: 700), () {
         setMessageListWatched();
       });
@@ -529,6 +541,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void updateMessage(MessageModel message) {
     _messageBloc.updateMessage(message, widget.yourModel.id);
+  }
+
+  void updateAllNotWatchedMessages() {
+    for(MessageModel message in listMessage) {
+      if(!message.isWatched && widget.yourModel.id != message.userId) {
+        _messageBloc.updateMessage(message, widget.yourModel.id);
+      }
+    }
+     isAllMessageUpdated = true;
   }
 
 }
