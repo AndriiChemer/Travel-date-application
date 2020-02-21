@@ -30,6 +30,8 @@ class _ChatItemState extends State<ChatItem> {
   UsersBloc _usersBloc;
   MessageBloc _messageBloc;
 
+  int newMessageCount;
+
   @override
   void didChangeDependencies() {
     _usersBloc = UsersBlocProvider.of(context);
@@ -194,7 +196,7 @@ class _ChatItemState extends State<ChatItem> {
     if(userModel != null) {
       String groupId = UserUtils.buildChatGroupId(widget.yourModel.id, userModel.id);
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: widget.yourModel, anotherModel: userModel, groupCharId: groupId)));//, ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: widget.yourModel, anotherModel: userModel, groupCharId: groupId, newMessageLength: newMessageCount,)));
     }
   }
 
@@ -221,6 +223,7 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _circleNotification(int newMessageCount) {
+    this.newMessageCount = newMessageCount;
     return Container(
       padding: EdgeInsets.all(3),
       decoration: BoxDecoration(

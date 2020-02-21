@@ -8,8 +8,6 @@ import 'package:travel_date_app/services/blocs/message_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
-import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/utils/time.dart';
 
 import 'app_bars.dart';
 import 'message_item.dart';
@@ -19,8 +17,9 @@ class NewChatScreen extends StatefulWidget {
   final UserModel yourModel;
   final UserModel anotherModel;
   final String groupCharId;
+  final int newMessageLength;
 
-  NewChatScreen({this.yourModel, this.anotherModel, this.groupCharId});
+  NewChatScreen({this.yourModel, this.anotherModel, this.groupCharId, this.newMessageLength});
 
   @override
   _NewChatScreenState createState() => _NewChatScreenState();
@@ -332,7 +331,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     print("buildListMessage groupCharId = ${widget.groupCharId}");
     return Flexible(
       child: StreamBuilder(
-        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
+        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId, widget.newMessageLength),
         initialData: null,
         builder: (context, snapshot) {
 
@@ -416,27 +415,31 @@ class _NewChatScreenState extends State<NewChatScreen> {
       }
     });
 
-    if(isFromStream) {
+    if(sorted.isNotEmpty) {
+      if(isFromStream) {
 
-      if(lastNotWatchedModel != null) {
-        int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
-        _messageBloc.setNewMessageIndex(lastVisibleIndex);
+        if(lastNotWatchedModel != null) {
+          int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+          _messageBloc.setNewMessageIndex(lastVisibleIndex);
+        } else {
+          _messageBloc.setNewMessageIndex(-1);
+        }
+
+        listMessage.insertAll(0, sorted);
+        scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+
       } else {
-        _messageBloc.setNewMessageIndex(-1);
+        setState(() {
+          listMessage.addAll(sorted);
+        });
       }
-
-      listMessage.insertAll(0, sorted);
-      scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
-
-    } else {
-      setState(() {
-        listMessage.addAll(sorted);
-      });
     }
   }
 
   void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
     Future.delayed(Duration(seconds: 0), (){
+
+      print("maxScrollExtent = ${listScrollController.position.maxScrollExtent}");
 
       if(messagesCount == 1 || messagesCount == 0) {
         double height = listScrollController.position.minScrollExtent;

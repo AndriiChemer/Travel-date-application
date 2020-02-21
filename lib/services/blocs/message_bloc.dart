@@ -29,8 +29,10 @@ class MessageBloc extends BlocBase {
     newMessageController.sink.add(index);
   }
 
-  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int newMessageLength) {
+    int docLimit = newMessageLength <= 20 ? 20 : newMessageLength;
+
+    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, docLimit);
     Stream<QuerySnapshot> stream = tempStream;
     tempStream.listen((querySnapshot) {
       int documentsLength = querySnapshot.documents.length;
