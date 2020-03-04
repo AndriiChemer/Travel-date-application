@@ -51,7 +51,7 @@ class _ChatItemState extends State<ChatItem> {
 
             if (!snapshot.hasData) {
 
-              return _bindItem('', '', false);
+              return Container();
             } else {
 
               userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
@@ -86,6 +86,8 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _chatInfo(String chatName) {
+    int valueEnd = widget.chatModel.lastMessage.length > 17 ? 17 : widget.chatModel.lastMessage.length;
+
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10),
       child: Center(
@@ -94,7 +96,7 @@ class _ChatItemState extends State<ChatItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text("${widget.chatModel.lastMessage.substring(0, 17)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
           ],
         ),
       ),
