@@ -335,51 +335,40 @@ class _NewChatScreenState extends State<NewChatScreen> {
         initialData: null,
         builder: (context, snapshot) {
 
-          switch(snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              print("ConnectionState.waiting = ${ConnectionState.waiting}");
-              return Center(
-                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
-            case ConnectionState.active:
-            default:
-            print("ConnectionState.active = ${ConnectionState.active}");
-            if (!snapshot.hasData) {
+          if (!snapshot.hasData) {
 
-              print("Has messages = ${snapshot.hasData}");
-              if(listMessage.length == 0) {
-                print("Chat is new");
-                isChatNew = true;
-              }
-
-              return Center(
-                  child: Container());
-
-            } else {
-              List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
-
-              print("messages size is = ${messages.length}");
-              if(messages.length == 0) {
-                print("Chat is new");
-                isChatNew = true;
-              } else {
-                print("Chat is exist");
-                isChatNew = false;
-                _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
-              }
-
-              addToMainMessageList(messages, true);
-
-              return ListView.builder(
-                key: ObjectKey(widget.groupCharId),
-                padding: EdgeInsets.all(10.0),
-                itemBuilder: (context, index) => MessageItem(index: index, message: listMessage[index], yourModel: widget.yourModel, anotherModel: widget.anotherModel, listMessage: listMessage,),
-                itemCount: listMessage.length,
-                reverse: true,
-                controller: listScrollController,
-              );
+            print("Has messages = ${snapshot.hasData}");
+            if(listMessage.length == 0) {
+              print("Chat is new");
+              isChatNew = true;
             }
 
+            return Center(
+                child: Container());
+
+          } else {
+            List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
+
+            print("messages size is = ${messages.length}");
+            if(messages.length == 0) {
+              print("Chat is new");
+              isChatNew = true;
+            } else {
+              print("Chat is exist");
+              isChatNew = false;
+              _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
+            }
+
+            addToMainMessageList(messages, true);
+
+            return ListView.builder(
+              key: ObjectKey(widget.groupCharId),
+              padding: EdgeInsets.all(10.0),
+              itemBuilder: (context, index) => MessageItem(index: index, message: listMessage[index], yourModel: widget.yourModel, anotherModel: widget.anotherModel, listMessage: listMessage,),
+              itemCount: listMessage.length,
+              reverse: true,
+              controller: listScrollController,
+            );
           }
         },
       ),
