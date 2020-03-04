@@ -31,7 +31,7 @@ class MessageBloc extends BlocBase {
   }
 
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int newMessageLength) {
-    int docLimit = newMessageLength <= 20 ? 20 : newMessageLength;
+    int docLimit = newMessageLength != null && newMessageLength > 20 ? newMessageLength : 20;
 
     Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, docLimit);
     Stream<QuerySnapshot> stream = tempStream;

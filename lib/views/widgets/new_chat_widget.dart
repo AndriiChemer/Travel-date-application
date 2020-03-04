@@ -371,6 +371,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               addToMainMessageList(messages, true);
 
               return ListView.builder(
+                key: ObjectKey(widget.groupCharId),
                 padding: EdgeInsets.all(10.0),
                 itemBuilder: (context, index) => MessageItem(index: index, message: listMessage[index], yourModel: widget.yourModel, anotherModel: widget.anotherModel, listMessage: listMessage,),
                 itemCount: listMessage.length,
@@ -428,7 +429,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
         }
 
         listMessage.insertAll(0, sorted);
-        scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+
+        if(listMessage.last.userId != widget.yourModel.id) {
+          scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+        } else {
+          addScrollListener();
+        }
 
       } else {
         setState(() {
@@ -542,12 +548,16 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void addScrollListener() {
     listScrollController.addListener(() {
+      print('addScrollListener');
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
 
-      if(maxScroll - currentScroll < -3) {
+      if(maxScroll == currentScroll) {
         // TODO task show progress load more messages
-//        _messageBloc.getMessages(widget.groupCharId);
+        Future.delayed(Duration(seconds: 1), (){
+          _messageBloc.getMessages(widget.groupCharId);
+        });
+
       }
     });
   }
@@ -568,6 +578,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   void dispose() {
     _chatBloc.updateUserInRoom(false, widget.yourModel.id, widget.groupCharId);
+    _messageBloc.dispose();
     super.dispose();
   }
 
