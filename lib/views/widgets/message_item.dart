@@ -131,7 +131,7 @@ class _MessageItemState extends State<MessageItem> {
         return snapshot.data != null && snapshot.data > -1 && snapshot.data == widget.index ? Container(
           width: MediaQuery.of(context).size.width,
           height: 2,
-          margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
+          margin: EdgeInsets.only(bottom: 1.0, top: 5.0),
           color: Colors.red[900],
         ) : Container();
       },

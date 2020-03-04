@@ -25,6 +25,7 @@ class MessageBloc extends BlocBase {
   Stream<int> get mewMessageIndex => newMessageController.stream;
 
   setNewMessageIndex(int index) {
+    print('setNewMessageIndex: ' + index.toString());
     lastVisibleItemIndex = index;
     newMessageController.sink.add(index);
   }
@@ -45,6 +46,10 @@ class MessageBloc extends BlocBase {
 
   Stream<QuerySnapshot> getNewMessageCounter(String userId) {
     return _messageRepository.getStreamNewMessageCount(userId);
+  }
+
+  Stream<QuerySnapshot> getNewMessageBottomNavCounter(String userId) {
+    return _messageRepository.getNewMessageBottomNavCounter(userId);
   }
 
   void getMessages(String groupChatId) {
@@ -90,6 +95,9 @@ class MessageBloc extends BlocBase {
   void dispose() async {
     await _messages.drain();
     _messages.close();
+
+    await newMessageController.drain();
+    newMessageController.close();
 
     super.dispose();
   }

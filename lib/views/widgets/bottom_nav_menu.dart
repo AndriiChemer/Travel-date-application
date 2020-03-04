@@ -92,6 +92,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
         builder: (context, snapshot) {
 
           int newMessages = snapshot.data.documents[0]["counter"] ?? 0;
+          print("newMessages = " + snapshot.data.documents[0]["counter"].toString() );
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: listNavItem.map((item) {
@@ -133,7 +134,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             ],
           ),
         ),
-        _notification(newMessageCount, item)
+        newMessageCount == 0 ? Container() : _notification(newMessageCount, item)
       ],
     );
   }

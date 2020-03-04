@@ -206,7 +206,7 @@ class _ChatItemState extends State<ChatItem> {
 
   Widget _newMessageCount(String id) {
     return id != '' ? StreamBuilder(
-      stream: _messageBloc.getNewMessageCounter(id),
+      stream: _messageBloc.getNewMessageBottomNavCounter(id),
       initialData: null,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
