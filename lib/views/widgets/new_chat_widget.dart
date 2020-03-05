@@ -58,7 +58,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('_messageBloc.lastVisibleItemIndex = ${_messageBloc.lastVisibleItemIndex}');
 
     return Scaffold(
       key: _scaffoldKey,
@@ -308,7 +307,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if(!isAllMessageUpdated) {
       updateAllNotWatchedMessages();
     }
-    //TODO task set all messages as watched
 
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
@@ -376,21 +374,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void showDividerNotWatchedMessages(List<MessageModel> sorted, MessageModel lastNotWatchedModel) {
-    print('showDividerNotWatchedMessages');
     if(lastNotWatchedModel != null) {
       int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
-      print('lastVisibleIndex = $lastVisibleIndex');
       _messageBloc.setNewMessageIndex(lastVisibleIndex);
     } else {
-      print('setMessageListWatched else ===============================================');
       _messageBloc.setNewMessageIndex(-1);
     }
   }
 
   bool isLastMessageNotWatched(List<MessageModel> sorted) {
-    print('isLastMessageNotWatched = ${sorted.first.userId != widget.yourModel.id && !sorted.first.isWatched}');
-    print('sorted.size = ${sorted.length}');
-    print('sorted.first = ${sorted.first.content}');
     return sorted.first.userId != widget.yourModel.id && !sorted.first.isWatched;
   }
 
@@ -430,10 +422,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
         if(lastNotWatchedModel != null) {
           int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
-          print('addToMainMessageList if ===============================================');
           _messageBloc.setNewMessageIndex(lastVisibleIndex);
         } else {
-          print('setMessageListWatched else ===============================================');
           _messageBloc.setNewMessageIndex(-1);
         }
 
@@ -449,9 +439,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void scrollToFirstNotWatchedMessage() {
     Future.delayed(Duration(seconds: 0), (){
-
-      print("maxScrollExtent = ${listScrollController.position.maxScrollExtent}");
-
       if(_messageBloc.lastVisibleItemIndex < getLastVisibleItemIndex()) {
         double height = listScrollController.position.minScrollExtent;
         listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
@@ -504,7 +491,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
       }
 
       Future.delayed(Duration(seconds: 2), (){
-        print('setMessageListWatched ===============================================');
         _messageBloc.setNewMessageIndex(firstVisibleItemIndex - 1);
       });
     }
@@ -512,7 +498,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   void setNotVisibleItemIndexListener() {
     listScrollController.addListener(() {
-      print('scrollListenerWithItemCount');
 
       int firstVisibleItemIndex = getFirstVisibleItemIndex();
 
@@ -521,20 +506,17 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
 
         if(firstVisibleItemIndex == 0 && message.isWatched) {
-          print('scrollListenerWithItemCount if ===============================================');
           _messageBloc.setNewMessageIndex(-1);
 
         } else {
           if(!message.isWatched && message.userId != widget.yourModel.id) {
             message.isWatched = true;
             _messageBloc.updateMessage(message, widget.yourModel.id);
-            print('scrollListenerWithItemCount update not watched message');
             _messageBloc.setNewMessageIndex(firstVisibleItemIndex--);
           }
         }
 
       } else {
-        print('scrollListenerWithItemCount All message updated, set index -1');
         _messageBloc.setNewMessageIndex(-1);
       }
 
@@ -542,7 +524,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
         MessageModel message = listMessage[firstVisibleItemIndex];
         if(message.isWatched && message.userId != widget.yourModel.id) {
-          print('scrollListenerWithItemCount another if ===============================================');
           _messageBloc.setNewMessageIndex(-1);
         }
       }
