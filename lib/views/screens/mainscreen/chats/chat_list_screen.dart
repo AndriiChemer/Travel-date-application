@@ -232,8 +232,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     chats.forEach((chat) {
 
       if(!contains(chatModels, chat)) {
-        print("!listMessage.contains(message) = ${!chatModels.contains(chat)}");
-        print("Message = ${chat.toJson().toString()}");
         sorted.add(chat);
       }
     });

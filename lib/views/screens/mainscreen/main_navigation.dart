@@ -71,7 +71,6 @@ class _MainNavigationState extends State<MainNavigation> {
       body: StreamBuilder(
         stream: bottomNavBloc.navStream,
         builder: (context, snapshot) {
-          print("ANDRII nav menu item = ${snapshot.data}");
           return snapshot.data != null && navigationScreens.length > 0 ?
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },

@@ -58,8 +58,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('_messageBloc.lastVisibleItemIndex = ${_messageBloc.lastVisibleItemIndex}');
 
-    print("groupCharId = ${widget.groupCharId}");
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBar(title: widget.anotherModel.name,),
@@ -328,7 +328,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   Widget buildListMessage() {
-    print("buildListMessage groupCharId = ${widget.groupCharId}");
     return Flexible(
       child: StreamBuilder(
         stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId, widget.newMessageLength),
@@ -337,9 +336,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
           if (!snapshot.hasData) {
 
-            print("Has messages = ${snapshot.hasData}");
             if(listMessage.length == 0) {
-              print("Chat is new");
               isChatNew = true;
             }
 
@@ -349,12 +346,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
           } else {
             List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
 
-            print("messages size is = ${messages.length}");
             if(messages.length == 0) {
-              print("Chat is new");
               isChatNew = true;
             } else {
-              print("Chat is exist");
               isChatNew = false;
               _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
             }
@@ -411,6 +405,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
         if(lastNotWatchedModel != null) {
           int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
           print('addToMainMessageList if ===============================================');
+          print('lastVisibleIndex = $lastVisibleIndex');
           _messageBloc.setNewMessageIndex(lastVisibleIndex);
         } else {
           print('setMessageListWatched else ===============================================');
@@ -419,15 +414,33 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
         listMessage.insertAll(0, sorted);
 
-        if(listMessage.last.userId != widget.yourModel.id) {
+        print('listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched = ${listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched}');
+
+        print('sorted.first = ${sorted.first.content}');
+
+        if(listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched) {
           scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
         } else {
           addScrollListener();
+          scrollListenerWithItemCount();
         }
 
       } else {
+
+        if(lastNotWatchedModel != null) {
+          int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+          print('addToMainMessageList if ===============================================');
+          _messageBloc.setNewMessageIndex(lastVisibleIndex);
+        } else {
+          print('setMessageListWatched else ===============================================');
+          _messageBloc.setNewMessageIndex(-1);
+        }
+
+        setMessageListWatched(sorted);
+
         setState(() {
           listMessage.addAll(sorted);
+          isLoading = false;
         });
       }
     }
@@ -438,7 +451,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
       print("maxScrollExtent = ${listScrollController.position.maxScrollExtent}");
 
-      if(messagesCount == 1 || messagesCount == 0) {
+      print('messagesCount = $messagesCount');
+      if(_messageBloc.lastVisibleItemIndex < getLastVisibleItemIndex()) {
         double height = listScrollController.position.minScrollExtent;
         listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
       } else {
@@ -448,7 +462,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
 
       Future.delayed(Duration(milliseconds: 700), () {
-        setMessageListWatched();
+        setMessageListWatched(listMessage);
       });
 
 
@@ -459,7 +473,41 @@ class _NewChatScreenState extends State<NewChatScreen> {
     });
   }
 
-  void setMessageListWatched() {
+  int getLastVisibleItemIndex() {
+    listScrollController.addListener(() {
+      double scrollOffset = listScrollController.position.pixels;
+      double viewportHeight = listScrollController.position.viewportDimension;
+      double maxScrollExtent = listScrollController.position.maxScrollExtent;
+      double minScrollExtent = listScrollController.position.minScrollExtent;
+      double scrollRangeMin = maxScrollExtent - minScrollExtent;
+//      double scrollRangeMax = maxScrollExtent - minScrollExtent + MediaQuery.of(context).size.height;
+      int firstVisibleItemIndex = (scrollOffset / (scrollRangeMin + viewportHeight) * listMessage.length).floor();
+      int lastVisibleItemIndex = ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * listMessage.length).floor() - 4;
+
+
+      print('\n\n======================================================');
+      print('scrollOffset = $scrollOffset');
+      print('viewportHeight = $viewportHeight');
+      print('maxScrollExtent = $maxScrollExtent');
+      print('minScrollExtent = $minScrollExtent');
+      print('scrollRangeMin = $scrollRangeMin');
+//      print('scrollRangeMax = $scrollRangeMax');
+      print('firstVisibleItemIndex = $firstVisibleItemIndex');
+      print('lastVisibleItemIndex = $lastVisibleItemIndex');
+    });
+
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRangeMin = maxScrollExtent - minScrollExtent;
+
+    return ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * listMessage.length).floor() - 4;
+  }
+
+  void setMessageListWatched(List<MessageModel> listMessage) {
+    //TODO task if message is 1 and more
+
     if(_messageBloc.lastVisibleItemIndex > -1) {
       double scrollOffset = listScrollController.position.pixels;
       double viewportHeight = listScrollController.position.viewportDimension;
@@ -492,10 +540,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
       double viewportHeight = listScrollController.position.viewportDimension;
       double maxScrollExtent = listScrollController.position.maxScrollExtent;
       double minScrollExtent = listScrollController.position.minScrollExtent;
-      double scrollRange = maxScrollExtent -
-          minScrollExtent;
-      int firstVisibleItemIndex =
-      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+      double scrollRange = maxScrollExtent - minScrollExtent;
+      int firstVisibleItemIndex = (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+
+      print('first visible model = ${listMessage[firstVisibleItemIndex].toJson().toString()}');
 
       if(firstVisibleItemIndex > -1) {
         MessageModel message = listMessage[firstVisibleItemIndex];
@@ -542,11 +590,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       double currentScroll = listScrollController.position.pixels;
 
       if(maxScroll == currentScroll) {
-        // TODO task show progress load more messages
-        Future.delayed(Duration(seconds: 1), (){
-          _messageBloc.getMessages(widget.groupCharId);
-        });
-
+        _messageBloc.getMessages(widget.groupCharId);
       }
     });
   }
@@ -578,6 +622,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   void updateAllNotWatchedMessages() {
     for(MessageModel message in listMessage) {
       if(!message.isWatched && widget.yourModel.id != message.userId) {
+        message.isWatched = true;
         _messageBloc.updateMessage(message, widget.yourModel.id);
       }
     }

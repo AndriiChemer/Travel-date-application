@@ -116,7 +116,6 @@ class MessageRepository {
   }
 
   Stream<QuerySnapshot> getNewMessageBottomNavCounter(String userId) {
-    print("getNewMessageBottomNavCounter User id $userId");
     return _firestore.collection(Columns.MESSAGE_COLUMN)
         .where("isWatched", isEqualTo: false)
         .where('userId', isEqualTo: userId)
@@ -126,9 +125,9 @@ class MessageRepository {
   void updateMessage(MessageModel message) {
     print("\n\n\n==================================================");
     print("message has been updated:\n${message.toString()}");
-//    _firestore.collection(Columns.MESSAGE_COLUMN)
-//        .document(message.messageId)
-//        .updateData(message.toJson());
+    _firestore.collection(Columns.MESSAGE_COLUMN)
+        .document(message.messageId)
+        .updateData(message.toJson());
 
 //    _firestore.collection(Columns.MESSAGE_COLUMN)
 //        .document(message.groupChatId)

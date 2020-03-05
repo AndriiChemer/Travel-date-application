@@ -92,7 +92,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
         builder: (context, snapshot) {
 
           int newMessages = snapshot.data.documents[0]["counter"] ?? 0;
-          print("newMessages = " + snapshot.data.documents[0]["counter"].toString() );
+
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: listNavItem.map((item) {
@@ -115,7 +115,6 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
 
   Widget buildItems(NavigationItem item, int newMessageCount, bool isSelected) {
     String name = item.text;
-    print("newMessageCount = $newMessageCount");
 
     return Stack(
       children: <Widget>[

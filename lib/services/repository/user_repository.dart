@@ -53,7 +53,6 @@ class UserRepository {
   }
   
   Future<void> handleOnlineState(String userID, bool isOnline) async {
-    print('User id: $userID');
     int date = DateTime.now().millisecondsSinceEpoch * 1000;
 
     _firestore.collection(Columns.USER_COLUMN)

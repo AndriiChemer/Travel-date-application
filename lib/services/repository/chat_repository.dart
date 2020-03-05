@@ -62,7 +62,6 @@ class ChatRepository {
       "lastContentType" : lastContentType,
     })
         .then((onValue) {
-      print('Chat has been updated successful');
     }).catchError((onError) {
       print("ChatRepository updateChat");
       print('onError: ' + onError.toString());

@@ -212,7 +212,6 @@ class _ChatItemState extends State<ChatItem> {
         if (snapshot.hasData) {
 
           var newMessageCount = snapshot.data.documents.length;
-          print("ANDRII new messages = $newMessageCount");
           return newMessageCount > 0 ? _circleNotification(newMessageCount) : Container();
         } else {
 

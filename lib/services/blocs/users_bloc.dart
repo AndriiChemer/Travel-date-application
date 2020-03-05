@@ -47,7 +47,6 @@ class UsersBloc extends BlocBase {
     _handleProgress(_isLoading);
 
     _userRepository.getUsersByLocation(city, lastDocument, documentLimit).then((querySnapshot) {
-      print("getUsersByLocation Success");
 
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
@@ -83,7 +82,6 @@ class UsersBloc extends BlocBase {
     print("getUsers");
 
     _userRepository.getUsers(lastDocument, documentLimit).then((querySnapshot) {
-      print("getUsers  Success");
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
 
@@ -111,7 +109,6 @@ class UsersBloc extends BlocBase {
     print("getUsers");
 
     _chatRepository.getChatByUserId(id).then((querySnapshot) {
-      print("getUsers  Success");
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
 
 
