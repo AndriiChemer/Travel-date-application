@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 
 class UserPreferences {
   SharedPreferences prefs;

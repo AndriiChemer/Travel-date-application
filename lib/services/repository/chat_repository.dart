@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:travel_date_app/models/chat.dart';
 
+import 'columns.dart';
+
 class ChatRepository {
-  // ignore: non_constant_identifier_names
-  var CHAT_COLUMN = 'chat_dt';
 
   final Firestore _firestore =  Firestore.instance;
 
@@ -18,12 +18,12 @@ class ChatRepository {
     return querySnapshot;
   }
 
+  //TODO task add orderBy
   Stream<QuerySnapshot> getStreamChatListByUserId(String userId, int documentLimit) {
     print("ChatRepository");
     print("getStreamChatListByUserId");
     return _firestore
-        .collection(CHAT_COLUMN)
-//        .where('ids', arrayContains: userId)
+        .collection(Columns.CHAT_COLUMN)
         .orderBy('createdAt', descending: true)
         .limit(documentLimit)
         .snapshots();
@@ -33,11 +33,14 @@ class ChatRepository {
     print("ChatRepository");
     print("createChat");
 
-    final QuerySnapshot result = await _firestore.collection(CHAT_COLUMN).where('groupChatId', isEqualTo: chatModel.groupChatId).getDocuments();
+    final QuerySnapshot result = await _firestore.collection(Columns.CHAT_COLUMN)
+        .where('groupChatId', isEqualTo: chatModel.groupChatId)
+        .getDocuments();
+
     final List<DocumentSnapshot> documents = result.documents;
 
     if (documents.length == 0) {
-      _firestore.collection(CHAT_COLUMN)
+      _firestore.collection(Columns.CHAT_COLUMN)
           .document(chatModel.groupChatId)
           .setData(chatModel.toJson());
     } else {
@@ -51,7 +54,7 @@ class ChatRepository {
     print("ChatRepository");
     print("updateChat");
 
-    _firestore.collection(CHAT_COLUMN)
+    _firestore.collection(Columns.CHAT_COLUMN)
         .document(groupChatId)
         .updateData({
       "lastMessage" : lastMessage,
@@ -59,11 +62,79 @@ class ChatRepository {
       "lastContentType" : lastContentType,
     })
         .then((onValue) {
-      print('Chat has been updated successful');
     }).catchError((onError) {
       print("ChatRepository updateChat");
       print('onError: ' + onError.toString());
     });
+  }
+
+  void updateFullChat(ChatModel chatModel) async {
+    print("ChatRepository");
+    print("updateFullChat");
+
+    try {
+      _firestore.collection(Columns.CHAT_COLUMN)
+          .document(chatModel.groupChatId)
+          .updateData(chatModel.toJson())
+          .then((onValue) {
+        print('Chat has been updated successful');
+      }).catchError((onError) {
+        print("ChatRepository updateChat");
+        print('onError: ' + onError.toString());
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
+  }
+
+//  void incrementNewMessageInChat(String grpChtId, String userId) {
+//    print("ChatRepository");
+//    print("updatincrementNewMessageInChateUserInRoom");
+//    _firestore.collection(Columns.CHAT_COLUMN)
+//        .document(grpChtId)
+//        .collection("ids")
+//        .document(userId)
+//        .where('userId', isEqualTo: userId)
+//        .updateData({"newMessageCoun" : FieldValue.increment(1)});
+//  }
+
+  void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) async {
+    print("ChatRepository");
+    print("updateUserInRoom");
+
+    try {
+      _firestore.collection(Columns.CHAT_COLUMN)
+          .document(groupCharId).get()
+          .then((result) {
+
+        ChatModel model = ChatModel.fromMap(result.data);
+
+        for(Ids user in model.ids) {
+          if(user.userId == yourId) {
+            user.isInRoom = isUserInRoom;
+            break;
+          }
+        }
+
+        updateFullChat(model);
+
+      }).catchError((onError){
+        print('updateUserInRoom onError = $onError');
+      });
+
+    } catch (onError) {
+      print('updateUserInRoom catch onError = $onError');
+    }
+
+
+
+
+//    _firestore.collection(Columns.CHAT_COLUMN)
+//        .document(groupCharId)
+//        .collection("ids")
+//        .where("userId", arrayContains: yourId).orderBy("ids", descending: false).getDocuments().then((onValue) {
+//
+//    });
   }
 
 }

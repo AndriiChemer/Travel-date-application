@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
@@ -24,8 +24,10 @@ class UserGridItem extends StatefulWidget {
 
 class _UserGridItemState extends State<UserGridItem> {
 
-  final _userPreferences = UserPreferences();
   MessageBloc _messageBloc;
+  final _userPreferences = UserPreferences();
+
+  int newMessageLength = 0;
 
   @override
   void didChangeDependencies() {
@@ -55,6 +57,17 @@ class _UserGridItemState extends State<UserGridItem> {
                 ],
               ),
               _blueCircle(),
+              StreamBuilder(
+                stream: _messageBloc.getNewMessageCounter(widget.model.id),
+                builder: (context, snapshot) {
+
+                  if(snapshot.hasData) {
+                    newMessageLength = snapshot.data.documents.length;
+                  }
+
+                  return Container();
+                },
+              )
             ],
           ),
         )
@@ -216,7 +229,7 @@ class _UserGridItemState extends State<UserGridItem> {
   onMessageButtonClick() async {
     _userPreferences.getUser().then((currentUser) {
       String groupCharId = buildGroupChatId(currentUser.id);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: widget.model, groupCharId: groupCharId)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: widget.model, groupCharId: groupCharId, newMessageLength: newMessageLength,)));
     }).catchError((onError) {
       //TODO task show toast "You can not write message"
     });

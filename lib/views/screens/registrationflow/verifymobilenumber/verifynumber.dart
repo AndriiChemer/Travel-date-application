@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 

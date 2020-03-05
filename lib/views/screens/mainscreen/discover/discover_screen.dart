@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';

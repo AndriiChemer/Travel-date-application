@@ -3,40 +3,52 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/message_repository.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 
 class MessageBloc extends BlocBase {
 
   bool _hasMore = true;
   bool _isLoading = false;
   int documentLimit = 10;
+  int lastVisibleItemIndex = -1;
   DocumentSnapshot lastDocument;
 
   final _messageRepository = MessageRepository();
+  final _newMessageRepository = NewMessagesRepository();
 
   final _showProgress = BehaviorSubject<bool>();
   final _messages = BehaviorSubject<List<MessageModel>>();
+  var newMessageController = BehaviorSubject<int>.seeded(-1);
 
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<MessageModel>> get messages => _messages.stream;
+  Stream<int> get mewMessageIndex => newMessageController.stream;
 
-  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId) {
-    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, 20);
+  setNewMessageIndex(int index) {
+    lastVisibleItemIndex = index;
+    newMessageController.sink.add(index);
+  }
+
+  Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int newMessageLength) {
+    int docLimit = newMessageLength != null && newMessageLength > 20 ? newMessageLength : 20;
+
+    Stream<QuerySnapshot> tempStream = _messageRepository.getStreamMessagesByGroupChatId(groupChatId, docLimit);
     Stream<QuerySnapshot> stream = tempStream;
     tempStream.listen((querySnapshot) {
       int documentsLength = querySnapshot.documents.length;
-      lastDocument = querySnapshot.documents[documentsLength - 1];
+      if(documentsLength > 0) {
+        lastDocument = querySnapshot.documents[documentsLength - 1];
+      }
     });
     return stream;
   }
 
-  Stream<QuerySnapshot> getMess() {
-    return Firestore.instance
-        .collection('messages')
-        .document("123")
-        .collection('123')
-        .orderBy('timestamp', descending: true)
-        .limit(20)
-        .snapshots();
+  Stream<QuerySnapshot> getNewMessageCounter(String userId) {
+    return _messageRepository.getStreamNewMessageCount(userId);
+  }
+
+  Stream<QuerySnapshot> getNewMessageBottomNavCounter(String userId) {
+    return _messageRepository.getNewMessageBottomNavCounter(userId);
   }
 
   void getMessages(String groupChatId) {
@@ -55,9 +67,10 @@ class MessageBloc extends BlocBase {
     _handleProgress(_isLoading);
 
     _messageRepository.getMessagesByGroupChatId(groupChatId, lastDocument, documentLimit).then((querySnapshot) {
-      print("getMessages Success");
+
 
       List<MessageModel> usersList = messagesConverter(querySnapshot.documents);
+
       if(usersList.length > 0) {
         _messages.add(usersList);
       }
@@ -83,6 +96,9 @@ class MessageBloc extends BlocBase {
     await _messages.drain();
     _messages.close();
 
+    await newMessageController.drain();
+    newMessageController.close();
+
     super.dispose();
   }
 
@@ -92,11 +108,14 @@ class MessageBloc extends BlocBase {
     documents.forEach((document) {
       MessageModel message = MessageModel.fromMap(document.data);
 
-      print("messages = ${message.toJson().toString()}");
-
       messages.add(message);
     });
 
     return messages;
+  }
+
+  void updateMessage(MessageModel message, String userId) async {
+    _messageRepository.updateMessage(message);
+    _newMessageRepository.decrementCounter(userId);
   }
 }

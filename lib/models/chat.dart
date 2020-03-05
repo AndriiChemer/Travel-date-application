@@ -1,4 +1,4 @@
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 
 
 // When we get chat then we check if our photo equals with photo in chat
@@ -11,7 +11,7 @@ class ChatModel {
   //Date in milliseconds
   int lastMessageAt;
   // users id
-  List<String> ids;
+  List<Ids> ids;
   //false if chat deleted
   bool isChatActive;
   // If message modify than messageModify++
@@ -35,7 +35,7 @@ class ChatModel {
         lastMessageAt = snapshot['lastMessageAt'] as int ?? 0,
         isChatActive = snapshot['isChatActive'] as bool ?? false,
         messageModify = snapshot['messageModify'] as int ?? 0,
-        ids = snapshot['ids'] == null ? [] : List.from(snapshot['ids']),
+        ids = snapshot['ids'] == null ? [] : parseListIds(snapshot),
         lastContentType = snapshot['lastContentType'] as int ?? -1,
         lastMessage = snapshot['lastMessage'] ?? '';
 
@@ -48,12 +48,57 @@ class ChatModel {
       "messageModify": messageModify,
       "lastMessage": lastMessage,
       "createdAt": createdAt,
-      "ids": ids,
+      "ids": convertListToMap(ids),
       "groupChatId": groupChatId,
       "lastContentType": lastContentType,
     };
   }
-  // Think about it
+
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+
+  static List<Map> convertListToMap(List<Ids> ids) {
+    List<Map> steps = [];
+    ids.forEach((Ids id) {
+      Map step = id.toJson();
+      steps.add(step);
+    });
+    return steps;
+  }
+
+  static List<Ids> parseListIds(Map snapshot) {
+    return snapshot['ids'].map<Ids>((item) {
+      return Ids.fromMap(item);
+    }).toList();
+  }
+
+  //TODO Think about it
   UserModel adminModel;
   List<UserModel> users;
+}
+
+class Ids {
+  String userId;
+  int newMessageCount;
+  bool isInRoom;
+
+  Ids(this.userId, this.newMessageCount, this.isInRoom);
+
+  Ids.fromMap(Map snapshot) :
+        userId = snapshot['userId'] ?? '',
+        isInRoom = snapshot['isInRoom'] as bool ?? 0,
+        newMessageCount = snapshot['newMessageCount'] as int ?? 0;
+
+
+  toJson() {
+    return {
+      "userId": userId,
+      "isInRoom": isInRoom,
+      "newMessageCount": newMessageCount,
+    };
+  }
+
 }

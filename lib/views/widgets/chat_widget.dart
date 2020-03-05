@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/chat.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/message_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/utils/time.dart';
@@ -26,10 +28,14 @@ class _ChatItemState extends State<ChatItem> {
 
   UserModel userModel;
   UsersBloc _usersBloc;
+  MessageBloc _messageBloc;
+
+  int newMessageCount;
 
   @override
   void didChangeDependencies() {
     _usersBloc = UsersBlocProvider.of(context);
+    _messageBloc = MessageBlocProvider.of(context);
 
     super.didChangeDependencies();
   }
@@ -49,15 +55,16 @@ class _ChatItemState extends State<ChatItem> {
           initialData: null,
           builder: (context, snapshot) {
 
+
+
             if (!snapshot.hasData) {
 
               return Container();
             } else {
 
               userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
-              print("User model = ${userModel.toJson().toString()}");
 
-              return _bindItem(userModel.name, userModel.imageUrl, userModel.isOnline);
+              return _bindItem(userId, userModel.name, userModel.imageUrl, userModel.isOnline);
             }
           },
         ),
@@ -65,38 +72,37 @@ class _ChatItemState extends State<ChatItem> {
     );
   }
 
-  Widget _bindItem(String chatName, String chatImageUrl, bool isOnline) {
+  Widget _bindItem(String id, String chatName, String chatImageUrl, bool isOnline) {
     return Column(
       children: <Widget>[
         _divider(context),
         SizedBox(height: 10,),
-        _chatDetail(chatName, chatImageUrl, isOnline)
+        _chatDetail(id, chatName, chatImageUrl, isOnline)
       ],
     );
   }
 
-  Widget _chatDetail(String chatName, String chatImageUrl, bool isOnline) {
+  Widget _chatDetail(String id, String chatName, String chatImageUrl, bool isOnline) {
     return Row(
       children: <Widget>[
         _circleImage(chatImageUrl, isOnline),
         _chatInfo(chatName),
-        _lastMessageAt(),
+        _lastMessageAt(id),
       ],
     );
   }
 
   Widget _chatInfo(String chatName) {
     int valueEnd = widget.chatModel.lastMessage.length > 17 ? 17 : widget.chatModel.lastMessage.length;
-
     return Container(
-      padding: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22),),
-            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20),)
+            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22), overflow: TextOverflow.ellipsis),
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20), overflow: TextOverflow.ellipsis)
           ],
         ),
       ),
@@ -129,28 +135,40 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _goldCircle(bool isOnline) {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: Container(
-        width: 16,
-        height: 16,
-        margin: EdgeInsets.only(left: 45),
-        decoration: BoxDecoration(
-            color: isOnline ? Colors.yellow[800] : Colors.white,
-            shape: BoxShape.circle
-        ),
-      ),
+    return Positioned.fill(
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Container(
+            width: 16,
+            height: 16,
+            margin: EdgeInsets.only(left: 45),
+            decoration: BoxDecoration(
+              color: isOnline ? Colors.yellow[800] : Colors.white,
+              shape: BoxShape.circle
+            ),
+          ),
+        )
     );
   }
 
-  Widget _lastMessageAt() {
+  Widget _lastMessageAt(String id) {
     String lastMessage = TimeUtils.readTimestamp(widget.chatModel.lastMessageAt);
 
     return Expanded(
-      child: Align(
+        child: Align(
         alignment: Alignment.centerRight,
-        child: Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
-      ),
+            child: Container(
+          height: 70,
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(lastMessage, style: TextStyle(color: Colors.white.withOpacity(0.7)),),
+              _newMessageCount(id)
+            ],
+          ),
+        ),
+        )
     );
   }
 
@@ -164,9 +182,9 @@ class _ChatItemState extends State<ChatItem> {
 
   String _getUserIs(String yourId) {
     String anotherId = '';
-    for(String id in widget.chatModel.ids) {
-      if(yourId != id) {
-        anotherId = id;
+    for(Ids id in widget.chatModel.ids) {
+      if(yourId != id.userId) {
+        anotherId = id.userId;
         break;
       }
     }
@@ -178,11 +196,51 @@ class _ChatItemState extends State<ChatItem> {
     if(userModel != null) {
       String groupId = UserUtils.buildChatGroupId(widget.yourModel.id, userModel.id);
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: widget.yourModel, anotherModel: userModel, groupCharId: groupId)));//, ChatDetailScreen(widget.chatModel, widget.yourModel, userModel)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: widget.yourModel, anotherModel: userModel, groupCharId: groupId, newMessageLength: newMessageCount,)));
     }
   }
 
   _openUserDetails() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+  }
+
+  Widget _newMessageCount(String id) {
+    return id != '' ? StreamBuilder(
+      stream: _messageBloc.getNewMessageBottomNavCounter(id),
+      initialData: null,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+
+          var newMessageCount = snapshot.data.documents.length;
+          return newMessageCount > 0 ? _circleNotification(newMessageCount) : Container();
+        } else {
+
+          return Container();
+        }
+      }
+    ) : Container();
+  }
+
+  Widget _circleNotification(int newMessageCount) {
+    this.newMessageCount = newMessageCount;
+    return Container(
+      padding: EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(13),
+      ),
+      constraints: BoxConstraints(
+        minWidth: 20,
+        minHeight: 20,
+      ),
+      child: Text(
+        '$newMessageCount',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 }

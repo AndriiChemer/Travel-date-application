@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';

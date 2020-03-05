@@ -4,6 +4,7 @@ import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/message_repository.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
 class ChatBloc extends BlocBase {
@@ -15,13 +16,16 @@ class ChatBloc extends BlocBase {
 
   final _chatRepository = ChatRepository();
   final _messageRepository = MessageRepository();
+  final _newMessageRepository = NewMessagesRepository();
 
   Stream<QuerySnapshot> getStreamChatListByUserId(String userId) {
     Stream<QuerySnapshot> tempStream = _chatRepository.getStreamChatListByUserId(userId, 20);
     Stream<QuerySnapshot> stream = tempStream;
     tempStream.listen((querySnapshot) {
       int documentsLength = querySnapshot.documents.length;
-      lastDocument = querySnapshot.documents[documentsLength - 1];
+      if(documentsLength > 0) {
+        lastDocument = querySnapshot.documents[documentsLength - 1];
+      }
     });
     return stream;
   }
@@ -30,7 +34,7 @@ class ChatBloc extends BlocBase {
     print("ChatBloc createChat");
     var chatId = grpChtId;
     var adminId = yourId;
-    var ids = [yourId, userId];
+    var ids = [Ids(yourId, 0, true), Ids(userId, 0, false)];
     int createdAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     var isChatActive = true;
@@ -41,29 +45,32 @@ class ChatBloc extends BlocBase {
 
     _chatRepository.createChat(chat).then((isCreated) {
 
-      updateChat(yourId, grpChtId, content, contentType);
+      updateChat(yourId, grpChtId, content, contentType, userId);
     }).catchError((onError) {
 
     });
 
   }
 
-  void updateChat(String yourId, String grpChtId, String content, int contentType) {
+  void updateChat(String yourId, String grpChtId, String content, int contentType, String userId) {
     print("ChatBloc updateChat");
     var lastMessageAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     _chatRepository.updateChat(grpChtId, content, lastMessageAt, contentType);
+    _newMessageRepository.incrementCounter(userId);
 
-    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt);
+    sendMessage(yourId, grpChtId, content, contentType, lastMessageAt, false);
 
   }
 
-  void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt) {
+   void sendMessage(String yourId, String grpChtId, String content, int contentType, int lastMessageAt, bool isUserInChat) {
     print("ChatBloc sendMessage");
+    //TODO task remove isUserInChat from parameter
 
-    MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType);
+    MessageModel message = MessageModel(yourId, grpChtId, grpChtId, lastMessageAt, content, contentType, false);
     _messageRepository.sendMessage(message)
         .then((onValue) {
+      _messageRepository.setMessageId(onValue.documentID);
       print("Message has been sent successful");
     }).catchError((onError) {
       print("ChatBloc sendMessage");
@@ -78,11 +85,13 @@ class ChatBloc extends BlocBase {
     documents.forEach((document){
       ChatModel chat = ChatModel.fromMap(document.data);
 
-      print("chat = ${chat.toJson().toString()}");
-
       chats.add(chat);
     });
 
     return chats;
+  }
+
+  void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) {
+    _chatRepository.updateUserInRoom(isUserInRoom, yourId, groupCharId);
   }
 }

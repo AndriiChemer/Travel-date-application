@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/message.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/chat_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
-import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/utils/time.dart';
+
+import 'app_bars.dart';
+import 'message_item.dart';
 
 class NewChatScreen extends StatefulWidget {
 
   final UserModel yourModel;
   final UserModel anotherModel;
   final String groupCharId;
+  final int newMessageLength;
 
-  NewChatScreen({this.yourModel, this.anotherModel, this.groupCharId});
+  NewChatScreen({this.yourModel, this.anotherModel, this.groupCharId, this.newMessageLength});
 
   @override
   _NewChatScreenState createState() => _NewChatScreenState();
@@ -33,10 +36,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
   final ScrollController listScrollController = new ScrollController();
   final TextEditingController textEditingController = new TextEditingController();
 
-  bool isShowSticker = false;
-  bool isLogsShow = false;
   bool isChatNew = false;
   bool isLoading = false;
+  bool isLogsShow = false;
+  bool isUserInChat = false;
+  bool isShowSticker = false;
+  bool isAllMessageUpdated = false;
   String imageUrl = '';
 
   List<MessageModel> listMessage = [];
@@ -46,20 +51,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
     _chatBloc = ChatBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-//    addScrollListener();
     addStreamListener();
-//    scrollListenerWithItemCount();
 
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    isUserInChat = true;
 
-    print("groupCharId = ${widget.groupCharId}");
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(context),
+      appBar: CustomAppBar(title: widget.anotherModel.name,),
       backgroundColor: CustomColors.mainBackground,
       body: WillPopScope(
         child: Stack(
@@ -146,24 +149,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
       decoration: new BoxDecoration(
           border: new Border(top: new BorderSide(color: Color(0xff203152), width: 0.5)), color: Colors.white),
     );
-  }
-
-  void onSendMessage(String content, int type) {
-    // type: 0 = text, 1 = image, 2 = sticker
-    if (content.trim() != '') {
-      textEditingController.clear();
-
-      if(isChatNew) {
-        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
-      } else {
-        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type);
-      }
-
-      listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-    } else {
-      print("Nothing to send");
-      //TODO show message
-    }
   }
 
   Widget buildSticker() {
@@ -276,39 +261,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     );
   }
 
-  Widget buildListMessage() {
-    return Flexible(
-      child: StreamBuilder(
-        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId),
-        initialData: null,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-                child: Container());//CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow[800])));
-          } else {
-
-            List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
-            if(messages.length == 0) {
-              isChatNew = true;
-            } else {
-              isChatNew = false;
-            }
-
-            addToMainMessageList(messages, true);
-
-            return ListView.builder(
-              padding: EdgeInsets.all(10.0),
-              itemBuilder: (context, index) => buildItem(index, listMessage[index]),
-              itemCount: listMessage.length,
-              reverse: true,
-              controller: listScrollController,
-            );
-          }
-        },
-      ),
-    );
-  }
-
   Widget buildLoading() {
     return Positioned(
       child: isLoading
@@ -352,287 +304,67 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return Future.value(false);
   }
 
-  Widget buildItem(int index, MessageModel messageModel) {
-    double maxScroll = listScrollController.position.maxScrollExtent;
-    double currentScroll = listScrollController.position.pixels;
-    double delta = MediaQuery.of(context).size.height * 0.2;
+  void onSendMessage(String content, int type) {
+    if(!isAllMessageUpdated) {
+      updateAllNotWatchedMessages();
+    }
 
-    print("maxScroll = $maxScroll");
-    print("currentScroll = $currentScroll");
-    print("delta = $delta");
+    // type: 0 = text, 1 = image, 2 = sticker
+    if (content.trim() != '') {
+      textEditingController.clear();
 
-    if (messageModel.userId == widget.yourModel.id) {
-      // Right (my message)
-      return Row(
-        children: <Widget>[
-          messageModel.type == 0
-          // Text
-              ? Container(
-            child: Text(
-              messageModel.content,
-              style: TextStyle(color: Color(0xff203152)),
-            ),
-            padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-            width: 200.0,
-            decoration: BoxDecoration(color: Color(0xffE8E8E8), borderRadius: BorderRadius.circular(8.0)),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          )
-              : messageModel.type == 1
-          // Image
-              ? Container(
-            child: FlatButton(
-              child: Material(
-                child: _loadImageContent(messageModel.content),
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                clipBehavior: Clip.hardEdge,
-              ),
-              onPressed: () {
-                //TODO task add open image full screen
-//                Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(url: messageModel.content)));
-              },
-              padding: EdgeInsets.all(0),
-            ),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          )
-          // Sticker
-              : Container(
-            child: new Image.asset(
-              'images/${messageModel.content}.gif',
-              width: 100.0,
-              height: 100.0,
-              fit: BoxFit.cover,
-            ),
-            margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-          ),
-        ],
-        mainAxisAlignment: MainAxisAlignment.end,
-      );
+      if(isChatNew) {
+        _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
+      } else {
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id);
+      }
+
+      listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
-      // Left (peer message)
-      return Container(
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                isLastMessageLeft(index)
-                    ? Material(
-                  child: _anotherUserImage(),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(18.0),
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                )
-                    : Container(width: 35.0),
-                messageModel.type == 0
-                    ? Container(
-                  child: Text(
-                    messageModel.content,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
-                  decoration: BoxDecoration(color: Color(0xff203152), borderRadius: BorderRadius.circular(8.0)),
-                  margin: EdgeInsets.only(left: 10.0),
-                )
-                    : messageModel.type == 1
-                    ? Container(
-                  child: FlatButton(
-                    child: Material(
-                      child: _peerImageMessage(messageModel.content),
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      clipBehavior: Clip.hardEdge,
-                    ),
-                    onPressed: () {
-//                        Navigator.push(context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
-                    },
-                    padding: EdgeInsets.all(0),
-                  ),
-                  margin: EdgeInsets.only(left: 10.0),
-                )
-                    : Container(
-                  child: new Image.asset(
-                    'images/${messageModel.content}.gif',
-                    width: 100.0,
-                    height: 100.0,
-                    fit: BoxFit.cover,
-                  ),
-                  margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-                ),
-              ],
-            ),
-
-            // Time
-            isLastMessageLeft(index)
-                ? Container(
-              child: Text(
-                TimeUtils.readTimestamp(messageModel.createdAt),
-                style: TextStyle(color: Color(0xffaeaeae), fontSize: 12.0, fontStyle: FontStyle.italic),
-              ),
-              margin: EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
-            )
-                : Container()
-          ],
-          crossAxisAlignment: CrossAxisAlignment.start,
-        ),
-        margin: EdgeInsets.only(bottom: 10.0),
-      );
+      print("Nothing to send");
+      //TODO show message
     }
   }
 
-  bool isLastMessageLeft(int index) {
-    if ((index > 0 && listMessage != null && listMessage[index - 1].userId == widget.yourModel.id) || index == 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  Widget buildListMessage() {
+    return Flexible(
+      child: StreamBuilder(
+        stream: _messageBloc.getStreamMessagesByGroupChatId(widget.groupCharId, widget.newMessageLength),
+        initialData: null,
+        builder: (context, snapshot) {
 
-  Widget _loadImageContent(String imageUrl) {
-//    return CachedNetworkImage(
-//      imageUrl: imageUrl,
-//      width: 200.0,
-//      height: 200.0,
-//      fit: BoxFit.cover,
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 200.0,
-//        height: 200.0,
-//        padding: EdgeInsets.all(70.0),
-//        decoration: BoxDecoration(
-//          color: Color(0xffE8E8E8),
-//          borderRadius: BorderRadius.all(
-//            Radius.circular(8.0),
-//          ),
-//        ),
-//      ),
-//      errorWidget: (context, url, error) => Material(
-//        child: Image.asset(
-//          'images/img_not_available.jpeg',
-//          width: 200.0,
-//          height: 200.0,
-//          fit: BoxFit.cover,
-//        ),
-//        borderRadius: BorderRadius.all(
-//          Radius.circular(8.0),
-//        ),
-//        clipBehavior: Clip.hardEdge,
-//      ),
-//    );
-    return Container(
-      width: 150,
-      height: 150,
-      color: Colors.red,
-    );
-  }
+          if (!snapshot.hasData) {
 
-  bool isLastMessageRight(int index) {
-    if ((index > 0 && listMessage != null && listMessage[index - 1].userId != widget.yourModel.id) || index == 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+            if(listMessage.length == 0) {
+              isChatNew = true;
+            }
 
-  Widget _anotherUserImage() {
-    return Container(
-      width: 35,
-      height: 35,
-      child: Image(image: NetworkImage(widget.anotherModel.imageUrl),),
-//      imageUrl: widget.anotherUser.imageUrl,
-//      placeholder: (context, url) => CircularProgressIndicator(),
-    );
-//    CachedNetworkImage(
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          strokeWidth: 1.0,
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 35.0,
-//        height: 35.0,
-//        padding: EdgeInsets.all(10.0),
-//      ),
-//      imageUrl: widget.anotherUser.imageUrl,
-//      width: 35.0,
-//      height: 35.0,
-//      fit: BoxFit.cover,
-//    );
-  }
+            return Center(
+                child: Container());
 
-  Widget _peerImageMessage(String imageUrl) {
-//    return CachedNetworkImage(
-//      placeholder: (context, url) => Container(
-//        child: CircularProgressIndicator(
-//          valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-//        ),
-//        width: 200.0,
-//        height: 200.0,
-//        padding: EdgeInsets.all(70.0),
-//        decoration: BoxDecoration(
-//          color: Color(0xffE8E8E8),
-//          borderRadius: BorderRadius.all(
-//            Radius.circular(8.0),
-//          ),
-//        ),
-//      ),
-//      errorWidget: (context, url, error) => Material(
-//        child: Image.asset(
-//          'images/img_not_available.jpeg',
-//          width: 200.0,
-//          height: 200.0,
-//          fit: BoxFit.cover,
-//        ),
-//        borderRadius: BorderRadius.all(
-//          Radius.circular(8.0),
-//        ),
-//        clipBehavior: Clip.hardEdge,
-//      ),
-//      imageUrl: imageUrl,
-//      width: 200.0,
-//      height: 200.0,
-//      fit: BoxFit.cover,
-//    );
+          } else {
+            List<MessageModel> messages = _messageBloc.messagesConverter(snapshot.data.documents);
 
-    return Container(
-      height: 200,
-      width: 200,
-      color: Colors.blue,
-    );
-  }
+            if(messages.length == 0) {
+              isChatNew = true;
+            } else {
+              isChatNew = false;
+              _chatBloc.updateUserInRoom(true, widget.yourModel.id, widget.groupCharId);
+            }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.secondaryBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(left: 20, right: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(), //TODO set chat name
-              Text(Strings.settings_toolbar, style: TextStyle(color: Colors.white, fontSize: 22),),
-              Container(width: 30, height: 30,)
-            ],
-          ),
-        )
-      ],
-    );
-  }
+            addToMainMessageList(messages, true);
 
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
+            return ListView.builder(
+              key: ObjectKey(widget.groupCharId),
+              padding: EdgeInsets.all(10.0),
+              itemBuilder: (context, index) => MessageItem(index: index, message: listMessage[index], yourModel: widget.yourModel, anotherModel: widget.anotherModel, listMessage: listMessage,),
+              itemCount: listMessage.length,
+              reverse: true,
+              controller: listScrollController,
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -642,105 +374,214 @@ class _NewChatScreenState extends State<NewChatScreen> {
     });
   }
 
-  void addScrollListener() {
+  void showDividerNotWatchedMessages(List<MessageModel> sorted, MessageModel lastNotWatchedModel) {
+    if(lastNotWatchedModel != null) {
+      int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+      _messageBloc.setNewMessageIndex(lastVisibleIndex);
+    } else {
+      _messageBloc.setNewMessageIndex(-1);
+    }
+  }
+
+  bool isLastMessageNotWatched(List<MessageModel> sorted) {
+    return sorted.first.userId != widget.yourModel.id && !sorted.first.isWatched;
+  }
+
+  void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
+    List<MessageModel> sorted = [];
+    MessageModel lastNotWatchedModel;
+
+    messages.forEach((message) {
+
+      if(!contains(listMessage, message)) {
+        if(!message.isWatched && message.userId != widget.yourModel.id) {
+          lastNotWatchedModel = message;
+        }
+        sorted.add(message);
+      }
+    });
+
+    if(sorted.isNotEmpty) {
+      if(isFromStream) {
+
+
+        listMessage.insertAll(0, sorted);
+
+        showDividerNotWatchedMessages(sorted, lastNotWatchedModel);
+
+        if(sorted.length == 1) {
+
+          _messageBloc.setNewMessageIndex(-1);
+        } else if(isLastMessageNotWatched(sorted)) {
+          scrollToFirstNotWatchedMessage();
+        } else {
+          loadMoreListener();
+          setNotVisibleItemIndexListener();
+        }
+
+      } else {
+
+        if(lastNotWatchedModel != null) {
+          int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+          _messageBloc.setNewMessageIndex(lastVisibleIndex);
+        } else {
+          _messageBloc.setNewMessageIndex(-1);
+        }
+
+        setMessageListWatched(sorted);
+
+        setState(() {
+          listMessage.addAll(sorted);
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  void scrollToFirstNotWatchedMessage() {
+    Future.delayed(Duration(seconds: 0), (){
+      if(_messageBloc.lastVisibleItemIndex < getLastVisibleItemIndex()) {
+        double height = listScrollController.position.minScrollExtent;
+        listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      } else {
+        double height = listScrollController.position.maxScrollExtent;
+        listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      }
+
+
+      Future.delayed(Duration(milliseconds: 700), () {
+        setMessageListWatched(listMessage);
+      });
+
+
+      Future.delayed(Duration(seconds: 2), () {
+        loadMoreListener();
+        setNotVisibleItemIndexListener();
+      });
+    });
+  }
+
+  int getLastVisibleItemIndex() {
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRangeMin = maxScrollExtent - minScrollExtent;
+
+    return ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * listMessage.length).floor() - 4;
+  }
+
+  int getFirstVisibleItemIndex() {
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRange = maxScrollExtent - minScrollExtent;
+    return (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+  }
+
+  void setMessageListWatched(List<MessageModel> listMessage) {
+    if(_messageBloc.lastVisibleItemIndex > -1) {
+      int firstVisibleItemIndex = getFirstVisibleItemIndex();
+
+      for(int i = firstVisibleItemIndex; i <= _messageBloc.lastVisibleItemIndex; i++) {
+        if(!listMessage[i].isWatched && widget.yourModel.id != listMessage[i].userId) {
+          listMessage[i].isWatched = true;
+          updateMessage(listMessage[i]);
+        }
+      }
+
+      Future.delayed(Duration(seconds: 2), (){
+        _messageBloc.setNewMessageIndex(firstVisibleItemIndex - 1);
+      });
+    }
+  }
+
+  void setNotVisibleItemIndexListener() {
+    listScrollController.addListener(() {
+
+      int firstVisibleItemIndex = getFirstVisibleItemIndex();
+
+      if(firstVisibleItemIndex > -1) {
+        MessageModel message = listMessage[firstVisibleItemIndex];
+
+
+        if(firstVisibleItemIndex == 0 && message.isWatched) {
+          _messageBloc.setNewMessageIndex(-1);
+
+        } else {
+          if(!message.isWatched && message.userId != widget.yourModel.id) {
+            message.isWatched = true;
+            _messageBloc.updateMessage(message, widget.yourModel.id);
+            _messageBloc.setNewMessageIndex(firstVisibleItemIndex--);
+          }
+        }
+
+      } else {
+        _messageBloc.setNewMessageIndex(-1);
+      }
+
+      if(firstVisibleItemIndex > -1) {
+
+        MessageModel message = listMessage[firstVisibleItemIndex];
+        if(message.isWatched && message.userId != widget.yourModel.id) {
+          _messageBloc.setNewMessageIndex(-1);
+        }
+      }
+    });
+  }
+
+  void loadMoreListener() {
     listScrollController.addListener(() {
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
-      double delta = MediaQuery.of(context).size.height * 0.2;
 
-      if(isLogsShow) {
-        print("addScrollListener");
-        print("maxScroll = $maxScroll");
-        print("currentScroll = $currentScroll");
-        print("delta = $delta");
-      }
-
-      if(maxScroll - currentScroll <= delta) {
+      if(maxScroll == currentScroll) {
         _messageBloc.getMessages(widget.groupCharId);
       }
     });
   }
 
-  void scrollListenerWithItemCount() {
-    listScrollController.addListener(() {
-      double scrollOffset = listScrollController.position.pixels;
-      double viewportHeight = listScrollController.position.viewportDimension;
-      double scrollRange = listScrollController.position.maxScrollExtent -
-          listScrollController.position.minScrollExtent;
-      int firstVisibleItemIndex =
-      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
-      print("firstVisibleItemIndex = $firstVisibleItemIndex");
-    });
-
-
-  }
-
-  void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
-    if(isLogsShow) {
-      print("==============================");
-      print(messages.toString());
-      print("length = ${messages.length}");
-      print("==============================");
-      print("addToMainMessageList");
-      print("size = ${listMessage.length}");
-    }
-    List<MessageModel> sorted = [];
-
-    int messagesCount = 0;
-    int stickersCount = 0;
-    int picturesCount = 0;
-
-    messages.forEach((message) {
-
-      if(!contains(listMessage, message)) {
-        if(isLogsShow) {
-          print("!listMessage.contains(message) = ${!listMessage.contains(message)}");
-          print("Message = ${message.toJson().toString()}");
-        }
-
-        switch(message.type) {
-          case 0: messagesCount++ ; break;
-          case 1: picturesCount++ ; break;
-          case 2: stickersCount++ ; break;
-        }
-
-        sorted.add(message);
-      }
-    });
-
-    if(isFromStream) {
-      listMessage.insertAll(0, sorted);
-//      scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
-
-    } else {
-      setState(() {
-        listMessage.addAll(sorted);
-      });
-    }
-  }
-
-  void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
-    Future.delayed(Duration(seconds: 1), () {
-
-      int height = messagesCount * 25 + stickersCount * 100 + picturesCount * 200;
-      listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
-      Future.delayed(Duration(seconds: 2), () {
-        addScrollListener();
-        scrollListenerWithItemCount();
-      });
-
-    });
-  }
-
   bool contains(List<MessageModel> list, MessageModel message) {
-    String compareObject = message.toJson().toString();
 
-    for(MessageModel m in list) {
-      if(m.toJson().toString() == compareObject) {
+    for(MessageModel itemMessage in list) {
+      if(itemMessage.content == message.content &&
+          itemMessage.userId == message.userId &&
+            itemMessage.createdAt == message.createdAt) {
+
+        if(itemMessage.messageId == '' && message.messageId != '' && message.userId != widget.yourModel.id && isUserInChat) {
+          itemMessage.messageId = message.messageId;
+          itemMessage.isWatched = true;
+          updateMessage(itemMessage);
+        }
+
         return true;
       }
     }
 
     return false;
   }
+
+  @override
+  void dispose() {
+    _chatBloc.updateUserInRoom(false, widget.yourModel.id, widget.groupCharId);
+    _messageBloc.dispose();
+    isUserInChat = false;
+    super.dispose();
+  }
+
+  void updateMessage(MessageModel message) {
+    _messageBloc.updateMessage(message, widget.yourModel.id);
+  }
+
+  void updateAllNotWatchedMessages() {
+    for(MessageModel message in listMessage) {
+      if(!message.isWatched && widget.yourModel.id != message.userId) {
+        message.isWatched = true;
+        _messageBloc.updateMessage(message, widget.yourModel.id);
+      }
+    }
+     isAllMessageUpdated = true;
+  }
+
 }

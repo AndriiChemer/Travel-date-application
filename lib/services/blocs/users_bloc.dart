@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/message.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 
@@ -47,7 +47,6 @@ class UsersBloc extends BlocBase {
     _handleProgress(_isLoading);
 
     _userRepository.getUsersByLocation(city, lastDocument, documentLimit).then((querySnapshot) {
-      print("getUsersByLocation Success");
 
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
@@ -83,7 +82,6 @@ class UsersBloc extends BlocBase {
     print("getUsers");
 
     _userRepository.getUsers(lastDocument, documentLimit).then((querySnapshot) {
-      print("getUsers  Success");
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
       List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
 
@@ -111,15 +109,12 @@ class UsersBloc extends BlocBase {
     print("getUsers");
 
     _chatRepository.getChatByUserId(id).then((querySnapshot) {
-      print("getUsers  Success");
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
 
 
       List<MessageModelTest> models = [];
       usersListDocumentSnapshot.forEach((document) {
         MessageModelTest model = MessageModelTest.fromMap(document.data);
-
-        print("model = ${model.toJson().toString()}");
 
         models.add(model);
       });
@@ -139,8 +134,6 @@ class UsersBloc extends BlocBase {
     List<UserModel> users = [];
     listDocumentSnapshot.forEach((document) {
       UserModel user = UserModel.fromMap(document.data);
-
-      print("user = ${user.toJson().toString()}");
 
       users.add(user);
     });

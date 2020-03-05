@@ -2,11 +2,12 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
+import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profile.dart';
@@ -26,6 +27,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   UsersBloc usersByLocationBloc;
+  NewMessagesRepository newMessageRepository = NewMessagesRepository();
 
   UserModel userModel;
 
@@ -69,12 +71,11 @@ class _MainNavigationState extends State<MainNavigation> {
       body: StreamBuilder(
         stream: bottomNavBloc.navStream,
         builder: (context, snapshot) {
-          print("ANDRII nav menu item = ${snapshot.data}");
           return snapshot.data != null && navigationScreens.length > 0 ?
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },
       ),
-      bottomNavigationBar: CustomBottomNavigation(),
+      bottomNavigationBar: CustomBottomNavigation(userModel: userModel),
     );
   }
 

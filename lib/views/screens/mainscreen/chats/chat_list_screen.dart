@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/chat.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/chat_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/mock_server.dart';
@@ -11,8 +11,6 @@ import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
-
-//TODO add Bloc stream for getting chat by id
 class ChatListScreen extends StatefulWidget {
 
  final UserModel yourAccount;
@@ -128,13 +126,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
         stream: _chatBloc.getStreamChatListByUserId(widget.yourAccount.id),
         initialData: null,
         builder: (context, snapshot) {
-          print("snapshot.hasData = ${snapshot.hasData}");
           if(!snapshot.hasData) {
             return _loading();
           } else {
 
             List<ChatModel> chats = _chatBloc.chatsConverter(snapshot.data.documents);
-            addToMainChatList(chats, true);
+
+            if(chats.length > 0) {
+              addToMainChatList(chats, true);
+            }
 
             return ListView.builder(
               scrollDirection: Axis.vertical,
@@ -220,19 +220,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
-    print("==============================");
-    print(chats.toString());
     print("length = ${chats.length}");
     print("==============================");
 
     List<ChatModel> sorted = [];
     print("addToMainChatList");
-    print("size = ${chats.length}");
     chats.forEach((chat) {
 
       if(!contains(chatModels, chat)) {
-        print("!listMessage.contains(message) = ${!chatModels.contains(chat)}");
-        print("Message = ${chat.toJson().toString()}");
         sorted.add(chat);
       }
     });
@@ -247,10 +242,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   bool contains(List<ChatModel> list, ChatModel chat) {
-    String compareObject = chat.toJson().toString();
+    String groupChatId = chat.groupChatId;
 
-    for(ChatModel m in list) {
-      if(m.toJson().toString() == compareObject) {
+    for(ChatModel itemChat in list) {
+      if(itemChat.groupChatId == groupChatId) {
         return true;
       }
     }

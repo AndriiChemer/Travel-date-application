@@ -6,13 +6,12 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:travel_date_app/models/person_model.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:path/path.dart' as path;
 
-class UserRepository {
+import 'columns.dart';
 
-  // ignore: non_constant_identifier_names
-  var USER_COLUMN = 'users_dt';
+class UserRepository {
 
   final Firestore _firestore =  Firestore.instance;
 
@@ -23,12 +22,12 @@ class UserRepository {
     print("UserRepository");
     print("addNewUser");
 
-    final QuerySnapshot result = await _firestore.collection(USER_COLUMN).where('id', isEqualTo: userModel.id).getDocuments();
+    final QuerySnapshot result = await _firestore.collection(Columns.USER_COLUMN).where('id', isEqualTo: userModel.id).getDocuments();
     final List<DocumentSnapshot> documents = result.documents;
 
     if (documents.length == 0) {
 
-      _firestore.collection(USER_COLUMN)
+      _firestore.collection(Columns.USER_COLUMN)
           .document(userModel.id)
           .setData(userModel.toJson());
     } else {
@@ -38,33 +37,48 @@ class UserRepository {
     return true;
   }
 
-  Future<void> updateUser(UserModel userModel) async {
+  void updateUser(UserModel userModel) async {
     print("UserRepository");
     print("updateUser");
 
-    _firestore.collection(USER_COLUMN)
-        .document(userModel.id)
-        .updateData(userModel.toJson())
-        .then((onValue) {
-          print('User has been updated successful');
-        }).catchError((onError) {
-          print("UserRepository updateUser");
-          print('onError: ' + onError.toString());
-        });
+    try{
+      _firestore.collection(Columns.USER_COLUMN)
+          .document(userModel.id)
+          .updateData(userModel.toJson())
+          .then((onValue) {
+        print('User has been updated successful');
+      }).catchError((onError) {
+        print("UserRepository updateUser");
+        print('onError: ' + onError.toString());
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
   }
   
   Future<void> handleOnlineState(String userID, bool isOnline) async {
-    print('User id: $userID');
     int date = DateTime.now().millisecondsSinceEpoch * 1000;
 
-    _firestore.collection(USER_COLUMN)
-        .document(userID)
-        .updateData({
-          'isOnline': isOnline,
-          'lastVisitedAt': date
-        }).then((onValue) {
-          print("Update user online state.");
-        });
+    print('isOnline = $isOnline');
+
+    try {
+      _firestore.collection(Columns.USER_COLUMN)
+          .document(userID)
+          .updateData({
+        'isOnline': isOnline,
+        'lastVisitedAt': date
+      }).then((onValue) {
+        print("Update user online state.");
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
+
+//    try {
+//
+//    } catch (error) {
+//      print('Try catch error ');
+//    }
   }
 
   Future<UserModel> getUsersById(String id) async {
@@ -72,7 +86,7 @@ class UserRepository {
     print("getUsersById");
 
     DocumentSnapshot querySnapshot = await _firestore
-        .collection(USER_COLUMN)
+        .collection(Columns.USER_COLUMN)
         .document(id).get();
 
     print('querySnapshot.data');
@@ -83,7 +97,7 @@ class UserRepository {
 
   Stream<QuerySnapshot> getUserByIdStream(String id) {
     return _firestore
-        .collection(USER_COLUMN)
+        .collection(Columns.USER_COLUMN)
         .where('id', isEqualTo: id)
         .snapshots();
   }
@@ -97,7 +111,7 @@ class UserRepository {
     if(lastDocument == null) {
 
       querySnapshot = await _firestore
-          .collection(USER_COLUMN)
+          .collection(Columns.USER_COLUMN)
 //          .where('city', isEqualTo: city)
           .orderBy('lastVisitedAt')
           .limit(documentLimit)
@@ -106,7 +120,7 @@ class UserRepository {
     } else {
 
       querySnapshot = await _firestore
-          .collection(USER_COLUMN)
+          .collection(Columns.USER_COLUMN)
 //          .where('city', isEqualTo: city)
           .orderBy('lastVisitedAt')
           .startAfterDocument(lastDocument)
@@ -125,7 +139,7 @@ class UserRepository {
     if(lastDocument == null) {
 
       querySnapshot = await _firestore
-          .collection(USER_COLUMN)
+          .collection(Columns.USER_COLUMN)
           .orderBy('lastVisitedAt')
           .limit(documentLimit)
           .getDocuments();
@@ -133,7 +147,7 @@ class UserRepository {
     } else {
 
       querySnapshot = await _firestore
-          .collection(USER_COLUMN)
+          .collection(Columns.USER_COLUMN)
           .orderBy('lastVisitedAt')
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
@@ -166,7 +180,7 @@ class UserRepository {
     print("UserRepository");
     print("uploadUserImage");
 
-    _firestore.collection(USER_COLUMN)
+    _firestore.collection(Columns.USER_COLUMN)
         .document(id)
         .updateData({'imageUrl' : imageUrl})
         .then((onValue) {
@@ -181,7 +195,7 @@ class UserRepository {
     print("UserRepository");
     print("uploadUserImage");
 
-    _firestore.collection(USER_COLUMN)
+    _firestore.collection(Columns.USER_COLUMN)
         .document(user.id)
         .updateData({'images' : FieldValue.arrayUnion(user.images)})
         .then((onValue) {
