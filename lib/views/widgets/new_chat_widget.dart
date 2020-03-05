@@ -375,6 +375,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
     });
   }
 
+  void showDividerNotWatchedMessages(List<MessageModel> sorted, MessageModel lastNotWatchedModel) {
+    if(lastNotWatchedModel != null) {
+      int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
+      print('addToMainMessageList if ===============================================');
+      print('lastVisibleIndex = $lastVisibleIndex');
+      _messageBloc.setNewMessageIndex(lastVisibleIndex);
+    } else {
+      print('setMessageListWatched else ===============================================');
+      _messageBloc.setNewMessageIndex(-1);
+    }
+  }
+
   void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
     List<MessageModel> sorted = [];
     MessageModel lastNotWatchedModel;
@@ -402,21 +414,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if(sorted.isNotEmpty) {
       if(isFromStream) {
 
-        if(lastNotWatchedModel != null) {
-          int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
-          print('addToMainMessageList if ===============================================');
-          print('lastVisibleIndex = $lastVisibleIndex');
-          _messageBloc.setNewMessageIndex(lastVisibleIndex);
-        } else {
-          print('setMessageListWatched else ===============================================');
-          _messageBloc.setNewMessageIndex(-1);
-        }
+        showDividerNotWatchedMessages(sorted, lastNotWatchedModel);
 
         listMessage.insertAll(0, sorted);
 
         print('listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched = ${listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched}');
-
-        print('sorted.first = ${sorted.first.content}');
 
         if(listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched) {
           scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
@@ -474,28 +476,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   int getLastVisibleItemIndex() {
-    listScrollController.addListener(() {
-      double scrollOffset = listScrollController.position.pixels;
-      double viewportHeight = listScrollController.position.viewportDimension;
-      double maxScrollExtent = listScrollController.position.maxScrollExtent;
-      double minScrollExtent = listScrollController.position.minScrollExtent;
-      double scrollRangeMin = maxScrollExtent - minScrollExtent;
-//      double scrollRangeMax = maxScrollExtent - minScrollExtent + MediaQuery.of(context).size.height;
-      int firstVisibleItemIndex = (scrollOffset / (scrollRangeMin + viewportHeight) * listMessage.length).floor();
-      int lastVisibleItemIndex = ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * listMessage.length).floor() - 4;
-
-
-      print('\n\n======================================================');
-      print('scrollOffset = $scrollOffset');
-      print('viewportHeight = $viewportHeight');
-      print('maxScrollExtent = $maxScrollExtent');
-      print('minScrollExtent = $minScrollExtent');
-      print('scrollRangeMin = $scrollRangeMin');
-//      print('scrollRangeMax = $scrollRangeMax');
-      print('firstVisibleItemIndex = $firstVisibleItemIndex');
-      print('lastVisibleItemIndex = $lastVisibleItemIndex');
-    });
-
     double scrollOffset = listScrollController.position.pixels;
     double viewportHeight = listScrollController.position.viewportDimension;
     double maxScrollExtent = listScrollController.position.maxScrollExtent;
@@ -505,18 +485,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * listMessage.length).floor() - 4;
   }
 
-  void setMessageListWatched(List<MessageModel> listMessage) {
-    //TODO task if message is 1 and more
+  int getFirstVisibleItemIndex() {
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRange = maxScrollExtent - minScrollExtent;
+    return (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+  }
 
+  void setMessageListWatched(List<MessageModel> listMessage) {
     if(_messageBloc.lastVisibleItemIndex > -1) {
-      double scrollOffset = listScrollController.position.pixels;
-      double viewportHeight = listScrollController.position.viewportDimension;
-      double maxScrollExtent = listScrollController.position.maxScrollExtent;
-      double minScrollExtent = listScrollController.position.minScrollExtent;
-      double scrollRange = maxScrollExtent -
-          minScrollExtent;
-      int firstVisibleItemIndex =
-      (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
+      int firstVisibleItemIndex = getFirstVisibleItemIndex();
 
       for(int i = firstVisibleItemIndex; i <= _messageBloc.lastVisibleItemIndex; i++) {
         if(!listMessage[i].isWatched && widget.yourModel.id != listMessage[i].userId) {
@@ -536,14 +516,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     listScrollController.addListener(() {
       print('scrollListenerWithItemCount');
 
-      double scrollOffset = listScrollController.position.pixels;
-      double viewportHeight = listScrollController.position.viewportDimension;
-      double maxScrollExtent = listScrollController.position.maxScrollExtent;
-      double minScrollExtent = listScrollController.position.minScrollExtent;
-      double scrollRange = maxScrollExtent - minScrollExtent;
-      int firstVisibleItemIndex = (scrollOffset / (scrollRange + viewportHeight) * listMessage.length).floor();
-
-      print('first visible model = ${listMessage[firstVisibleItemIndex].toJson().toString()}');
+      int firstVisibleItemIndex = getFirstVisibleItemIndex();
 
       if(firstVisibleItemIndex > -1) {
         MessageModel message = listMessage[firstVisibleItemIndex];

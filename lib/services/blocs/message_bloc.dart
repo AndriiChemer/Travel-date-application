@@ -25,7 +25,6 @@ class MessageBloc extends BlocBase {
   Stream<int> get mewMessageIndex => newMessageController.stream;
 
   setNewMessageIndex(int index) {
-    print('setNewMessageIndex: ' + index.toString());
     lastVisibleItemIndex = index;
     newMessageController.sink.add(index);
   }
