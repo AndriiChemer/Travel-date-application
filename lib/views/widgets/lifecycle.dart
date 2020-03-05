@@ -16,11 +16,13 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
           case AppLifecycleState.detached:
             break;
           case AppLifecycleState.resumed:
+            print('AppLifecycleState.resumed = true');
             _handleUserOnlineState(userId, true);
             break;
           case AppLifecycleState.inactive:
             break;
           case AppLifecycleState.paused:
+            print('AppLifecycleState.resumed = false');
             _handleUserOnlineState(userId, false);
             break;
         }

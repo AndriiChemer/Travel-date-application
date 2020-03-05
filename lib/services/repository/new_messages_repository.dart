@@ -40,11 +40,11 @@ class NewMessagesRepository {
     updateCounter(userId, 1);
   }
 
-  void decrementCounter(String userId) {
+  void decrementCounter(String userId) async {
     updateCounter(userId, -1);
   }
 
-  Future<void> updateCounter(String userId, int value) async {
+  void updateCounter(String userId, int value) async {
     print("UserRepository");
     print("updateUser");
 

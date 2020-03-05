@@ -227,8 +227,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
     List<ChatModel> sorted = [];
     print("addToMainChatList");
-    print("is from stream = $isFromStream");
-    print("size = ${chats.length}");
     chats.forEach((chat) {
 
       if(!contains(chatModels, chat)) {

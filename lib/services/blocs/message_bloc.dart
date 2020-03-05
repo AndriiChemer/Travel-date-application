@@ -67,9 +67,10 @@ class MessageBloc extends BlocBase {
     _handleProgress(_isLoading);
 
     _messageRepository.getMessagesByGroupChatId(groupChatId, lastDocument, documentLimit).then((querySnapshot) {
-      print("getMessages Success");
+
 
       List<MessageModel> usersList = messagesConverter(querySnapshot.documents);
+
       if(usersList.length > 0) {
         _messages.add(usersList);
       }
@@ -113,7 +114,7 @@ class MessageBloc extends BlocBase {
     return messages;
   }
 
-  void updateMessage(MessageModel message, String userId) {
+  void updateMessage(MessageModel message, String userId) async {
     _messageRepository.updateMessage(message);
     _newMessageRepository.decrementCounter(userId);
   }

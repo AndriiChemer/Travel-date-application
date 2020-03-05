@@ -376,9 +376,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   void showDividerNotWatchedMessages(List<MessageModel> sorted, MessageModel lastNotWatchedModel) {
+    print('showDividerNotWatchedMessages');
     if(lastNotWatchedModel != null) {
       int lastVisibleIndex = sorted.indexOf(lastNotWatchedModel);
-      print('addToMainMessageList if ===============================================');
       print('lastVisibleIndex = $lastVisibleIndex');
       _messageBloc.setNewMessageIndex(lastVisibleIndex);
     } else {
@@ -387,23 +387,20 @@ class _NewChatScreenState extends State<NewChatScreen> {
     }
   }
 
+  bool isLastMessageNotWatched(List<MessageModel> sorted) {
+    print('isLastMessageNotWatched = ${sorted.first.userId != widget.yourModel.id && !sorted.first.isWatched}');
+    print('sorted.size = ${sorted.length}');
+    print('sorted.first = ${sorted.first.content}');
+    return sorted.first.userId != widget.yourModel.id && !sorted.first.isWatched;
+  }
+
   void addToMainMessageList(List<MessageModel> messages, bool isFromStream) {
     List<MessageModel> sorted = [];
     MessageModel lastNotWatchedModel;
 
-    int messagesCount = 0;
-    int stickersCount = 0;
-    int picturesCount = 0;
-
     messages.forEach((message) {
 
       if(!contains(listMessage, message)) {
-        switch(message.type) {
-          case 0: messagesCount++ ; break;
-          case 1: picturesCount++ ; break;
-          case 2: stickersCount++ ; break;
-        }
-
         if(!message.isWatched && message.userId != widget.yourModel.id) {
           lastNotWatchedModel = message;
         }
@@ -414,17 +411,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if(sorted.isNotEmpty) {
       if(isFromStream) {
 
-        showDividerNotWatchedMessages(sorted, lastNotWatchedModel);
 
         listMessage.insertAll(0, sorted);
 
-        print('listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched = ${listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched}');
+        showDividerNotWatchedMessages(sorted, lastNotWatchedModel);
 
-        if(listMessage.last.userId != widget.yourModel.id && !sorted.first.isWatched) {
-          scrollToFirstNotWatchedMessage(messagesCount, stickersCount, picturesCount);
+        if(sorted.length == 1) {
+
+          _messageBloc.setNewMessageIndex(-1);
+        } else if(isLastMessageNotWatched(sorted)) {
+          scrollToFirstNotWatchedMessage();
         } else {
-          addScrollListener();
-          scrollListenerWithItemCount();
+          loadMoreListener();
+          setNotVisibleItemIndexListener();
         }
 
       } else {
@@ -448,12 +447,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
     }
   }
 
-  void scrollToFirstNotWatchedMessage(int messagesCount, int stickersCount, int picturesCount) {
+  void scrollToFirstNotWatchedMessage() {
     Future.delayed(Duration(seconds: 0), (){
 
       print("maxScrollExtent = ${listScrollController.position.maxScrollExtent}");
 
-      print('messagesCount = $messagesCount');
       if(_messageBloc.lastVisibleItemIndex < getLastVisibleItemIndex()) {
         double height = listScrollController.position.minScrollExtent;
         listScrollController.animateTo(height.toDouble(), duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
@@ -469,8 +467,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
 
       Future.delayed(Duration(seconds: 2), () {
-        addScrollListener();
-        scrollListenerWithItemCount();
+        loadMoreListener();
+        setNotVisibleItemIndexListener();
       });
     });
   }
@@ -512,7 +510,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     }
   }
 
-  void scrollListenerWithItemCount() {
+  void setNotVisibleItemIndexListener() {
     listScrollController.addListener(() {
       print('scrollListenerWithItemCount');
 
@@ -530,22 +528,17 @@ class _NewChatScreenState extends State<NewChatScreen> {
           if(!message.isWatched && message.userId != widget.yourModel.id) {
             message.isWatched = true;
             _messageBloc.updateMessage(message, widget.yourModel.id);
-
-            print('scrollListenerWithItemCount else if ===============================================');
+            print('scrollListenerWithItemCount update not watched message');
+            _messageBloc.setNewMessageIndex(firstVisibleItemIndex--);
           }
-          _messageBloc.setNewMessageIndex(firstVisibleItemIndex--);
         }
 
       } else {
-        print('scrollListenerWithItemCount else ===============================================');
+        print('scrollListenerWithItemCount All message updated, set index -1');
         _messageBloc.setNewMessageIndex(-1);
       }
 
-      bool a = firstVisibleItemIndex > -1;
-      print('firstVisibleItemIndex: ' + firstVisibleItemIndex.toString());
-      print('firstVisibleItemIndex > -1' + a.toString());
       if(firstVisibleItemIndex > -1) {
-
 
         MessageModel message = listMessage[firstVisibleItemIndex];
         if(message.isWatched && message.userId != widget.yourModel.id) {
@@ -556,9 +549,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
     });
   }
 
-  void addScrollListener() {
+  void loadMoreListener() {
     listScrollController.addListener(() {
-      print('addScrollListener');
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
 
@@ -574,6 +566,13 @@ class _NewChatScreenState extends State<NewChatScreen> {
       if(itemMessage.content == message.content &&
           itemMessage.userId == message.userId &&
             itemMessage.createdAt == message.createdAt) {
+
+        if(itemMessage.messageId == '' && message.messageId != '') {
+          itemMessage.messageId = message.messageId;
+          itemMessage.isWatched = true;
+          updateMessage(itemMessage);
+        }
+
         return true;
       }
     }

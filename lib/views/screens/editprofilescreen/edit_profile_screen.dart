@@ -412,6 +412,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         (city.isNotEmpty && city.length > 2) &&
         (description.isNotEmpty && description.length > 2)) {
       _userPreferences.writeUser(widget.user);
+      print('onSaveButtonClick');
       _userRepository.updateUser(widget.user);
       Navigator.pop(context);
     }

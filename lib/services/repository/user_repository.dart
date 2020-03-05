@@ -37,32 +37,48 @@ class UserRepository {
     return true;
   }
 
-  Future<void> updateUser(UserModel userModel) async {
+  void updateUser(UserModel userModel) async {
     print("UserRepository");
     print("updateUser");
 
-    _firestore.collection(Columns.USER_COLUMN)
-        .document(userModel.id)
-        .updateData(userModel.toJson())
-        .then((onValue) {
-          print('User has been updated successful');
-        }).catchError((onError) {
-          print("UserRepository updateUser");
-          print('onError: ' + onError.toString());
-        });
+    try{
+      _firestore.collection(Columns.USER_COLUMN)
+          .document(userModel.id)
+          .updateData(userModel.toJson())
+          .then((onValue) {
+        print('User has been updated successful');
+      }).catchError((onError) {
+        print("UserRepository updateUser");
+        print('onError: ' + onError.toString());
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
   }
   
   Future<void> handleOnlineState(String userID, bool isOnline) async {
     int date = DateTime.now().millisecondsSinceEpoch * 1000;
 
-    _firestore.collection(Columns.USER_COLUMN)
-        .document(userID)
-        .updateData({
-          'isOnline': isOnline,
-          'lastVisitedAt': date
-        }).then((onValue) {
-          print("Update user online state.");
-        });
+    print('isOnline = $isOnline');
+
+    try {
+      _firestore.collection(Columns.USER_COLUMN)
+          .document(userID)
+          .updateData({
+        'isOnline': isOnline,
+        'lastVisitedAt': date
+      }).then((onValue) {
+        print("Update user online state.");
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
+
+//    try {
+//
+//    } catch (error) {
+//      print('Try catch error ');
+//    }
   }
 
   Future<UserModel> getUsersById(String id) async {

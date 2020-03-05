@@ -72,15 +72,19 @@ class ChatRepository {
     print("ChatRepository");
     print("updateFullChat");
 
-    _firestore.collection(Columns.CHAT_COLUMN)
-        .document(chatModel.groupChatId)
-        .updateData(chatModel.toJson())
-        .then((onValue) {
-      print('Chat has been updated successful');
-    }).catchError((onError) {
-      print("ChatRepository updateChat");
-      print('onError: ' + onError.toString());
-    });
+    try {
+      _firestore.collection(Columns.CHAT_COLUMN)
+          .document(chatModel.groupChatId)
+          .updateData(chatModel.toJson())
+          .then((onValue) {
+        print('Chat has been updated successful');
+      }).catchError((onError) {
+        print("ChatRepository updateChat");
+        print('onError: ' + onError.toString());
+      });
+    } catch (error) {
+      print('Try catch error ');
+    }
   }
 
 //  void incrementNewMessageInChat(String grpChtId, String userId) {
@@ -94,25 +98,34 @@ class ChatRepository {
 //        .updateData({"newMessageCoun" : FieldValue.increment(1)});
 //  }
 
-  void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) {
+  void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) async {
     print("ChatRepository");
     print("updateUserInRoom");
-    _firestore.collection(Columns.CHAT_COLUMN)
-        .document(groupCharId).get()
-        .then((result) {
 
-      ChatModel model = ChatModel.fromMap(result.data);
+    try {
+      _firestore.collection(Columns.CHAT_COLUMN)
+          .document(groupCharId).get()
+          .then((result) {
 
-      for(Ids user in model.ids) {
-        if(user.userId == yourId) {
-          user.isInRoom = isUserInRoom;
-          break;
+        ChatModel model = ChatModel.fromMap(result.data);
+
+        for(Ids user in model.ids) {
+          if(user.userId == yourId) {
+            user.isInRoom = isUserInRoom;
+            break;
+          }
         }
-      }
 
-      updateFullChat(model);
+        updateFullChat(model);
 
-    });
+      }).catchError((onError){
+        print('updateUserInRoom onError = $onError');
+      });
+
+    } catch (onError) {
+      print('updateUserInRoom catch onError = $onError');
+    }
+
 
 
 

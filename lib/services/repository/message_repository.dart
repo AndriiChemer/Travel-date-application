@@ -122,12 +122,51 @@ class MessageRepository {
         .snapshots();
   }
 
-  void updateMessage(MessageModel message) {
+  Future<void> updateMessage(MessageModel message) async {
     print("\n\n\n==================================================");
-    print("message has been updated:\n${message.toString()}");
-    _firestore.collection(Columns.MESSAGE_COLUMN)
-        .document(message.messageId)
-        .updateData(message.toJson());
+    print('message = ${message.toJson().toString()}');
+    try {
+      _firestore.collection(Columns.MESSAGE_COLUMN)
+          .document(message.messageId)
+          .updateData({
+            "isWatched": message.isWatched,
+          })
+          .then((onValue) {
+
+          })
+          .catchError((onError){
+            print('updateMessage onError = $onError');
+          });
+    } catch(error) {
+      print('updateMessage catch $error');
+    }
+
+    //TODO work version
+//    await firestore.runTransaction((tx) async {
+//      try {
+//        await tx.get(ref);
+//      } catch (error) {
+//        // Workaround for transaction handler which throws
+//        // DOCUMENT_NOT_FOUND exception.
+//        if (error is PlatformException &&
+//            error.code == 'DOCUMENT_NOT_FOUND') {
+//          await tx.set(ref, data);
+//        } else
+//          rethrow;
+//      }
+//    });
+
+//    DocumentReference usernameDocRef =
+//    Firestore.instance.collection(_USERNAMES).document(username);
+//
+//    await Firestore.instance.runTransaction((transaction) async {
+//      var snapshot = await transaction.get(usernameDocRef);
+//      if (!snapshot.exists) {
+//        await transaction.set(usernameDocRef, {
+//          _UsernamesKey.userid: _user.id,
+//        });
+//      }
+//    });
 
 //    _firestore.collection(Columns.MESSAGE_COLUMN)
 //        .document(message.groupChatId)
