@@ -11,8 +11,6 @@ import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
-
-//TODO add Bloc stream for getting chat by id
 class ChatListScreen extends StatefulWidget {
 
  final UserModel yourAccount;

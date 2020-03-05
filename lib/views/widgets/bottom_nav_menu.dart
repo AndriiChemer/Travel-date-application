@@ -91,7 +91,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
         initialData: 0,
         builder: (context, snapshot) {
 
-          int newMessages = snapshot.data.documents[0]["counter"] ?? 0;
+          int newMessages = snapshot.data["counter"] ?? 0;
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

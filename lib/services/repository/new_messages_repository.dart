@@ -6,9 +6,10 @@ class NewMessagesRepository {
 
   final Firestore _firestore =  Firestore.instance;
 
-  Stream<QuerySnapshot> getNewMessageCount(String userId) {
+  Stream<DocumentSnapshot> getNewMessageCount(String userId) {
     return _firestore
         .collection(Columns.NEW_MESSAGES_COLUMN)
+        .document(userId)
         .snapshots();
   }
 

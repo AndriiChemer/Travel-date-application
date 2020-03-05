@@ -45,14 +45,14 @@ class ChatBloc extends BlocBase {
 
     _chatRepository.createChat(chat).then((isCreated) {
 
-      updateChat(yourId, grpChtId, content, contentType, userId, false);
+      updateChat(yourId, grpChtId, content, contentType, userId);
     }).catchError((onError) {
 
     });
 
   }
 
-  void updateChat(String yourId, String grpChtId, String content, int contentType, String userId, bool isUserInChat) {
+  void updateChat(String yourId, String grpChtId, String content, int contentType, String userId) {
     print("ChatBloc updateChat");
     var lastMessageAt = DateTime.now().millisecondsSinceEpoch * 1000;
 

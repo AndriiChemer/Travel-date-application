@@ -58,6 +58,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    isUserInChat = true;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -315,7 +316,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       if(isChatNew) {
         _chatBloc.createChat(widget.yourModel.id, widget.anotherModel.id, widget.groupCharId, content, type);
       } else {
-        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id, isUserInChat);
+        _chatBloc.updateChat(widget.yourModel.id, widget.groupCharId, content, type, widget.anotherModel.id);
       }
 
       listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
@@ -548,7 +549,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           itemMessage.userId == message.userId &&
             itemMessage.createdAt == message.createdAt) {
 
-        if(itemMessage.messageId == '' && message.messageId != '') {
+        if(itemMessage.messageId == '' && message.messageId != '' && message.userId != widget.yourModel.id && isUserInChat) {
           itemMessage.messageId = message.messageId;
           itemMessage.isWatched = true;
           updateMessage(itemMessage);
@@ -565,6 +566,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   void dispose() {
     _chatBloc.updateUserInRoom(false, widget.yourModel.id, widget.groupCharId);
     _messageBloc.dispose();
+    isUserInChat = false;
     super.dispose();
   }
 

@@ -7,7 +7,7 @@ class GeneralNewMessageBloc extends BlocBase {
   final _newMessagesRepository = NewMessagesRepository();
 
 
-  Stream<QuerySnapshot> getNewMessageCount(String userId) {
+  Stream<DocumentSnapshot> getNewMessageCount(String userId) {
     return _newMessagesRepository.getNewMessageCount(userId);
   }
 
