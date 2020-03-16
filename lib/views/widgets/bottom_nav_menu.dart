@@ -88,7 +88,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
       ),
       child: StreamBuilder(
         stream: _generalNewMessageBloc.getNewMessageCount(widget.userModel.id),
-        initialData: 0,
+        initialData: "0",
         builder: (context, snapshot) {
 
           int newMessages = snapshot.data["counter"] ?? 0;

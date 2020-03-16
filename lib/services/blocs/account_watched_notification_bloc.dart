@@ -21,6 +21,10 @@ class AccountWatchedNotificationsBloc extends BlocBase {
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<KissWatchNotifModel>> get watched => _watchedNotifications.stream;
 
+  Stream<QuerySnapshot> getNewAccountWatchedCounter(String userId) {
+    return _notificationRepository.getWatchedAccountNotificationCount(userId);
+  }
+
   void getWatched(String userId) {
     print("getKiss");
 

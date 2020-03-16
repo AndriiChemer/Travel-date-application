@@ -21,6 +21,9 @@ class KissNotificationsBloc extends BlocBase {
   Observable<bool> get showProgress => _showProgress.stream;
   Stream<List<KissWatchNotifModel>> get kisses => _kissNotifications.stream;
 
+  Stream<QuerySnapshot> getNewAccountKissedCounter(String userId) {
+    return _notificationRepository.getKissNotificationCount(userId);
+  }
 
   void getKiss(String userId) {
     print("getKiss");

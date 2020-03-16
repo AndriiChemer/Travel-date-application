@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
+import 'package:travel_date_app/services/blocs/kiss_notification_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/account_kissed_provider.dart';
+import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/mock_server.dart';
@@ -31,16 +35,19 @@ class _MainNavigationState extends State<MainNavigation> {
 
   UserModel userModel;
 
-  int _kissCounterNotification = 3;
   int _viewCounterNotification = MockServer.peopleList.length;
 
   List<Widget> navigationScreens;
   UserRepository _userRepository = UserRepository();
 
+  KissNotificationsBloc kissedBloc;
+  AccountWatchedNotificationsBloc watchedBloc;
 
   @override
   void didChangeDependencies() {
     usersByLocationBloc = UsersBlocProvider.of(context);
+    watchedBloc = AccountWatchedProvider.of(context);
+    kissedBloc = AccountKissedProvider.of(context);
 
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
@@ -111,29 +118,41 @@ class _MainNavigationState extends State<MainNavigation> {
         child: Stack(
           children: [
             Icon(Icons.remove_red_eye, color: Colors.yellow[800], size: 35,),
-            _viewCounterNotification > 0 ? Container(
-              width: 40,
-              height: 30,
-              alignment: Alignment.topRight,
-              margin: EdgeInsets.only(),
-              child: Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.yellow[800],
-                    border: Border.all(color: Colors.black, width: 1)),
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Center(
-                    child: Text(
-                      _viewCounterNotification.toString(),
-                      style: TextStyle(fontSize: 13, color: Colors.black),
+            StreamBuilder(
+              stream: watchedBloc.getNewAccountWatchedCounter(userModel.id),
+              builder: (context, snapshot) {
+
+                if(!snapshot.hasData) {
+                  return Container();
+                }
+
+                var watchCount = snapshot.data.documents.length;
+
+                return watchCount > 0 ? Container(
+                  width: 40,
+                  height: 30,
+                  alignment: Alignment.topRight,
+                  margin: EdgeInsets.only(),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.yellow[800],
+                        border: Border.all(color: Colors.black, width: 1)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Center(
+                        child: Text(
+                          watchCount.toString(),
+                          style: TextStyle(fontSize: 13, color: Colors.black),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ) : Container(),
+                ) : Container();
+              },
+            ),
           ],
         ),
       ),
@@ -149,29 +168,41 @@ class _MainNavigationState extends State<MainNavigation> {
         child: Stack(
           children: [
             SvgPicture.asset("assets/images/icons/lips_icon.svg", height: 35, color: Colors.yellow[800],),
-            _kissCounterNotification > 0 ? Container(
-              width: 40,
-              height: 30,
-              alignment: Alignment.topRight,
-              margin: EdgeInsets.only(),
-              child: Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.yellow[800],
-                    border: Border.all(color: Colors.black, width: 1)),
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Center(
-                    child: Text(
-                      _kissCounterNotification.toString(),
-                      style: TextStyle(fontSize: 13, color: Colors.black),
+            StreamBuilder(
+                stream: kissedBloc.getNewAccountKissedCounter(userModel.id),
+                builder: (context, snapshot) {
+
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+
+                  var kissCount = snapshot.data.documents.length;
+
+                  return kissCount > 0 ? Container(
+                    width: 40,
+                    height: 30,
+                    alignment: Alignment.topRight,
+                    margin: EdgeInsets.only(),
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.yellow[800],
+                          border: Border.all(color: Colors.black, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Center(
+                          child: Text(
+                            kissCount.toString(),
+                            style: TextStyle(fontSize: 13, color: Colors.black),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ) : Container(),
+                  ) : Container();
+                }
+            )
           ],
         ),
       ),
