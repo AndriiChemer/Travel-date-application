@@ -1,11 +1,13 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/services/repository/notification_repository.dart';
 
 class KissNotificationsBloc extends BlocBase {
 
   bool _hasMoreKisses = true;
+  bool _isLoading = false;
 
   int documentLimit = 10;
   int lastVisibleItemIndex = -1;
@@ -13,51 +15,65 @@ class KissNotificationsBloc extends BlocBase {
 
   final _notificationRepository = NotificationRepository();
 
-  var _newKissController = BehaviorSubject<int>.seeded(-1);
+  final _showProgress = BehaviorSubject<bool>();
+  final _kissNotifications = BehaviorSubject<List<KissWatchNotifModel>>();
 
-  Stream<int> get newKissIndex => _newKissController.stream;
+  Observable<bool> get showProgress => _showProgress.stream;
+  Stream<List<KissWatchNotifModel>> get kisses => _kissNotifications.stream;
 
 
-//  void getKiss(String groupChatId) {
-//    print("MessageBloc");
-//    print("getMessages groupChatId = $groupChatId");
-//
-//    if(!_hasMore) {
-//      print('No More Users');
-//      return;
-//    }
-//
-//    if(_isLoading) {
-//      return;
-//    }
-//
-//    _handleProgress(_isLoading);
-//
-//    _messageRepository.getMessagesByGroupChatId(groupChatId, lastDocument, documentLimit).then((querySnapshot) {
-//
-//
-//      List<MessageModel> usersList = messagesConverter(querySnapshot.documents);
-//
-//      if(usersList.length > 0) {
-//        _messages.add(usersList);
-//      }
-//
-//
-//
-//      int documentsLength = querySnapshot.documents.length;
-//      lastDocument = querySnapshot.documents[documentsLength - 1];
-//
-//      if (documentsLength < documentLimit) {
-//        _hasMore = false;
-//      }
-//    });
-//  }
+  void getKiss(String userId) {
+    print("getKiss");
+
+    if(!_hasMoreKisses) {
+      print('No More kiss notifications');
+      return;
+    }
+
+    if(_isLoading) {
+      return;
+    }
+
+    _handleProgress(_isLoading);
+
+    _notificationRepository.getKissNotification(userId, lastDocument, documentLimit).then((querySnapshot) {
+      List<KissWatchNotifModel> notificList = notifConverter(querySnapshot.documents);
+
+      if(notificList.length > 0) {
+        _kissNotifications.add(notificList);
+      }
+
+      int documentsLength = querySnapshot.documents.length;
+      lastDocument = querySnapshot.documents[documentsLength - 1];
+
+      if (documentsLength < documentLimit) {
+        _hasMoreKisses = false;
+      }
+    });
+  }
+
+  void _handleProgress(bool isLoading) {
+    _showProgress.add(isLoading);
+    _isLoading = isLoading;
+  }
+
+  List<KissWatchNotifModel> notifConverter(List<DocumentSnapshot> documents) {
+    List<KissWatchNotifModel> notifications = [];
+
+    documents.forEach((document) {
+      KissWatchNotifModel model = KissWatchNotifModel.fromMap(document.data);
+
+      notifications.add(model);
+    });
+
+    return notifications;
+  }
 
 
   @override
   void dispose() async {
-    await _newKissController.drain();
-    _newKissController.close();
+    await _kissNotifications.drain();
+    _kissNotifications.close();
 
     super.dispose();
   }
