@@ -14,4 +14,6 @@ class Columns {
   // ignore: non_constant_identifier_names
   //TODO added indexing for
   static var MESSAGE_COLUMN = 'message_test2';
+
+  static var NOTIFICATION_COLUMN = 'notification_test';
 }
