@@ -1,22 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/widgets/user_grid_item.dart';
 
 class ViewsProfile extends StatefulWidget {
 
-  final List<UserModel> people;
+  final UserModel yourModel;
 
 
-  ViewsProfile({@required this.people});
+  ViewsProfile({@required this.yourModel});
 
   @override
   _ViewsProfileState createState() => _ViewsProfileState();
 }
 
 class _ViewsProfileState extends State<ViewsProfile> {
+
+  AccountWatchedNotificationsBloc watchedBloc;
+
+  final ScrollController listScrollController = new ScrollController();
+
+  List<String> peopleWhoWatched = [];
+
+  @override
+  void didChangeDependencies() {
+    watchedBloc = AccountWatchedProvider.of(context);
+
+    getWhoWatchedMyAccount();
+    super.didChangeDependencies();
+  }
+
+  getWhoWatchedMyAccount() {
+    watchedBloc.getWatched(widget.yourModel.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,14 +54,18 @@ class _ViewsProfileState extends State<ViewsProfile> {
     final double itemHeight = (size.width / 1.5) + 15;
     final double itemWidth = size.width / 2;
 
-    return GridView.count(
-      crossAxisCount: 2,
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: (itemWidth / itemHeight)
+      ),
       shrinkWrap: true,
-      childAspectRatio: (itemWidth / itemHeight),
       padding: const EdgeInsets.all(10),
-      children: widget.people.map((UserModel model) {
-        return UserGridItem(model: model, itemWidth: itemWidth, itemHeight: itemHeight,);
-      }).toList(),
+      itemCount: peopleWhoWatched.length,
+      itemBuilder: (context, index) => Container()
+//      children: widget.people.map((UserModel model) {
+//        return UserGridItem(model: model, itemWidth: itemWidth, itemHeight: itemHeight,);
+//      }).toList(),
     );
   }
 

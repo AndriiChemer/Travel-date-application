@@ -9,7 +9,6 @@ import 'package:location/location.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
-import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/verifymobilenumber/verifynumber.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/widgets/country_picker.dart';

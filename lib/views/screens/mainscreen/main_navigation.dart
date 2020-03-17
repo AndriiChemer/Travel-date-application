@@ -229,6 +229,6 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   onViewedIconClick() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(people: MockServer.peopleList,)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile()));
   }
 }
