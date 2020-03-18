@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
@@ -25,6 +27,8 @@ class UserGridItem extends StatefulWidget {
 class _UserGridItemState extends State<UserGridItem> {
 
   MessageBloc _messageBloc;
+  KissedWatchedNotificationsBloc kissedWatchedBloc;
+
   final _userPreferences = UserPreferences();
 
   int newMessageLength = 0;
@@ -32,6 +36,7 @@ class _UserGridItemState extends State<UserGridItem> {
   @override
   void didChangeDependencies() {
     _messageBloc = MessageBlocProvider.of(context);
+    kissedWatchedBloc = AccountKissedWatchedProvider.of(context);
     super.didChangeDependencies();
   }
 
@@ -90,9 +95,7 @@ class _UserGridItemState extends State<UserGridItem> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           GestureDetector(
-            onTap: () {
-
-            },
+            onTap: onKissButtonClick,
             child: Container(
               margin: EdgeInsets.only(left: 20, top: 5, bottom: 5),
               child: SvgPicture.asset("assets/images/icons/lips_icon.svg", height: 30, color: Colors.yellow[800],),
@@ -237,6 +240,13 @@ class _UserGridItemState extends State<UserGridItem> {
   }
 
   onVerifyVideoClick() {
+
+  }
+
+  onKissButtonClick() {
+    _userPreferences.getUser().then((currentUser) {
+      kissedWatchedBloc.sendKiss(currentUser.id, widget.model.id);
+    });
 
   }
 

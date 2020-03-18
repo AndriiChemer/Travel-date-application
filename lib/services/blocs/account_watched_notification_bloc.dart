@@ -83,4 +83,16 @@ class KissedWatchedNotificationsBloc extends BlocBase {
 
     super.dispose();
   }
+
+  void sendKiss(String yourId, String userId) {
+    sendWatchKissedNotification(yourId, userId, NotificationRepository.KISS_DOCUMENT);
+  }
+
+  void sendWatchKissedNotification(String yourId, String userId, String column) {
+    var notificationCreatedAt = DateTime.now().millisecondsSinceEpoch * 1000;
+    _notificationRepository.sendWatchKissedNotification(column, yourId, userId, notificationCreatedAt, false)
+        .then((notification) {
+            _notificationRepository.setNotificationId(column, userId, notification.documentID);
+        });
+  }
 }
