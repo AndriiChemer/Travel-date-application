@@ -5,13 +5,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
-import 'package:travel_date_app/services/blocs/kiss_notification_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
-import 'package:travel_date_app/services/mock_server.dart';
 import 'package:travel_date_app/services/repository/new_messages_repository.dart';
+import 'package:travel_date_app/services/repository/notification_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/viewedprofilescreen/who_view_profile.dart';
@@ -34,20 +32,16 @@ class _MainNavigationState extends State<MainNavigation> {
   NewMessagesRepository newMessageRepository = NewMessagesRepository();
 
   UserModel userModel;
-
-  int _viewCounterNotification = MockServer.peopleList.length;
-
   List<Widget> navigationScreens;
   UserRepository _userRepository = UserRepository();
 
-  KissNotificationsBloc kissedBloc;
-  AccountWatchedNotificationsBloc watchedBloc;
+  KissedWatchedNotificationsBloc kissedWatchedBloc;
 
   @override
   void didChangeDependencies() {
+    print('didChangeDependencies start');
     usersByLocationBloc = UsersBlocProvider.of(context);
-    watchedBloc = AccountWatchedProvider.of(context);
-    kissedBloc = AccountKissedProvider.of(context);
+    kissedWatchedBloc = AccountKissedWatchedProvider.of(context);
 
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
@@ -64,11 +58,14 @@ class _MainNavigationState extends State<MainNavigation> {
       ChatListScreen(yourAccount: userModel),
       AccountScreen(user: userModel)
     ];
+
+    print('didChangeDependencies end');
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('build start');
     _userRepository.handleOnlineState(userModel.id, true);
     BottomNavBloc bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
 
@@ -78,6 +75,7 @@ class _MainNavigationState extends State<MainNavigation> {
       body: StreamBuilder(
         stream: bottomNavBloc.navStream,
         builder: (context, snapshot) {
+          print('stream start');
           return snapshot.data != null && navigationScreens.length > 0 ?
             navigationScreens[snapshot.data] : Center(child: Text("Data snapshot == null"),);
         },
@@ -119,7 +117,7 @@ class _MainNavigationState extends State<MainNavigation> {
           children: [
             Icon(Icons.remove_red_eye, color: Colors.yellow[800], size: 35,),
             StreamBuilder(
-              stream: watchedBloc.getNewAccountWatchedCounter(userModel.id),
+              stream: kissedWatchedBloc.getNewAccountWatchedCounter(userModel.id),
               builder: (context, snapshot) {
 
                 if(!snapshot.hasData) {
@@ -161,15 +159,13 @@ class _MainNavigationState extends State<MainNavigation> {
 
   Widget _kissIcon() {
     return GestureDetector(
-      onTap: () {
-        showFeatureNotImplementedYet();
-      },
+      onTap: onKissedIconClick,
       child: Container(
         child: Stack(
           children: [
             SvgPicture.asset("assets/images/icons/lips_icon.svg", height: 35, color: Colors.yellow[800],),
             StreamBuilder(
-                stream: kissedBloc.getNewAccountKissedCounter(userModel.id),
+                stream: kissedWatchedBloc.getNewAccountKissedCounter(userModel.id),
                 builder: (context, snapshot) {
 
                   if (!snapshot.hasData) {
@@ -229,6 +225,11 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   onViewedIconClick() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: NotificationRepository.WATCH_DOCUMENT, yourModel: userModel,)));
   }
+
+  onKissedIconClick() {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: NotificationRepository.KISS_DOCUMENT, yourModel: userModel,)));
+  }
+
 }

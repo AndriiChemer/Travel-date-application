@@ -2,16 +2,16 @@ import 'package:flutter/widgets.dart';
 
 import '../account_watched_notification_bloc.dart';
 
-class AccountWatchedProvider extends InheritedWidget {
+class AccountKissedWatchedProvider extends InheritedWidget {
 
-  final bloc = AccountWatchedNotificationsBloc();
+  final bloc = KissedWatchedNotificationsBloc();
 
-  AccountWatchedProvider({Key key, Widget child}) : super(key: key, child: child);
+  AccountKissedWatchedProvider({Key key, Widget child}) : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(_) => true;
 
-  static AccountWatchedNotificationsBloc of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AccountWatchedProvider>().bloc;
+  static KissedWatchedNotificationsBloc of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AccountKissedWatchedProvider>().bloc;
   }
 }

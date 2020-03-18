@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_list_block.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/general_new_message_bloc_provider.dart';
@@ -22,9 +21,6 @@ import 'services/blocs/providers/users_provider.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -44,26 +40,24 @@ class MyApp extends StatelessWidget {
       ],
       child: UsersBlocProvider(
         child: ChatBlocProvider(
-          child: AccountKissedProvider(
-            child: AccountWatchedProvider(
-              child: MessageBlocProvider(
-                child: ImageBlocProvider(
-                  child: GeneralNewMessageBlocProvider(
-                      child: MaterialApp(
-                          title: 'Date App',
-                          debugShowCheckedModeBanner: false,
-                          theme: ThemeData(
-                              canvasColor: Colors.transparent
-                          ),
-                          home: Splash(),
-                          routes: {
-                            '/signin': (context) => SignInScreen(),
-                            '/verifyphone': (context) => VerifySuccess(),
-                            '/setage': (context) => AgeScreen(),
-                            '/mainNavigation': (context) => MainNavigation(),
-                          }
-                      )
-                  ),
+          child: AccountKissedWatchedProvider(
+            child: MessageBlocProvider(
+              child: ImageBlocProvider(
+                child: GeneralNewMessageBlocProvider(
+                    child: MaterialApp(
+                        title: 'Date App',
+                        debugShowCheckedModeBanner: false,
+                        theme: ThemeData(
+                            canvasColor: Colors.transparent
+                        ),
+                        home: Splash(),
+                        routes: {
+                          '/signin': (context) => SignInScreen(),
+                          '/verifyphone': (context) => VerifySuccess(),
+                          '/setage': (context) => AgeScreen(),
+                          '/mainNavigation': (context) => MainNavigation(),
+                        }
+                    )
                 ),
               ),
             ),

@@ -5,8 +5,8 @@ import 'columns.dart';
 class NotificationRepository {
   final Firestore _firestore =  Firestore.instance;
 
-  final String KISS_DOCUMENT = 'kissed';
-  final String WATCH_DOCUMENT = 'watched';
+  static const String KISS_DOCUMENT = 'kissed';
+  static const String WATCH_DOCUMENT = 'watched';
 
   //==========================Kissed============================================
   Future<QuerySnapshot> getKissNotification(
@@ -53,8 +53,9 @@ class NotificationRepository {
   }
 
   //===============================Watched======================================
-  Future<QuerySnapshot> getWatchedNotification(
+  Future<QuerySnapshot> getKissedWatchedNotification(
       String userId,
+      String column,
       DocumentSnapshot lastDocument,
       int documentLimit) async {
 
@@ -64,7 +65,7 @@ class NotificationRepository {
 
       querySnapshot = await _firestore
           .collection(Columns.NOTIFICATION_COLUMN)
-          .document(WATCH_DOCUMENT)
+          .document(column)
           .collection(userId)
           .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
@@ -75,7 +76,7 @@ class NotificationRepository {
 
       querySnapshot = await _firestore
           .collection(Columns.NOTIFICATION_COLUMN)
-          .document(WATCH_DOCUMENT)
+          .document(column)
           .collection(userId)
           .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)

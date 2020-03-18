@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
-import 'package:travel_date_app/views/widgets/user_grid_item.dart';
+import 'package:travel_date_app/views/widgets/user_id_grid_item.dart';
 
 class ViewsProfile extends StatefulWidget {
 
+  final String column;
   final UserModel yourModel;
 
-
-  ViewsProfile({@required this.yourModel});
+  ViewsProfile({@required this.yourModel, @required this.column});
 
   @override
   _ViewsProfileState createState() => _ViewsProfileState();
@@ -20,22 +21,22 @@ class ViewsProfile extends StatefulWidget {
 
 class _ViewsProfileState extends State<ViewsProfile> {
 
-  AccountWatchedNotificationsBloc watchedBloc;
+  KissedWatchedNotificationsBloc watchedBloc;
 
   final ScrollController listScrollController = new ScrollController();
 
-  List<String> peopleWhoWatched = [];
+  List<KissWatchNotifModel> peopleWhoWatched = [];
 
   @override
   void didChangeDependencies() {
-    watchedBloc = AccountWatchedProvider.of(context);
+    watchedBloc = AccountKissedWatchedProvider.of(context);
 
     getWhoWatchedMyAccount();
     super.didChangeDependencies();
   }
 
   getWhoWatchedMyAccount() {
-    watchedBloc.getWatched(widget.yourModel.id);
+    watchedBloc.getKissedWatchedNotification(widget.yourModel.id, widget.column);
   }
 
   @override
@@ -43,6 +44,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
     return Scaffold(
       appBar: getAppBar(context),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         color: CustomColors.mainBackground,
         child: _gridListPeople(context),
       ),
@@ -62,13 +64,11 @@ class _ViewsProfileState extends State<ViewsProfile> {
       shrinkWrap: true,
       padding: const EdgeInsets.all(10),
       itemCount: peopleWhoWatched.length,
-      itemBuilder: (context, index) => Container()
-//      children: widget.people.map((UserModel model) {
-//        return UserGridItem(model: model, itemWidth: itemWidth, itemHeight: itemHeight,);
-//      }).toList(),
+      itemBuilder: (context, index) => UserIdGridItem(kissWatchNotifModel: peopleWhoWatched[index], itemWidth: itemWidth, itemHeight: itemHeight,)
     );
   }
 
+  //TODO change to static
   AppBar getAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: CustomColors.toolbarBackground,
@@ -99,6 +99,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
     );
   }
 
+  //TODO change to static
   Widget _arrowBack() {
     return GestureDetector(
       onTap: () {
@@ -107,4 +108,14 @@ class _ViewsProfileState extends State<ViewsProfile> {
       child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
     );
   }
+
+  listenGettingPeople() {
+    watchedBloc.kissWatchNotification.listen((event) {
+      setState(() {
+        peopleWhoWatched.addAll(event);
+      });
+    });
+  }
+
+
 }

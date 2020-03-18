@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/services/repository/notification_repository.dart';
 
-class AccountWatchedNotificationsBloc extends BlocBase {
+class KissedWatchedNotificationsBloc extends BlocBase {
 
-  bool _hasMorePeopleWatched = true;
+  bool _hasMore = true;
   bool _isLoading = false;
 
   int documentLimit = 10;
@@ -16,20 +16,24 @@ class AccountWatchedNotificationsBloc extends BlocBase {
   final _notificationRepository = NotificationRepository();
 
   final _showProgress = BehaviorSubject<bool>();
-  final _watchedNotifications = BehaviorSubject<List<KissWatchNotifModel>>();
+  final _kissWatchedNotifications = BehaviorSubject<List<KissWatchNotifModel>>();
 
   Observable<bool> get showProgress => _showProgress.stream;
-  Stream<List<KissWatchNotifModel>> get watched => _watchedNotifications.stream;
+  Stream<List<KissWatchNotifModel>> get kissWatchNotification => _kissWatchedNotifications.stream;
 
   Stream<QuerySnapshot> getNewAccountWatchedCounter(String userId) {
     return _notificationRepository.getWatchedAccountNotificationCount(userId);
   }
 
-  void getWatched(String userId) {
-    print("getKiss");
+  Stream<QuerySnapshot> getNewAccountKissedCounter(String userId) {
+    return _notificationRepository.getKissNotificationCount(userId);
+  }
 
-    if(!_hasMorePeopleWatched) {
-      print('No More kiss notifications');
+  void getKissedWatchedNotification(String userId, String column) {
+    print("get$column");
+
+    if(!_hasMore) {
+      print('No More $column notifications');
       return;
     }
 
@@ -39,18 +43,18 @@ class AccountWatchedNotificationsBloc extends BlocBase {
 
     _handleProgress(_isLoading);
 
-    _notificationRepository.getWatchedNotification(userId, lastDocument, documentLimit).then((querySnapshot) {
+    _notificationRepository.getKissedWatchedNotification(userId, column, lastDocument, documentLimit).then((querySnapshot) {
       List<KissWatchNotifModel> notificList = notifConverter(querySnapshot.documents);
 
       if(notificList.length > 0) {
-        _watchedNotifications.add(notificList);
+        _kissWatchedNotifications.add(notificList);
       }
 
       int documentsLength = querySnapshot.documents.length;
       lastDocument = querySnapshot.documents[documentsLength - 1];
 
       if (documentsLength < documentLimit) {
-        _hasMorePeopleWatched = false;
+        _hasMore = false;
       }
     });
   }
@@ -74,8 +78,8 @@ class AccountWatchedNotificationsBloc extends BlocBase {
 
   @override
   void dispose() async {
-    await _watchedNotifications.drain();
-    _watchedNotifications.close();
+    await _kissWatchedNotifications.drain();
+    _kissWatchedNotifications.close();
 
     super.dispose();
   }

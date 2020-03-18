@@ -27,8 +27,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   void initState() {
+    print('initState start');
     getUserPreferences();
     super.initState();
+    print('initState end');
   }
 
   @override
@@ -106,7 +108,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void getUserPreferences() {
+    print('getUserPreferences start');
     _userPreferences.getUser().then((user){
+      print('getUserPreferences end');
       setState(() {
         ownModel = user;
       });

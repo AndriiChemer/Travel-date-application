@@ -1,64 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
+import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
-import 'package:travel_date_app/views/widgets/new_chat_widget.dart';
 
-class UserGridItem extends StatefulWidget {
+import 'new_chat_widget.dart';
 
-  final UserModel model;
+class UserIdGridItem extends StatefulWidget {
+
+  final KissWatchNotifModel kissWatchNotifModel;
   final double itemWidth;
   final double itemHeight;
 
 
-  UserGridItem({@required this.model, @required this.itemWidth, @required this.itemHeight, });
+  UserIdGridItem({@required this.kissWatchNotifModel, @required this.itemWidth, @required this.itemHeight, });
 
   @override
-  _UserGridItemState createState() => _UserGridItemState();
+  _UserIdGridItemState createState() => _UserIdGridItemState();
 }
 
-class _UserGridItemState extends State<UserGridItem> {
+class _UserIdGridItemState extends State<UserIdGridItem> {
 
+  UsersBloc _userBloc;
   MessageBloc _messageBloc;
   final _userPreferences = UserPreferences();
 
   int newMessageLength = 0;
+  UserModel userModel;
 
   @override
   void didChangeDependencies() {
+    _userBloc = UsersBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
+
+    _userBloc.getUserById(widget.kissWatchNotifModel.userId)
+        .then((user) => {
+          setState(() {
+            userModel = user;
+          })
+        }).catchError((onError) {
+          print("GetUSerById onError");
+          print("onError = $onError");
+        });
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Container(
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: CustomColors.personItemBackground,
-          borderRadius: BorderRadius.all(Radius.circular(10))
-      ),
-      child: GestureDetector(
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: CustomColors.personItemBackground,
+            borderRadius: BorderRadius.all(Radius.circular(10))
+        ),
+        child: GestureDetector(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: widget.model,)));
+            if(userModel != null) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+            }
           },
           child: Stack(
             children: <Widget>[
-              _buildMainColumnItem(widget.model, widget.itemWidth, widget.itemHeight),
+              _buildMainColumnItem(userModel, widget.itemWidth, widget.itemHeight),
               Row(
                 children: <Widget>[
                   _goldCircle(),
-                  _userStatus(widget.model.status)
+                  userModel == null ? Container() : _userStatus(userModel.status),
                 ],
               ),
               _blueCircle(),
-              StreamBuilder(
-                stream: _messageBloc.getNewMessageCounter(widget.model.id),
+              userModel == null ? Container() : StreamBuilder(
+                stream: _messageBloc.getNewMessageCounter(userModel.id),
                 builder: (context, snapshot) {
 
                   if(snapshot.hasData) {
@@ -185,9 +206,9 @@ class _UserGridItemState extends State<UserGridItem> {
   }
 
   Widget _nameCityColumn() {
-    String name = widget.model.name;
-    String age = widget.model.calculateAge();
-    String city = widget.model.city;
+    String name = userModel == null ? '' : userModel.name;
+    String age = userModel == null ? '' : userModel.calculateAge();
+    String city = userModel == null ? '' : userModel.city;
 
     return Positioned.fill(
         child: Align(
@@ -229,7 +250,7 @@ class _UserGridItemState extends State<UserGridItem> {
   onMessageButtonClick() async {
     _userPreferences.getUser().then((currentUser) {
       String groupCharId = buildGroupChatId(currentUser.id);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: widget.model, groupCharId: groupCharId, newMessageLength: newMessageLength,)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChatScreen(yourModel: currentUser, anotherModel: userModel, groupCharId: groupCharId, newMessageLength: newMessageLength,)));
     }).catchError((onError) {
       //TODO task show toast "You can not write message"
     });
@@ -242,10 +263,10 @@ class _UserGridItemState extends State<UserGridItem> {
 
   String buildGroupChatId(String currentId) {
     String groupChatId;
-    if (currentId.hashCode <= widget.model.id.hashCode) {
-      groupChatId = '$currentId-${widget.model.id}';
+    if (currentId.hashCode <= userModel.id.hashCode) {
+      groupChatId = '$currentId-${userModel.id}';
     } else {
-      groupChatId = '${widget.model.id}-$currentId';
+      groupChatId = '${userModel.id}-$currentId';
     }
 
     return groupChatId;
