@@ -8,20 +8,20 @@ import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/widgets/user_id_grid_item.dart';
 
-class ViewsProfile extends StatefulWidget {
+class KissedWatchedProfile extends StatefulWidget {
 
   final String column;
   final UserModel yourModel;
 
-  ViewsProfile({@required this.yourModel, @required this.column});
+  KissedWatchedProfile({@required this.yourModel, @required this.column});
 
   @override
-  _ViewsProfileState createState() => _ViewsProfileState();
+  _KissedWatchedProfileState createState() => _KissedWatchedProfileState();
 }
 
-class _ViewsProfileState extends State<ViewsProfile> {
+class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
 
-  KissedWatchedNotificationsBloc watchedBloc;
+  KissedWatchedNotificationsBloc kissWatchedNotificBloc;
 
   final ScrollController listScrollController = new ScrollController();
 
@@ -29,7 +29,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
 
   @override
   void didChangeDependencies() {
-    watchedBloc = AccountKissedWatchedProvider.of(context);
+    kissWatchedNotificBloc = AccountKissedWatchedProvider.of(context);
 
     listenGettingPeople();
     getWhoWatchedMyAccount();
@@ -37,7 +37,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
   }
 
   getWhoWatchedMyAccount() {
-    watchedBloc.getKissedWatchedNotification(widget.yourModel.id, widget.column);
+    kissWatchedNotificBloc.getKissedWatchedNotification(widget.yourModel.id, widget.column);
   }
 
   @override
@@ -111,7 +111,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
   }
 
   listenGettingPeople() {
-    watchedBloc.kissWatchNotification.listen((event) {
+    kissWatchedNotificBloc.kissWatchNotification.listen((event) {
       setState(() {
         print('event = $event');
         peopleWhoWatched.addAll(event);
