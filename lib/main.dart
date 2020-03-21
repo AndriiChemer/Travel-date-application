@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_list_block.dart';
-import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
+import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/general_new_message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';

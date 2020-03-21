@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
-import 'package:travel_date_app/services/blocs/account_watched_notification_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
+import 'package:travel_date_app/services/blocs/account_kissed_watched_notification_bloc.dart';
+import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/widgets/user_id_grid_item.dart';
@@ -21,7 +21,8 @@ class KissedWatchedProfile extends StatefulWidget {
 
 class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
 
-  KissedWatchedNotificationsBloc kissWatchedNotificBloc;
+  KissedWatchedBloc kissWatchedNotificBloc = KissedWatchedBloc();
+//  KissedWatchedNotificationsBloc kissWatchedNotificBloc;
 
   final ScrollController listScrollController = new ScrollController();
 
@@ -29,7 +30,7 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
 
   @override
   void didChangeDependencies() {
-    kissWatchedNotificBloc = AccountKissedWatchedProvider.of(context);
+//    kissWatchedNotificBloc = AccountKissedWatchedProvider.of(context);
 
     listenGettingPeople();
     getWhoWatchedMyAccount();
@@ -114,6 +115,7 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
     kissWatchedNotificBloc.kissWatchNotification.listen((event) {
       addNotificationToList(event);
     });
+    kissWatchedNotificBloc.resetStream();
   }
 
 
@@ -121,13 +123,33 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
     List<KissWatchNotifModel> sorted = [];
 
     list.forEach((model) {
-      if(!peopleWhoWatched.contains(model)) {
+      if(!contains(peopleWhoWatched, model)) {
         sorted.add(model);
       }
     });
 
-    setState(() {
-      peopleWhoWatched.addAll(sorted);
-    });
+    if(sorted.length > 0) {
+      setState(() {
+        peopleWhoWatched.addAll(sorted);
+      });
+    }
+
+  }
+
+  bool contains(List<KissWatchNotifModel> list, KissWatchNotifModel model) {
+
+    for(KissWatchNotifModel itemModel in list) {
+      if(itemModel.fromUserId == model.fromUserId) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @override
+  void dispose() {
+    kissWatchedNotificBloc.dispose();
+    super.dispose();
   }
 }

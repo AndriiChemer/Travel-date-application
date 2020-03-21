@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../account_watched_notification_bloc.dart';
+import '../account_kissed_watched_notification_bloc.dart';
 
 class AccountKissedWatchedProvider extends InheritedWidget {
 
