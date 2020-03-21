@@ -31,6 +31,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
   void didChangeDependencies() {
     watchedBloc = AccountKissedWatchedProvider.of(context);
 
+    listenGettingPeople();
     getWhoWatchedMyAccount();
     super.didChangeDependencies();
   }
@@ -112,6 +113,7 @@ class _ViewsProfileState extends State<ViewsProfile> {
   listenGettingPeople() {
     watchedBloc.kissWatchNotification.listen((event) {
       setState(() {
+        print('event = $event');
         peopleWhoWatched.addAll(event);
       });
     });

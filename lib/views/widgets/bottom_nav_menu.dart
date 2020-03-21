@@ -88,10 +88,13 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
       ),
       child: StreamBuilder(
         stream: _generalNewMessageBloc.getNewMessageCount(widget.userModel.id),
-        initialData: "0",
         builder: (context, snapshot) {
 
-          int newMessages = snapshot.data["counter"] ?? 0;
+          int newMessages = 0;
+
+          if(snapshot.hasData) {
+            newMessages = snapshot.data["counter"] as int ?? 0;
+          }
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

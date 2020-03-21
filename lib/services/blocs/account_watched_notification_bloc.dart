@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/notification.dart';
+import 'package:travel_date_app/services/repository/columns.dart';
 import 'package:travel_date_app/services/repository/notification_repository.dart';
 
 class KissedWatchedNotificationsBloc extends BlocBase {
@@ -85,7 +86,11 @@ class KissedWatchedNotificationsBloc extends BlocBase {
   }
 
   void sendKiss(String yourId, String userId) {
-    sendWatchKissedNotification(yourId, userId, NotificationRepository.KISS_DOCUMENT);
+    sendWatchKissedNotification(yourId, userId, Columns.KISSED_COLUMN);
+  }
+
+  void sendWatch(String yourId, String userId) {
+    sendWatchKissedNotification(yourId, userId, Columns.WATCHED_COLUMN);
   }
 
   void sendWatchKissedNotification(String yourId, String userId, String column) {

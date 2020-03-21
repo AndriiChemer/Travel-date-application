@@ -16,4 +16,6 @@ class Columns {
   static var MESSAGE_COLUMN = 'message_test2';
 
   static var NOTIFICATION_COLUMN = 'notification_test';
+  static var KISSED_COLUMN = 'kissed_test';
+  static var WATCHED_COLUMN = 'watched_test';
 }

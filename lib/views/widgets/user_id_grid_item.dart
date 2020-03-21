@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
@@ -13,12 +14,12 @@ import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
 
 import 'new_chat_widget.dart';
 
+//TODO task add skeleton
 class UserIdGridItem extends StatefulWidget {
 
   final KissWatchNotifModel kissWatchNotifModel;
   final double itemWidth;
   final double itemHeight;
-
 
   UserIdGridItem({@required this.kissWatchNotifModel, @required this.itemWidth, @required this.itemHeight, });
 
@@ -40,68 +41,63 @@ class _UserIdGridItemState extends State<UserIdGridItem> {
     _userBloc = UsersBlocProvider.of(context);
     _messageBloc = MessageBlocProvider.of(context);
 
-    _userBloc.getUserById(widget.kissWatchNotifModel.userId)
-        .then((user) => {
-          setState(() {
-            userModel = user;
-          })
-        }).catchError((onError) {
-          print("GetUSerById onError");
-          print("onError = $onError");
-        });
+    _getUser();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
 
-
     return Container(
         margin: EdgeInsets.all(10),
         decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.yellow[800],
+            ),
             color: CustomColors.personItemBackground,
             borderRadius: BorderRadius.all(Radius.circular(10))
         ),
         child: GestureDetector(
-          onTap: () {
-            if(userModel != null) {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
-            }
-          },
+          onTap: openUserDetails,
           child: Stack(
             children: <Widget>[
               _buildMainColumnItem(userModel, widget.itemWidth, widget.itemHeight),
-              Row(
-                children: <Widget>[
-                  _goldCircle(),
-                  userModel == null ? Container() : _userStatus(userModel.status),
-                ],
-              ),
+              _buildUserStatus(),
               _blueCircle(),
-              userModel == null ? Container() : StreamBuilder(
-                stream: _messageBloc.getNewMessageCounter(userModel.id),
-                builder: (context, snapshot) {
-
-                  if(snapshot.hasData) {
-                    newMessageLength = snapshot.data.documents.length;
-                  }
-
-                  return Container();
-                },
-              )
+              getNewMessageCountStream()
             ],
           ),
         )
     );
   }
 
+  Widget _buildUserStatus() {
+    return Row(
+      children: <Widget>[
+        _goldCircle(),
+        userModel == null ? Container() : _userStatus(userModel.status),
+      ],
+    );
+  }
+
   Widget _buildMainColumnItem(UserModel model, double itemWidth, double itemHeight) {
     return Column(
       children: <Widget>[
-        _itemImage(model, itemWidth, itemHeight),
+        model == null ? _skeletonLoader(itemWidth, itemHeight) : _itemImage(model, itemWidth, itemHeight),
         _verificationVideoRow(),
         _bottomButtons()
       ],
+    );
+  }
+
+  Widget _skeletonLoader(double itemWidth, double itemHeight) {
+    return Shimmer.fromColors(
+        baseColor: Colors.grey[400],
+        highlightColor: Colors.white,
+        child: Container(
+          width: itemWidth,
+          height: itemWidth - 25,
+        )
     );
   }
 
@@ -270,5 +266,37 @@ class _UserIdGridItemState extends State<UserIdGridItem> {
     }
 
     return groupChatId;
+  }
+
+  void _getUser() {
+    _userBloc.getUserById(widget.kissWatchNotifModel.fromUserId)
+        .then((user) => {
+          setState(() {
+            userModel = user;
+          })
+        }).catchError((onError) {
+          print("GetUSerById onError");
+          print("onError = $onError");
+        });
+  }
+
+  Widget getNewMessageCountStream() {
+    return userModel == null ? Container() : StreamBuilder(
+      stream: _messageBloc.getNewMessageCounter(userModel.id),
+      builder: (context, snapshot) {
+
+        if(snapshot.hasData) {
+          newMessageLength = snapshot.data.documents.length;
+        }
+
+        return Container();
+      },
+    );
+  }
+
+  openUserDetails() {
+    if(userModel != null) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: userModel,)));
+    }
   }
 }

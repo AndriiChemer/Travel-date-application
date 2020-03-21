@@ -8,6 +8,7 @@ import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/account_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
+import 'package:travel_date_app/services/repository/columns.dart';
 import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/services/repository/notification_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -168,11 +169,15 @@ class _MainNavigationState extends State<MainNavigation> {
                 stream: kissedWatchedBloc.getNewAccountKissedCounter(userModel.id),
                 builder: (context, snapshot) {
 
+                  print('snapshot.hasData = ${snapshot.hasData}');
                   if (!snapshot.hasData) {
+                    print("Does not has Data");
                     return Container();
                   }
+                  print("Has Data");
 
                   var kissCount = snapshot.data.documents.length;
+                  print('kissCount = $kissCount');
 
                   return kissCount > 0 ? Container(
                     width: 40,
@@ -225,11 +230,11 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   onViewedIconClick() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: NotificationRepository.WATCH_DOCUMENT, yourModel: userModel,)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: Columns.WATCHED_COLUMN, yourModel: userModel,)));
   }
 
   onKissedIconClick() {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: NotificationRepository.KISS_DOCUMENT, yourModel: userModel,)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ViewsProfile(column: Columns.KISSED_COLUMN, yourModel: userModel,)));
   }
 
 }
