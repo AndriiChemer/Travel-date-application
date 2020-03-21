@@ -112,12 +112,22 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
 
   listenGettingPeople() {
     kissWatchedNotificBloc.kissWatchNotification.listen((event) {
-      setState(() {
-        print('event = $event');
-        peopleWhoWatched.addAll(event);
-      });
+      addNotificationToList(event);
     });
   }
 
 
+  addNotificationToList(List<KissWatchNotifModel> list) {
+    List<KissWatchNotifModel> sorted = [];
+
+    list.forEach((model) {
+      if(!peopleWhoWatched.contains(model)) {
+        sorted.add(model);
+      }
+    });
+
+    setState(() {
+      peopleWhoWatched.addAll(sorted);
+    });
+  }
 }
