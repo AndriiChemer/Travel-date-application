@@ -5,7 +5,8 @@ import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/chat_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
-import 'package:travel_date_app/services/mock_server.dart';
+import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
+import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/userdetail/user_details.dart';
@@ -27,12 +28,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
   var searchTextFieldController = TextEditingController();
   final ScrollController listScrollController = new ScrollController();
 
+  bool isLoading = true;
   ChatBloc _chatBloc;
+  UsersBloc _usersBloc;
   List<ChatModel> chatModels = [];
 
   @override
   void didChangeDependencies() {
     _chatBloc = ChatBlocProvider.of(context);
+    _usersBloc = UsersBlocProvider.of(context);
+
     addScrollListener();
     super.didChangeDependencies();
   }
@@ -83,40 +88,42 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _usersInChat() {
-    return FutureBuilder(
-      future: MockServer.getPeoplesForDiscoversScreen(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if(!snapshot.hasData) {
-          return _loading();
-        } else {
+    return Wrap(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(left: 20, top: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 24),),
+              ),
+              SizedBox(height: 10,),
+              Container(
+                height: 90,
+                child: ListView.builder(
+                    itemCount: chatModels.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext context, int index) {
 
-          List<UserModel> users = snapshot.data;
-          int itemCount = users.length;
+                      if(chatModels.isEmpty) {
+                        return Container();
+                      }
 
-          return Container(
-            margin: EdgeInsets.only(left: 20, top: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 24),),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    height: 90,
-                    child: ListView.builder(
-                        itemCount: itemCount,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _circleImage(users[index]);
-                        }
-                    ),
-                  ),
-                ],
-            ),
-          );
-        }
-      },
+                      String userID = chatModels[index].ids
+                          .where((model) => model.userId != widget.yourAccount.id)
+                          .toList()
+                          .first
+                          .userId;
+
+                      return _circleImage(userID);
+                    }
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 
@@ -167,31 +174,43 @@ class _ChatListScreenState extends State<ChatListScreen> {
     super.dispose();
   }
 
-  Widget _circleImage(UserModel user) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: user,)));
-      },
+  Widget _circleImage(String userId) {
+    return StreamBuilder(
+      stream: _usersBloc.getUserByIdStream(userId),
+      builder: (context, snapshot) {
 
-      child: Container(
-        margin: EdgeInsets.only(top: 10, bottom: 20, right: 20),
-        child: Stack(
-          children: <Widget>[
-            Container(
-              width: 60,
-              height: 70,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(user.imageUrl)
-                  )
-              ),
+        if(!snapshot.hasData) {
+          return Container();
+        }
+
+        UserModel user = _usersBloc.usersConverter(snapshot.data.documents).first;
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetails(user: user,)));
+          },
+
+          child: Container(
+            margin: EdgeInsets.only(top: 10, bottom: 20, right: 20),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  width: 60,
+                  height: 70,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(user.imageUrl)
+                      )
+                  ),
+                ),
+                _goldCircle(user.isOnline)
+              ],
             ),
-            _goldCircle(user.isOnline)
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -220,11 +239,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
-    print("length = ${chats.length}");
-    print("==============================");
-
     List<ChatModel> sorted = [];
-    print("addToMainChatList");
     chats.forEach((chat) {
 
       if(!contains(chatModels, chat)) {
@@ -234,6 +249,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
     if(isFromStream) {
       chatModels.insertAll(0, sorted);
+      Future.delayed(Duration(seconds: 1), () { setState(() {}); });
     } else {
       setState(() {
         chatModels.addAll(sorted);
@@ -255,7 +271,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   void addScrollListener() {
     listScrollController.addListener(() {
-      print("addScrollListener");
       double maxScroll = listScrollController.position.maxScrollExtent;
       double currentScroll = listScrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.2;
