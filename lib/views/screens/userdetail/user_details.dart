@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_kissed_watched_notification_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
@@ -29,13 +28,11 @@ class _UserDetailsState extends State<UserDetails> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  KissedWatchedNotificationsBloc kissWatchedNotificBloc;
   UserPreferences userPreferences = UserPreferences();
+  KissedWatchedBloc kissedWatchedBloc = KissedWatchedBloc();
 
   @override
   void didChangeDependencies() {
-    kissWatchedNotificBloc = kissWatchedNotificBloc = AccountKissedWatchedProvider.of(context);
-
     sendWatchedAccount();
     super.didChangeDependencies();
   }
@@ -289,7 +286,7 @@ class _UserDetailsState extends State<UserDetails> {
 
   void sendWatchedAccount() {
     userPreferences.getUserId().then((yourId) {
-      kissWatchedNotificBloc.sendWatch(yourId, widget.user.id);
+      kissedWatchedBloc.sendWatch(yourId, widget.user.id);
     });
   }
 }

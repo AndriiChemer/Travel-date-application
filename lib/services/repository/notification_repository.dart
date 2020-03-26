@@ -32,28 +32,33 @@ class NotificationRepository {
     QuerySnapshot querySnapshot;
 
     if(lastDocument == null) {
-
       querySnapshot = await _firestore
           .collection(column)
           .where('toUserId', isEqualTo: userId)
+          .where('isWatched', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .limit(documentLimit)
           .getDocuments();
-
     } else {
-
       querySnapshot = await _firestore
           .collection(column)
           .where('toUserId', isEqualTo: userId)
+          .where('isWatched', isEqualTo: false)
           .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
           .orderBy('createdAt', descending: true)
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .getDocuments();
-
     }
 
     return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getNotificationByIds(String column, String fromUserId, toUserId) {
+    return _firestore.collection(column)
+        .where('fromUserId', isEqualTo: fromUserId)
+        .where('toUserId', isEqualTo: toUserId)
+        .getDocuments();
   }
 
   Future<DocumentReference> sendWatchKissedNotification(String column, String fromUserId, toUserId, int notificationCreatedAt, bool isWatched) {
@@ -63,110 +68,24 @@ class NotificationRepository {
         .add(model.toJson());
   }
 
+  void resendNotification(String column, String notificationId, int notificationCreatedAt) async {
+    _firestore.collection(column)
+        .document(notificationId)
+        .updateData({
+          "isWatched" : false,
+          "createdAt": notificationCreatedAt
+        });
+  }
+
   void setNotificationId(String column, String userId, String documentID) {
     _firestore.collection(column)
         .document(documentID)
         .updateData({ "notificationId" : documentID });
   }
 
-//  Stream<QuerySnapshot> getWatchedAccountNotification(String userId) {
-//    return _firestore.collection(Columns.NOTIFICATION_COLUMN)
-//        .document('watched_account')
-//        .collection(userId)
-//        .orderBy('createdAt', descending: true)
-//        .snapshots();
-//  }
-//
-//  Stream<QuerySnapshot> getKissNotificationStream(String userId) {
-//    return _firestore.collection(Columns.NOTIFICATION_COLUMN)
-//        .document(KISS_DOCUMENT)
-//        .collection(userId)
-//        .orderBy('createdAt', descending: true)
-//        .snapshots();
-//  }
-
-//  Stream<QuerySnapshot> getKissNotificationCount1(String userId) {
-//    return _firestore.collection(KISS_DOCUMENT)
-//        .document(KISS_DOCUMENT)
-//        .collection(userId)
-//        .document(KISS_DOCUMENT)
-//        .collection(KISS_DOCUMENT)
-//        .where("isWatched", isEqualTo: false)
-//        .orderBy('createdAt', descending: true)
-//        .snapshots();
-//  }
-
-  //===============================Watched======================================
-  Future<QuerySnapshot> getKissedWatchedNotification1(
-      String userId,
-      String column,
-      DocumentSnapshot lastDocument,
-      int documentLimit) async {
-
-    QuerySnapshot querySnapshot;
-
-    if(lastDocument == null) {
-
-      querySnapshot = await _firestore
-          .collection(Columns.NOTIFICATION_COLUMN)
-          .document(column)
-          .collection(userId)
-          .document(column)
-          .collection(column)
-          .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
-          .orderBy('createdAt', descending: true)
-          .limit(documentLimit)
-          .getDocuments();
-
-    } else {
-
-      querySnapshot = await _firestore
-          .collection(Columns.NOTIFICATION_COLUMN)
-          .document(column)
-          .collection(userId)
-          .document(column)
-          .collection(column)
-          .where("createdAt", isLessThan: lastDocument.data['createdAt'] as int ?? 0)
-          .orderBy('createdAt', descending: true)
-          .startAfterDocument(lastDocument)
-          .limit(documentLimit)
-          .getDocuments();
-
-    }
-
-    print('getKissedWatchedNotification querySnapshot = $querySnapshot');
-    return querySnapshot;
-  }
-
-//  Stream<QuerySnapshot> getWatchedAccountNotificationCount1(String userId) {
-//    return _firestore.collection(Columns.NOTIFICATION_COLUMN)
-//        .document(WATCH_DOCUMENT)
-//        .collection(userId)
-//        .document(WATCH_DOCUMENT)
-//        .collection(WATCH_DOCUMENT)
-//        .where("isWatched", isEqualTo: false)
-//        .orderBy('createdAt', descending: true)
-//        .snapshots();
-//  }
-
-  Future<DocumentReference> sendWatchKissedNotification1(String column, String yourId, String userId, int notificationCreatedAt, bool isWatched) {
-    var model = KissWatchNotifModel(yourId, yourId, '', notificationCreatedAt, isWatched);
-
-    return _firestore.collection(Columns.NOTIFICATION_COLUMN)
-        .document(column)
-        .collection(userId)
-        .document(column)
-        .collection(column)
-        .add(model.toJson());
-  }
-
-  void setNotificationId1(String column, String userId, String documentID) {
-    _firestore.collection(Columns.NOTIFICATION_COLUMN)
-        .document(column)
-        .collection(userId)
-        .document(column)
-        .collection(column)
-        .document(documentID)
-        .updateData({ "notificationId" : documentID });
+  void updateNotification(String column, KissWatchNotifModel peopleWhoKissWatched) {
+    _firestore.collection(column)
+        .document(peopleWhoKissWatched.notificationId)
+        .updateData({ "isWatched" : peopleWhoKissWatched.isWatched });
   }
 }

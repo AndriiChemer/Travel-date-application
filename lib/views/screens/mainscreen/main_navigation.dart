@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_kissed_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/repository/columns.dart';
@@ -29,19 +28,17 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   UsersBloc usersByLocationBloc;
-  NewMessagesRepository newMessageRepository = NewMessagesRepository();
-
   UserModel userModel;
+
   List<Widget> navigationScreens;
   UserRepository _userRepository = UserRepository();
-
-  KissedWatchedNotificationsBloc kissedWatchedBloc;
+  KissedWatchedBloc kissedWatchedBloc = KissedWatchedBloc();
+  NewMessagesRepository newMessageRepository = NewMessagesRepository();
 
   @override
   void didChangeDependencies() {
     print('didChangeDependencies start');
     usersByLocationBloc = UsersBlocProvider.of(context);
-    kissedWatchedBloc = AccountKissedWatchedProvider.of(context);
 
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;

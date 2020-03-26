@@ -1,8 +1,8 @@
 class KissWatchNotifModel {
-  String fromUserId;
-  String toUserId;
+  String fromUserId; //yGTQM94ACKPDyIeEsKprDCQms5g1
+  String toUserId; //FDIw3gV89JeAmaAxkkmkwTzWf5x2
   String notificationId;
-  int createdAt;
+  int createdAt; //1585229671959000
   bool isWatched;
 
   KissWatchNotifModel(this.fromUserId, this.toUserId, this.notificationId, this.createdAt, this.isWatched);

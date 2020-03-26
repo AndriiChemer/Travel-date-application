@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_kissed_watched_notification_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
@@ -27,7 +26,7 @@ class UserGridItem extends StatefulWidget {
 class _UserGridItemState extends State<UserGridItem> {
 
   MessageBloc _messageBloc;
-  KissedWatchedNotificationsBloc kissedWatchedBloc;
+  KissedWatchedBloc kissedWatchedBloc = KissedWatchedBloc();
 
   final _userPreferences = UserPreferences();
 
@@ -36,7 +35,6 @@ class _UserGridItemState extends State<UserGridItem> {
   @override
   void didChangeDependencies() {
     _messageBloc = MessageBlocProvider.of(context);
-    kissedWatchedBloc = AccountKissedWatchedProvider.of(context);
     super.didChangeDependencies();
   }
 

@@ -3,9 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/account_kissed_watched_notification_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/account_kissed_watched_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/widgets/app_bars.dart';
 import 'package:travel_date_app/views/widgets/user_id_grid_item.dart';
 
 class KissedWatchedProfile extends StatefulWidget {
@@ -22,19 +22,16 @@ class KissedWatchedProfile extends StatefulWidget {
 class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
 
   KissedWatchedBloc kissWatchedNotificBloc = KissedWatchedBloc();
-//  KissedWatchedNotificationsBloc kissWatchedNotificBloc;
-
   final ScrollController listScrollController = new ScrollController();
 
-  List<KissWatchNotifModel> peopleWhoWatched = [];
+  List<KissWatchNotifModel> peopleWhoKissWatched = [];
 
   @override
-  void didChangeDependencies() {
-//    kissWatchedNotificBloc = AccountKissedWatchedProvider.of(context);
-
+  void initState() {
     listenGettingPeople();
     getWhoWatchedMyAccount();
-    super.didChangeDependencies();
+
+    super.initState();
   }
 
   getWhoWatchedMyAccount() {
@@ -44,7 +41,7 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(context),
+      appBar: CustomAppBar(title: Strings.view_profile_toolbar_title),
       body: Container(
         height: MediaQuery.of(context).size.height,
         color: CustomColors.mainBackground,
@@ -59,55 +56,15 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
     final double itemWidth = size.width / 2;
 
     return GridView.builder(
+      controller: listScrollController,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: (itemWidth / itemHeight)
       ),
       shrinkWrap: true,
       padding: const EdgeInsets.all(10),
-      itemCount: peopleWhoWatched.length,
-      itemBuilder: (context, index) => UserIdGridItem(kissWatchNotifModel: peopleWhoWatched[index], itemWidth: itemWidth, itemHeight: itemHeight,)
-    );
-  }
-
-  //TODO change to static
-  AppBar getAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: CustomColors.toolbarBackground,
-      automaticallyImplyLeading: false,
-      actions: <Widget>[
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.only(right: 20, left: 20),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Colors.yellow[800], width: 1)
-              )
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _arrowBack(),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(Strings.view_profile_toolbar_title, style: TextStyle(color: Colors.white, fontSize: 20),),
-                ),
-              )
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  //TODO change to static
-  Widget _arrowBack() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
+      itemCount: peopleWhoKissWatched.length,
+      itemBuilder: (context, index) => UserIdGridItem(kissWatchNotifModel: peopleWhoKissWatched[index], itemWidth: itemWidth, itemHeight: itemHeight,)
     );
   }
 
@@ -118,22 +75,73 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
     kissWatchedNotificBloc.resetStream();
   }
 
-
   addNotificationToList(List<KissWatchNotifModel> list) {
     List<KissWatchNotifModel> sorted = [];
 
     list.forEach((model) {
-      if(!contains(peopleWhoWatched, model)) {
+      if(!contains(peopleWhoKissWatched, model)) {
         sorted.add(model);
       }
     });
 
     if(sorted.length > 0) {
       setState(() {
-        peopleWhoWatched.addAll(sorted);
+        peopleWhoKissWatched.addAll(sorted);
       });
+
+      updateVisibleItems();
+      updateDuringScroll();
     }
 
+  }
+
+  void updateVisibleItems() {
+    int firstVisibleItemIndex = getFirstVisibleItemIndex();
+    int lastVisibleItemIndex = getLastVisibleItemIndex();
+    int step = firstVisibleItemIndex;
+
+    print("===================================================================");
+    print("firstVisibleItemIndex = $firstVisibleItemIndex");
+    print("lastVisibleItemIndex = $lastVisibleItemIndex");
+
+    if(!peopleWhoKissWatched[firstVisibleItemIndex].isWatched) {
+      print("peopleWhoKissWatched[firstVisibleItemIndex].isWatched = ${peopleWhoKissWatched[firstVisibleItemIndex].isWatched}");
+
+      while(lastVisibleItemIndex > step) {
+        if(!peopleWhoKissWatched[step].isWatched) {
+          print("when step is $step then true");
+          peopleWhoKissWatched[step].isWatched = true;
+          kissWatchedNotificBloc.updateNotification(widget.column, peopleWhoKissWatched[step]);
+        }
+
+        step++;
+      }
+
+      kissWatchedNotificBloc.setNewNotificationIndex(step);
+    }
+  }
+
+  void updateDuringScroll() {
+    Future.delayed(Duration(milliseconds: 700), () {
+      listScrollController.addListener(() {
+        int lastVisibleItem = getLastVisibleItemIndex();
+
+        if(lastVisibleItem > -1) {
+
+          if(lastVisibleItem == 0 && peopleWhoKissWatched[lastVisibleItem].isWatched) {
+            kissWatchedNotificBloc.setNewNotificationIndex(-1);
+          } else {
+            if(!peopleWhoKissWatched[lastVisibleItem].isWatched) {
+              peopleWhoKissWatched[lastVisibleItem].isWatched = true;
+              kissWatchedNotificBloc.updateNotification(widget.column, peopleWhoKissWatched[lastVisibleItem]);
+            }
+          }
+
+        } else {
+          kissWatchedNotificBloc.setNewNotificationIndex(-1);
+        }
+      });
+    });
   }
 
   bool contains(List<KissWatchNotifModel> list, KissWatchNotifModel model) {
@@ -143,8 +151,26 @@ class _KissedWatchedProfileState extends State<KissedWatchedProfile> {
         return true;
       }
     }
-
     return false;
+  }
+
+  int getLastVisibleItemIndex() {
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRangeMin = maxScrollExtent - minScrollExtent;
+
+    return ((scrollOffset + MediaQuery.of(context).size.height) / (scrollRangeMin + viewportHeight) * peopleWhoKissWatched.length).floor();
+  }
+
+  int getFirstVisibleItemIndex() {
+    double scrollOffset = listScrollController.position.pixels;
+    double viewportHeight = listScrollController.position.viewportDimension;
+    double maxScrollExtent = listScrollController.position.maxScrollExtent;
+    double minScrollExtent = listScrollController.position.minScrollExtent;
+    double scrollRange = maxScrollExtent - minScrollExtent;
+    return (scrollOffset / (scrollRange + viewportHeight) * peopleWhoKissWatched.length).floor();
   }
 
   @override
