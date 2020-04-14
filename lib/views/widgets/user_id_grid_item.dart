@@ -5,7 +5,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:travel_date_app/models/notification.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
@@ -30,7 +29,7 @@ class UserIdGridItem extends StatefulWidget {
 class _UserIdGridItemState extends State<UserIdGridItem> {
 
   UsersBloc _userBloc;
-  MessageBloc _messageBloc;
+  MessageBloc _messageBloc = MessageBloc();
   final _userPreferences = UserPreferences();
 
   int newMessageLength = 0;
@@ -39,7 +38,6 @@ class _UserIdGridItemState extends State<UserIdGridItem> {
   @override
   void didChangeDependencies() {
     _userBloc = UsersBlocProvider.of(context);
-    _messageBloc = MessageBlocProvider.of(context);
 
     _getUser();
     super.didChangeDependencies();

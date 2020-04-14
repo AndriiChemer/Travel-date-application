@@ -6,7 +6,6 @@ import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/chat_bloc.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart';
-import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/utils/colors.dart';
 
 import 'app_bars.dart';
@@ -30,7 +29,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   ChatBloc _chatBloc;
-  MessageBloc _messageBloc;
+  MessageBloc _messageBloc = MessageBloc();
 
   final FocusNode focusNode = new FocusNode();
   final ScrollController listScrollController = new ScrollController();
@@ -49,7 +48,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
   @override
   void didChangeDependencies() {
     _chatBloc = ChatBlocProvider.of(context);
-    _messageBloc = MessageBlocProvider.of(context);
 
     addStreamListener();
 

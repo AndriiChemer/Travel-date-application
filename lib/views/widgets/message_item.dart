@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/utils/time.dart';
 
 class MessageItem extends StatefulWidget {
@@ -22,14 +21,7 @@ class MessageItem extends StatefulWidget {
 
 class _MessageItemState extends State<MessageItem> {
 
-  MessageBloc _messageBloc;
-
-  @override
-  void didChangeDependencies() {
-    _messageBloc = MessageBlocProvider.of(context);
-
-    super.didChangeDependencies();
-  }
+  MessageBloc _messageBloc = MessageBloc();
 
   @override
   Widget build(BuildContext context) {

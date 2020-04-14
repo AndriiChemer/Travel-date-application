@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/message_bloc.dart';
-import 'package:travel_date_app/services/blocs/providers/message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/users_provider.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/utils/time.dart';
@@ -28,14 +27,13 @@ class _ChatItemState extends State<ChatItem> {
 
   UserModel userModel;
   UsersBloc _usersBloc;
-  MessageBloc _messageBloc;
+  MessageBloc _messageBloc = MessageBloc();
 
   int newMessageCount;
 
   @override
   void didChangeDependencies() {
     _usersBloc = UsersBlocProvider.of(context);
-    _messageBloc = MessageBlocProvider.of(context);
 
     super.didChangeDependencies();
   }
