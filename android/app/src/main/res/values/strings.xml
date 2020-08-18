@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Travel Date App</string>
+    <string name="facebook_app_id">317178079336950</string>
+    <string name="fb_login_protocol_scheme">fb317178079336950</string>
+
+</resources>

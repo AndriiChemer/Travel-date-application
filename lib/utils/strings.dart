@@ -11,6 +11,9 @@ class Strings {
   static const String message_nav = "Message";
   static const String profile_nav = "Profile";
 
+  // Generals errors
+  static const String smth_wrong = 'Something went wrong!';
+
   // Registration Screen
   static const String name = "Name";
   static const String email = "Email";
@@ -93,5 +96,12 @@ class Strings {
 
   //Edit Images Screen
   static const String add_images = "Add Images";
+
+
+  //Sign-in message
+  static const String facebook_login_cancel = "Sign-in using Facebook has been canceled!";
+  static const String facebook_error_message = 'Something went wrong with the login process.\n' +
+    "Here\'s the error Facebook gave us: ";
+
 
 }

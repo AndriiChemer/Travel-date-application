@@ -8,7 +8,6 @@ import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
-import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
@@ -177,9 +176,7 @@ class _SignInScreenState extends State<SignInScreen> {
             heroTag: "facebook",
             backgroundColor: Colors.white,
             child: Image.asset("assets/images/socialmedia/facebook.png"),
-            onPressed: (){
-              showFeatureNotImplementedYet();
-            },
+            onPressed: _facebookSignInPressed,
           ),
 
           FloatingActionButton(
@@ -255,6 +252,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _googleSignInPressed() {
     _auth.googleSignIn().then((user) {
+      getUserById(user);
+    }).catchError((onError) {
+      print('error: ' + onError.toString());
+      showErrorMessage(onError.toString());
+    });
+  }
+
+  void _facebookSignInPressed() {
+    _auth.facebookSignIn().then((user) {
       getUserById(user);
     }).catchError((onError) {
       print('error: ' + onError.toString());

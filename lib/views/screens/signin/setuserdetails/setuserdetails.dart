@@ -22,7 +22,7 @@ class _SetUserDetailsState extends State<SetUserDetails> {
         child: FloatingActionButton(
           heroTag: "logout",
           backgroundColor: Colors.white,
-          child: Icon(Icons.exit_to_app),
+          child: Icon(Icons.exit_to_app, color: Colors.grey[800],),
           onPressed: onLogoutClick,
         ),
       ),
