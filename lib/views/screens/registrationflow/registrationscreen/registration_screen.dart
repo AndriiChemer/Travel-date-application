@@ -400,9 +400,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   getUserLocation() async {
     print("getUserLocation");
-    LocationData currentLocation;
+
     String error;
+    bool _serviceEnabled;
+    LocationData currentLocation;
+    PermissionStatus _permissionGranted;
+
     Location location = new Location();
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = (await location.requestPermission());
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
 
     try {
       currentLocation = await location.getLocation();
@@ -418,6 +438,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         print(error);
       }
       currentLocation = null;
+    } on Exception catch (generalException) {
+      print("generalException = " + generalException.toString());
     }
 
     if(currentLocation != null) {

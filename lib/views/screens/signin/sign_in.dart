@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -57,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 _marginHeight(30),
                 _socialMedias(),
                 _marginHeight(30),
-                _signInButton(),
+                _signUnButton(),
                 _marginHeight(30),
               ],
             ),
@@ -149,7 +151,12 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget _or() {
-    return Center(child: Text(Strings.or.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),);
+    return Center(
+      child: GestureDetector(
+        onDoubleTap: _onSignOut,
+        child: Text(Strings.or.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
+      ),
+    );
   }
 
   Widget _marginHeight(double height) {
@@ -179,9 +186,7 @@ class _SignInScreenState extends State<SignInScreen> {
             heroTag: "google-plus",
             backgroundColor: Colors.white,
             child: Image.asset("assets/images/socialmedia/google-plus.png"),
-            onPressed: (){
-              showFeatureNotImplementedYet();
-            },
+            onPressed: _googleSignInPressed,
           ),
 
           FloatingActionButton(
@@ -206,7 +211,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _signInButton() {
+  Widget _signUnButton() {
     return Center(
       child: RichText(
         text: TextSpan(
@@ -237,26 +242,44 @@ class _SignInScreenState extends State<SignInScreen> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
+  void showErrorMessage(String errorMessage) {
+    print("onError = " + errorMessage);
+    final snackBar = SnackBar(
+      content: Text(errorMessage, style: TextStyle(color: Colors.white, fontSize: 15),),
+      duration: Duration(milliseconds: 550),
+      backgroundColor: Colors.red[900],
+
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _googleSignInPressed() {
+    _auth.googleSignIn().then((user) {
+      getUserById(user);
+    }).catchError((onError) {
+      print('error: ' + onError.toString());
+      showErrorMessage(onError.toString());
+    });
+  }
+
+  void getUserById(FirebaseUser user) {
+    Future.wait([_userRepository.isUserExist(user), _userRepository.getUsersById(user.uid)])
+        .then((List responses) => checkUserResponses(responses))
+        .catchError((onError) => showErrorMessage(onError.toString()));
+  }
+
+  void _onSignOut() {
+    _auth.signOut();
+  }
+
   void _signInPressed() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
       _auth.signIn(emailController.text, passwordController.text).then((firebaseUser) {
-
-        _userRepository.getUsersById(firebaseUser.uid).then((user) {
-          print(user.toJson().toString());
-          _userPreferences.writeUser(user);
-
-          _userPreferences.saveLoggedIn();
-//          Navigator.push(context, MaterialPageRoute(builder: (context) => MainNavigation(userModel: user)));
-          Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: user);
-        }).catchError((onError) {
-          print("error: " + onError.toString());
-          // TODO task set Server Error
-        });
+        getUserById(firebaseUser);
       }).then((onError) {
-        print('error: ' + onError.toString());
-        // TODO task set Server Error
+        showErrorMessage(onError.toString());
       });
     } else {
       setState(() {
@@ -270,5 +293,19 @@ class _SignInScreenState extends State<SignInScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void checkUserResponses(List responses) {
+    bool isUserExist = responses[0];
+    UserModel user = responses[1];
+
+    if(isUserExist) {
+      print(user.toJson().toString());
+      _userPreferences.writeUser(user);
+      _userPreferences.saveLoggedIn();
+      Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: user);
+    } else {
+      Navigator.pushReplacementNamed(context, '/setuserdetails', arguments: user);
+    }
   }
 }

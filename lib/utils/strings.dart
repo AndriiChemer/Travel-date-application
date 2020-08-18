@@ -1,8 +1,8 @@
 
 class Strings {
   // Generals
-  static const String sign_up = "Sing Up";
-  static const String sign_in = "Sing In";
+  static const String sign_up = "Sign Up";
+  static const String sign_in = "Sign In";
   static const String yes = "Yes";
   static const String no = "No";
 

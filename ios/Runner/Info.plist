@@ -47,5 +47,24 @@
 	<string>Need to upload image</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need to upload image</string>
+	<key>CFBundleURLTypes</key>
+    <array>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<string>com.googleusercontent.apps.418506897771-de2fmu4m13biacgt1bcg7k891mgptfll</string>
+    		</array>
+    	</dict>
+    </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Need location when in use</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Always and when in use!</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Older devices need location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Can I haz location always?</string>
 </dict>
 </plist>

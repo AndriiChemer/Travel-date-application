@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:path/path.dart' as path;
@@ -73,12 +74,6 @@ class UserRepository {
     } catch (error) {
       print('Try catch error ');
     }
-
-//    try {
-//
-//    } catch (error) {
-//      print('Try catch error ');
-//    }
   }
 
   Future<UserModel> getUsersById(String id) async {
@@ -92,8 +87,20 @@ class UserRepository {
     print('querySnapshot.data');
     print(querySnapshot.data.toString());
 
+    if(querySnapshot.data == null) {
+      return UserModel.emptyUser();
+    }
     return UserModel.fromMap(querySnapshot.data);
   }
+
+  Future<bool> isUserExist(FirebaseUser firebaseUser) async {
+    DocumentSnapshot querySnapshot = await _firestore
+        .collection(Columns.USER_COLUMN)
+        .document(firebaseUser.uid).get();
+
+    return querySnapshot.data != null;
+  }
+
 
   Stream<QuerySnapshot> getUserByIdStream(String id) {
     return _firestore

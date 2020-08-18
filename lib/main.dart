@@ -10,6 +10,7 @@ import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
+import 'package:travel_date_app/views/screens/signin/setuserdetails/setuserdetails.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 import 'package:travel_date_app/views/widgets/lifecycle.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
                       '/verifyphone': (context) => VerifySuccess(),
                       '/setage': (context) => AgeScreen(),
                       '/mainNavigation': (context) => MainNavigation(),
+                      '/setuserdetails': (context) => SetUserDetails(),
                     }
                 )
             ),

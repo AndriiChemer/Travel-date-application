@@ -130,4 +130,27 @@ class UserModel {
       return "assets/images/no_image_female.jpg";
     }
   }
+
+  UserModel.emptyUser():
+        id = '',
+        name = '',
+        city = '',
+        imageUrl = '',
+        status = '',
+        dateCreated = 0,
+        lat = 0.0,
+        lng = 0.0,
+        sex = '',
+        description = '',
+        isVerify = false,
+        isHide = false,
+        isOnline = false,
+        lastVisitedAt = 0,
+        birthday = 0,
+        email = '',
+        password = '',
+        phone = '',
+        country = '',
+        images = [],
+        countryCode = '';
 }
