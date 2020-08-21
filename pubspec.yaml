@@ -46,12 +46,14 @@ dependencies:
 #  firebase_ml_vision: ^0.9.3+3
   cloud_firestore: ^0.12.10
   firebase_storage: ^3.1.0
-  geocoder: ^0.2.1
-  location: ^3.0.2
+  geolocator: ^5.1.3
   dotted_border: ^1.0.4
   image_picker: ^0.6.0+17
   google_sign_in: ^4.5.1
   flutter_facebook_login: ^3.0.0
+  permission_handler: ^5.0.1+1
+  location: ^3.0.2
+  provider: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +72,7 @@ flutter:
     - assets/images/socialmedia/facebook.png
     - assets/images/socialmedia/google-plus.png
     - assets/images/socialmedia/instagram.png
-    - assets/images/socialmedia/snapchat-ghost.png
+    - assets/images/socialmedia/apple.png
     - assets/images/material/man_icon.png
     - assets/images/material/women_icon.png
     - assets/images/interests/pie_category.jpg

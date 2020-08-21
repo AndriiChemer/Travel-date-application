@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:location/location.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/LocationService.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -10,6 +12,7 @@ import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
+import 'package:location/location.dart' as locationPackage;
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -29,6 +32,12 @@ class _SignInScreenState extends State<SignInScreen> {
   Auth _auth = Auth();
 
   bool _autoValidate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    LocationService().checkLocationPermission();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,12 +205,10 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
 
           FloatingActionButton(
-            heroTag: "snapchat-ghost",
+            heroTag: "apple",
             backgroundColor: Colors.white,
-            child: Image.asset("assets/images/socialmedia/snapchat-ghost.png"),
-            onPressed: (){
-              showFeatureNotImplementedYet();
-            },
+            child: Image.asset("assets/images/socialmedia/apple.png"),
+            onPressed: _appleSignInPressed,
           )
         ],
       ),
@@ -260,6 +267,15 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _facebookSignInPressed() {
+    _auth.facebookSignIn().then((user) {
+      getUserById(user);
+    }).catchError((onError) {
+      print('error: ' + onError.toString());
+      showErrorMessage(onError.toString());
+    });
+  }
+
+  void _appleSignInPressed() {
     _auth.facebookSignIn().then((user) {
       getUserById(user);
     }).catchError((onError) {

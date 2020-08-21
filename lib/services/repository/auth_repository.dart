@@ -21,6 +21,8 @@ abstract class BaseAuth {
   Future<FirebaseUser> googleSignIn();
 
   Future<FirebaseUser> facebookSignIn();
+
+  Future<FirebaseUser> appleSignIn();
 }
 
 class Auth implements BaseAuth {
@@ -75,6 +77,24 @@ class Auth implements BaseAuth {
     print("isEmailVerified");
     FirebaseUser user = await _firebaseAuth.currentUser();
     return user.isEmailVerified;
+  }
+
+  @override
+  Future<FirebaseUser> appleSignIn() async {
+    print("googleSignIn");
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken
+    );
+
+    AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
+    FirebaseUser userDetails = authResult.user;
+
+    print("currentUser.uid: " + userDetails.uid);
+    return userDetails;
   }
 
   @override
