@@ -198,11 +198,9 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
               isLoading = false;
             });
 
-            //TODO task clean stack screen
             Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: widget.newUser);
           } else {
             isLoading = false;
-            // TODO task show error
           }
         });
 

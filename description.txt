@@ -1,2 +1,4 @@
 1. Bloc pattern for registration
 https://dev.to/prakashselvaraj/bloc-flutter-1352
+
+https://www.netguru.com/codestories/flutter-bloc

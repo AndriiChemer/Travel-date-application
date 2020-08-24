@@ -29,6 +29,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
 
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _phoneFocus = FocusNode();
+
   bool _autoValidate = false;
   bool isTermsChecked = false;
   CountryCode _selectedCountry;
@@ -39,6 +43,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _selectedCountry.name = "Polska";
     _selectedCountry.code = "PL";
     _selectedCountry.dialCode = "+48";
+
 
     print("initState");
     _getCurrentLocation();

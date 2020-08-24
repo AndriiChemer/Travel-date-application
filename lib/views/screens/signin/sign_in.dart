@@ -149,9 +149,7 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: GestureDetector(
-          onTap: () {
-            //TODO task forgot password screen
-          },
+          onTap: showFeatureNotImplementedYet,
           child: Text("Forgot Password", style: TextStyle(decoration: TextDecoration.underline, color: Colors.yellow[800]),),
         ),
       ),
@@ -208,7 +206,7 @@ class _SignInScreenState extends State<SignInScreen> {
             heroTag: "apple",
             backgroundColor: Colors.white,
             child: Image.asset("assets/images/socialmedia/apple.png"),
-            onPressed: _appleSignInPressed,
+            onPressed: showFeatureNotImplementedYet,
           )
         ],
       ),
@@ -286,7 +284,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void getUserById(FirebaseUser user) {
     Future.wait([_userRepository.isUserExist(user), _userRepository.getUsersById(user.uid)])
-        .then((List responses) => checkUserResponses(responses))
+        .then((List responses) => checkUserResponses(responses, user))
         .catchError((onError) => showErrorMessage(onError.toString()));
   }
 
@@ -317,7 +315,7 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void checkUserResponses(List responses) {
+  void checkUserResponses(List responses, FirebaseUser firebaseUser) {
     bool isUserExist = responses[0];
     UserModel user = responses[1];
 
@@ -327,7 +325,7 @@ class _SignInScreenState extends State<SignInScreen> {
       _userPreferences.saveLoggedIn();
       Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: user);
     } else {
-      Navigator.pushReplacementNamed(context, '/setuserdetails', arguments: user);
+      Navigator.pushNamed(context, '/setuserdetails', arguments: firebaseUser);
     }
   }
 }
