@@ -118,7 +118,9 @@ class UserModel {
   }
 
   void buildPhotoList() {
-    if(imageUrl != null) {
+    if(imageUrl != null && images.isEmpty) {
+      images.add(imageUrl);
+    } else if(imageUrl != null && images.isNotEmpty) {
       images.insert(0, imageUrl);
     }
   }
@@ -153,4 +155,34 @@ class UserModel {
         country = '',
         images = [],
         countryCode = '';
+}
+
+
+class UserFacebookModel {
+  String name;
+  PictureModel picture;
+
+  UserFacebookModel();
+
+  UserFacebookModel.fromMap(Map snapshot) :
+        name = snapshot['name'] ?? '',
+        picture = snapshot['picture'] != null ? PictureModel.fromMap(snapshot['picture']) : '';
+}
+
+class PictureModel {
+  PictureDataModel data;
+
+  PictureModel();
+
+  PictureModel.fromMap(Map snapshot):
+        data = snapshot['data'] != null ? PictureDataModel.fromMap(snapshot['data']) : null;
+}
+
+class PictureDataModel {
+  String url;
+
+  PictureDataModel({this.url = ''});
+
+  PictureDataModel.fromMap(Map snapshot) :
+        url = snapshot['url'] ?? '';
 }

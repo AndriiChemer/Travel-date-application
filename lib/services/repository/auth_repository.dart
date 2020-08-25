@@ -1,9 +1,14 @@
 
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:http/http.dart' as http;
+
 
 abstract class BaseAuth {
   Future<FirebaseUser> signIn(String email, String password);
@@ -133,7 +138,25 @@ class Auth implements BaseAuth {
          ''');
 
         FirebaseUser user = (await _firebaseAuth.signInWithCredential(authCredential)).user;
-        debugPrint("user data: \nid: ${user.uid} \nName: ${user.displayName} \nEmail: ${user.email} \nPhoto: ${user.photoUrl} \Phone: ${user.phoneNumber}");
+
+        UserUpdateInfo userUpdateInfo = UserUpdateInfo();
+
+        if (user.displayName != null) {
+          userUpdateInfo.displayName = user.displayName;
+        }
+
+        if (user.photoUrl != null) {
+          final graphResponse = await http.get(
+              'https://graph.facebook.com/v2.12/me?fields=name,picture.width(800).height(800),first_name,last_name,email&access_token=${accessToken.token}');
+
+          final Map facebookBody = json.decode(graphResponse.body);
+          var userFacebookModel = UserFacebookModel.fromMap(facebookBody);
+
+
+          userUpdateInfo.photoUrl = userFacebookModel.picture.data.url;
+          user.updateProfile(userUpdateInfo);
+        }
+
         return user;
       case FacebookLoginStatus.cancelledByUser:
         debugPrint('Login cancelled by the user.');
@@ -145,5 +168,4 @@ class Auth implements BaseAuth {
 
     return null;
   }
-
 }

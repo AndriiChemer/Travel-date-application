@@ -38,39 +38,6 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
     super.didChangeDependencies();
   }
 
-//  @override
-//  Widget build(BuildContext context) {
-//    return Container(
-//      height: 57,
-//      width: MediaQuery.of(context).size.width,
-//      padding: EdgeInsets.only(right: 15, left: 15, top: 4, bottom: 4),
-//      decoration: BoxDecoration(
-//        color: CustomColors.bottomBackground,
-//        boxShadow: [
-//          BoxShadow(
-//              color: Colors.yellow[800],
-//              blurRadius: 5
-//          )
-//        ],
-//      ),
-//      child: Row(
-//        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//        children: listNavItem.map((item) {
-//          var itemIndex = listNavItem.indexOf(item);
-//          return GestureDetector(
-//            onTap: () {
-//              bottomNavBloc.setNavIndexPage(itemIndex);
-//              setState((){
-//                selectedIndex = itemIndex;
-//              });
-//            },
-//            child: buildItems(item, selectedIndex == itemIndex),
-//          );
-//        }).toList(),
-//      ),
-//    );
-//  }
-
   @override
   Widget build(BuildContext context) {
     return Container(

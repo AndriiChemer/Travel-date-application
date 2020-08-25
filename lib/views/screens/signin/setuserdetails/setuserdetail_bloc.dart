@@ -86,10 +86,10 @@ class SetUserDetailBloc extends BlocBase {
     String id = firebaseUser.uid;
     String name = firebaseUser.displayName;
     String email = firebaseUser.email;
-    int dateCreated = DateTime.now().millisecondsSinceEpoch * 1000;
+    int dateCreated = DateTime.now().millisecondsSinceEpoch;
 
     UserModel newUser = UserModel(id: id, name: name, email: email, isOnline: true, dateCreated: dateCreated);
-    newUser.birthday = millisecondsDateBirthday * 1000;
+    newUser.birthday = millisecondsDateBirthday;
     newUser.sex = state == 0 ? "Male" : "Female";
 
     if(firebaseUser.photoUrl != null) {
