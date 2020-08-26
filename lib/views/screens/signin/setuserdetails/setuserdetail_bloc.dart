@@ -82,23 +82,9 @@ class SetUserDetailBloc extends BlocBase {
     return birthDate;
   }
 
-  void onButtonClick(FirebaseUser firebaseUser, int millisecondsDateBirthday, int state) {
-    String id = firebaseUser.uid;
-    String name = firebaseUser.displayName;
-    String email = firebaseUser.email;
-    int dateCreated = DateTime.now().millisecondsSinceEpoch;
-
-    UserModel newUser = UserModel(id: id, name: name, email: email, isOnline: true, dateCreated: dateCreated);
+  void onButtonClick(UserModel newUser, int millisecondsDateBirthday, int state) {
     newUser.birthday = millisecondsDateBirthday;
     newUser.sex = state == 0 ? "Male" : "Female";
-
-    if(firebaseUser.photoUrl != null) {
-      newUser.imageUrl = firebaseUser.photoUrl;
-    }
-
-    if(firebaseUser.phoneNumber != null) {
-      newUser.phone = firebaseUser.phoneNumber;
-    }
 
     if(userPlace != null) {
       newUser.countryCode = userPlace.isoCountryCode;

@@ -93,10 +93,10 @@ class UserRepository {
     return UserModel.fromMap(querySnapshot.data);
   }
 
-  Future<bool> isUserExist(FirebaseUser firebaseUser) async {
+  Future<bool> isUserExist(String uid) async {
     DocumentSnapshot querySnapshot = await _firestore
         .collection(Columns.USER_COLUMN)
-        .document(firebaseUser.uid).get();
+        .document(uid).get();
 
     return querySnapshot.data != null;
   }

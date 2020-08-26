@@ -23,9 +23,9 @@ abstract class BaseAuth {
 
   Future<bool> isEmailVerified();
 
-  Future<FirebaseUser> googleSignIn();
+  Future<UserModel> googleSignIn();
 
-  Future<FirebaseUser> facebookSignIn();
+  Future<UserModel> facebookSignIn();
 
   Future<FirebaseUser> appleSignIn();
 }
@@ -96,14 +96,15 @@ class Auth implements BaseAuth {
     );
 
     AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
-    FirebaseUser userDetails = authResult.user;
+    FirebaseUser firebaseUser = authResult.user;
 
-    print("currentUser.uid: " + userDetails.uid);
-    return userDetails;
+
+    print("currentUser.uid: " + firebaseUser.uid);
+    return firebaseUser;
   }
 
   @override
-  Future<FirebaseUser> googleSignIn() async {
+  Future<UserModel> googleSignIn() async {
     print("googleSignIn");
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -114,14 +115,17 @@ class Auth implements BaseAuth {
     );
 
     AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
-    FirebaseUser userDetails = authResult.user;
+    //TODO get photo from google account
+    FirebaseUser firebaseUser = authResult.user;
+    ///We don't have photo yet
+    UserModel userModel = _getUserModel(firebaseUser, '');
 
-    print("currentUser.uid: " + userDetails.uid);
-    return userDetails;
+    print("currentUser.uid: " + firebaseUser.uid);
+    return userModel;
   }
 
   @override
-  Future<FirebaseUser> facebookSignIn() async {
+  Future<UserModel> facebookSignIn() async {
     final FacebookLoginResult result = await _facebookSignIn.logIn(['email', 'public_profile']);
 
     switch (result.status) {
@@ -137,25 +141,9 @@ class Auth implements BaseAuth {
          Declined permissions: ${accessToken.declinedPermissions}
          ''');
 
-        FirebaseUser user = (await _firebaseAuth.signInWithCredential(authCredential)).user;
-
-        UserUpdateInfo userUpdateInfo = UserUpdateInfo();
-
-        if (user.displayName != null) {
-          userUpdateInfo.displayName = user.displayName;
-        }
-
-        if (user.photoUrl != null) {
-          final graphResponse = await http.get(
-              'https://graph.facebook.com/v2.12/me?fields=name,picture.width(800).height(800),first_name,last_name,email&access_token=${accessToken.token}');
-
-          final Map facebookBody = json.decode(graphResponse.body);
-          var userFacebookModel = UserFacebookModel.fromMap(facebookBody);
-
-
-          userUpdateInfo.photoUrl = userFacebookModel.picture.data.url;
-          user.updateProfile(userUpdateInfo);
-        }
+        FirebaseUser firebaseUser = (await _firebaseAuth.signInWithCredential(authCredential)).user;
+        var userPhotoUrl = await _getUrlFromFacebook(firebaseUser, accessToken.token);
+        UserModel user = _getUserModel(firebaseUser, userPhotoUrl);
 
         return user;
       case FacebookLoginStatus.cancelledByUser:
@@ -167,5 +155,35 @@ class Auth implements BaseAuth {
     }
 
     return null;
+  }
+
+  Future<String> _getUrlFromFacebook(FirebaseUser firebaseUser, String accessToken) async {
+    if (firebaseUser.photoUrl != null) {
+      final graphResponse = await http.get(
+          'https://graph.facebook.com/v2.12/me?fields=name,picture.width(800).height(800),first_name,last_name,email&access_token=$accessToken');
+      final Map facebookBody = json.decode(graphResponse.body);
+      var userFacebookModel = UserFacebookModel.fromMap(facebookBody);
+      return userFacebookModel.picture.data.url;
+    } else {
+      return '';
+    }
+  }
+
+  UserModel _getUserModel(FirebaseUser firebaseUser, String photo) {
+    var userModel = UserModel();
+    if(firebaseUser.displayName != null) {
+      userModel.name = firebaseUser.displayName;
+    }
+
+    if(firebaseUser.phoneNumber != null) {
+      userModel.phone = firebaseUser.phoneNumber;
+    }
+    userModel.id = firebaseUser.uid;
+    userModel.email = firebaseUser.email;
+    userModel.dateCreated = DateTime.now().millisecondsSinceEpoch;
+    userModel.isOnline = true;
+    userModel.imageUrl = photo;
+
+    return userModel;
   }
 }

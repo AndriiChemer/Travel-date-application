@@ -291,9 +291,9 @@ class _SetUserDetailsState extends State<SetUserDetails> {
       return;
     }
 
-    final firebaseUser = ModalRoute.of(context).settings.arguments as FirebaseUser;
+    final newUser = ModalRoute.of(context).settings.arguments as UserModel;
 
-    userDetailBloc.onButtonClick(firebaseUser, _selectedDate.millisecondsSinceEpoch, state);
+    userDetailBloc.onButtonClick(newUser, _selectedDate.millisecondsSinceEpoch, state);
   }
 
   void showErrorMessage(String message) {

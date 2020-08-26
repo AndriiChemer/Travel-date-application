@@ -273,17 +273,8 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
-  void _appleSignInPressed() {
-    _auth.facebookSignIn().then((user) {
-      getUserById(user);
-    }).catchError((onError) {
-      print('error: ' + onError.toString());
-      showErrorMessage(onError.toString());
-    });
-  }
-
-  void getUserById(FirebaseUser user) {
-    Future.wait([_userRepository.isUserExist(user), _userRepository.getUsersById(user.uid)])
+  void getUserById(UserModel user) {
+    Future.wait([_userRepository.isUserExist(user.id), _userRepository.getUsersById(user.id)])
         .then((List responses) => checkUserResponses(responses, user))
         .catchError((onError) => showErrorMessage(onError.toString()));
   }
@@ -296,8 +287,9 @@ class _SignInScreenState extends State<SignInScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      _auth.signIn(emailController.text, passwordController.text).then((firebaseUser) {
-        getUserById(firebaseUser);
+      _auth.signIn(emailController.text, passwordController.text)
+          .then((firebaseUser) {
+        signInSuccess(firebaseUser);
       }).then((onError) {
         showErrorMessage(onError.toString());
       });
@@ -315,17 +307,19 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void checkUserResponses(List responses, FirebaseUser firebaseUser) {
+  void checkUserResponses(List responses, UserModel newUser) {
     bool isUserExist = responses[0];
-    UserModel user = responses[1];
+    UserModel existingUser = responses[1];
 
     if(isUserExist) {
-      print(user.toJson().toString());
-      _userPreferences.writeUser(user);
+      print(existingUser.toJson().toString());
+      _userPreferences.writeUser(existingUser);
       _userPreferences.saveLoggedIn();
-      Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: user);
+      Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: existingUser);
     } else {
-      Navigator.pushNamed(context, '/setuserdetails', arguments: firebaseUser);
+      Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
     }
   }
+
+  void signInSuccess(FirebaseUser firebaseUser) {}
 }
