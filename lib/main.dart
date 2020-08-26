@@ -13,6 +13,7 @@ import 'package:travel_date_app/views/screens/registrationflow/successverify/suc
 import 'package:travel_date_app/views/screens/signin/setuserdetails/setuserdetail_bloc.dart';
 import 'package:travel_date_app/views/screens/signin/setuserdetails/setuserdetails.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
+import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
 import 'package:travel_date_app/views/widgets/lifecycle.dart';
 
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         Bloc((i)=> MessageListBloc()),
         Bloc((i)=> UsersBloc()),
         Bloc((i)=> SetUserDetailBloc()),
+        Bloc((i)=> SignInBloc()),
       ],
       child: UsersBlocProvider(
         child: ChatBlocProvider(

@@ -28,7 +28,7 @@ class UserRepository {
 
     if (documents.length == 0) {
 
-      _firestore.collection(Columns.USER_COLUMN)
+      await _firestore.collection(Columns.USER_COLUMN)
           .document(userModel.id)
           .setData(userModel.toJson());
     } else {
@@ -88,7 +88,7 @@ class UserRepository {
     print(querySnapshot.data.toString());
 
     if(querySnapshot.data == null) {
-      return UserModel.emptyUser();
+      return null;
     }
     return UserModel.fromMap(querySnapshot.data);
   }

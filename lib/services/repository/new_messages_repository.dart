@@ -17,22 +17,11 @@ class NewMessagesRepository {
     print("NewMessagesRepository");
     print("addNewUser");
 
-    final QuerySnapshot result = await _firestore.collection(Columns.NEW_MESSAGES_COLUMN)
-        .where('id', isEqualTo: userId)
-        .getDocuments();
-
-    final List<DocumentSnapshot> documents = result.documents;
-
-    if (documents.length == 0) {
-
-      _firestore.collection(Columns.NEW_MESSAGES_COLUMN)
-          .document(userId)
-          .setData({
-        "counter" : 0
-      });
-    } else {
-      return false;
-    }
+    await _firestore.collection(Columns.NEW_MESSAGES_COLUMN)
+        .document(userId)
+        .setData({
+      "counter" : 0
+    });
 
     return true;
   }

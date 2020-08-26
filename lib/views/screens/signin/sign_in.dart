@@ -1,18 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:location/location.dart';
-import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/LocationService.dart';
-import 'package:travel_date_app/services/prefs/user_prefs.dart';
-import 'package:travel_date_app/services/repository/auth_repository.dart';
-import 'package:travel_date_app/services/repository/user_repository.dart';
+import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
+import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
-import 'package:location/location.dart' as locationPackage;
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -27,14 +23,17 @@ class _SignInScreenState extends State<SignInScreen> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
-  UserPreferences _userPreferences = UserPreferences();
-  UserRepository _userRepository = UserRepository();
-  Auth _auth = Auth();
+  SignInBloc signInBloc;
+  BottomNavBloc bottomNavBloc;
 
   bool _autoValidate = false;
 
   @override
   void initState() {
+    bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
+    signInBloc = BlocProvider.getBloc<SignInBloc>();
+    bottomNavBloc.setNavIndexPage(0);
+    _blocStreamListener();
     super.initState();
     LocationService().checkLocationPermission();
   }
@@ -85,9 +84,7 @@ class _SignInScreenState extends State<SignInScreen> {
         color: Colors.yellow[800],
         textColor: Colors.white,
         child: Text(Strings.sign_in.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 20),),
-        onPressed: () {
-          _signInPressed();
-        },
+        onPressed: _signInPressed,
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(30.0),
         ),
@@ -179,37 +176,21 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          FloatingActionButton(
-            heroTag: "facebook",
-            backgroundColor: Colors.white,
-            child: Image.asset("assets/images/socialmedia/facebook.png"),
-            onPressed: _facebookSignInPressed,
-          ),
-
-          FloatingActionButton(
-            heroTag: "google-plus",
-            backgroundColor: Colors.white,
-            child: Image.asset("assets/images/socialmedia/google-plus.png"),
-            onPressed: _googleSignInPressed,
-          ),
-
-          FloatingActionButton(
-            heroTag: "instagram",
-            backgroundColor: Colors.white,
-            child: Image.asset("assets/images/socialmedia/instagram.png"),
-            onPressed: (){
-              showFeatureNotImplementedYet();
-            },
-          ),
-
-          FloatingActionButton(
-            heroTag: "apple",
-            backgroundColor: Colors.white,
-            child: Image.asset("assets/images/socialmedia/apple.png"),
-            onPressed: showFeatureNotImplementedYet,
-          )
+          _buildSocialMediaButton("facebook", "assets/images/socialmedia/facebook.png", _facebookSignInPressed),
+          _buildSocialMediaButton("google-plus", "assets/images/socialmedia/google-plus.png", _googleSignInPressed),
+          _buildSocialMediaButton("instagram", "assets/images/socialmedia/instagram.png", showFeatureNotImplementedYet),
+          _buildSocialMediaButton("apple", "assets/images/socialmedia/apple.png", showFeatureNotImplementedYet),
         ],
       ),
+    );
+  }
+
+  Widget _buildSocialMediaButton(String tag, String assetPath, VoidCallback onPressed) {
+    return FloatingActionButton(
+      heroTag: tag,
+      backgroundColor: Colors.white,
+      child: Image.asset(assetPath),
+      onPressed: onPressed,
     );
   }
 
@@ -235,64 +216,41 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void showFeatureNotImplementedYet() {
-    final snackBar = SnackBar(
-      content: Text("This feature not implemented yet!", style: TextStyle(color: Colors.white, fontSize: 15),),
-      duration: Duration(milliseconds: 550),
-      backgroundColor: Colors.red[900],
-
-    );
-    _scaffoldKey.currentState.showSnackBar(snackBar);
+    _showSnackBar("This feature not implemented yet!");
   }
 
   void showErrorMessage(String errorMessage) {
-    print("onError = " + errorMessage);
-    final snackBar = SnackBar(
-      content: Text(errorMessage, style: TextStyle(color: Colors.white, fontSize: 15),),
-      duration: Duration(milliseconds: 550),
-      backgroundColor: Colors.red[900],
+    _showSnackBar(errorMessage);
+  }
 
+  void _showSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message, style: TextStyle(color: Colors.white, fontSize: 15),),
+      duration: Duration(seconds: 2),
+      backgroundColor: Colors.red[900],
     );
+
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   void _googleSignInPressed() {
-    _auth.googleSignIn().then((user) {
-      getUserById(user);
-    }).catchError((onError) {
-      print('error: ' + onError.toString());
-      showErrorMessage(onError.toString());
-    });
+    signInBloc.onGoogleSignInPressed();
   }
 
   void _facebookSignInPressed() {
-    _auth.facebookSignIn().then((user) {
-      getUserById(user);
-    }).catchError((onError) {
-      print('error: ' + onError.toString());
-      showErrorMessage(onError.toString());
-    });
-  }
-
-  void getUserById(UserModel user) {
-    Future.wait([_userRepository.isUserExist(user.id), _userRepository.getUsersById(user.id)])
-        .then((List responses) => checkUserResponses(responses, user))
-        .catchError((onError) => showErrorMessage(onError.toString()));
+    signInBloc.onFacebookSignInPressed();
   }
 
   void _onSignOut() {
-    _auth.signOut();
+    signInBloc.onSignOutPressed();
   }
 
+  //TODO validation
   void _signInPressed() {
+    print("Valid form: ${_formKey.currentState.validate()}");
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-
-      _auth.signIn(emailController.text, passwordController.text)
-          .then((firebaseUser) {
-        signInSuccess(firebaseUser);
-      }).then((onError) {
-        showErrorMessage(onError.toString());
-      });
+      signInBloc.onSignInPressed(emailController.text, passwordController.text);
     } else {
       setState(() {
         _autoValidate = true;
@@ -307,19 +265,25 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void checkUserResponses(List responses, UserModel newUser) {
-    bool isUserExist = responses[0];
-    UserModel existingUser = responses[1];
+  void _blocStreamListener() {
+    signInBloc.errorStream.listen((message) {
+      if(message != null) {
+        showErrorMessage(message);
+      }
+    });
 
-    if(isUserExist) {
-      print(existingUser.toJson().toString());
-      _userPreferences.writeUser(existingUser);
-      _userPreferences.saveLoggedIn();
-      Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: existingUser);
-    } else {
-      Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
-    }
+    signInBloc.mainScreenStream.listen((existingUser) {
+      print("emit mainScreenStream");
+      if(existingUser != null) {
+        Navigator.pushReplacementNamed(context, '/mainNavigation', arguments: existingUser);
+      }
+    });
+
+    signInBloc.socialMediaScreenStream.listen((newUser) {
+      print("emit socialMediaScreenStream");
+      if(newUser != null) {
+        Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
+      }
+    });
   }
-
-  void signInSuccess(FirebaseUser firebaseUser) {}
 }

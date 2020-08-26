@@ -58,15 +58,15 @@ class SetUserDetailBloc extends BlocBase {
   void _openNextScreen(UserModel user) {
     progressSink.add(true);
 
-    userRepository.addNewUser(user)
-        .then((value) {
+    Future.wait([userRepository.addNewUser(user), newMessageRepository.addNewUser(user.id)])
+        .then((List responses) {
           userPreferences.writeUser(user);
-          newMessageRepository.addNewUser(user.id);
           progressSink.add(false);
           userSink.add(user);
-        }).then((error) {
-            progressSink.add(false);
-            messageErrorSink.add(error.toString());
+        })
+        .catchError((onError) {
+          progressSink.add(false);
+          messageErrorSink.add(onError.toString());
         });
   }
 

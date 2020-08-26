@@ -103,5 +103,7 @@ class Strings {
   static const String facebook_error_message = 'Something went wrong with the login process.\n' +
     "Here\'s the error Facebook gave us: ";
 
+  static const String user_not_exist = "User doe's not exist!";
+
 
 }

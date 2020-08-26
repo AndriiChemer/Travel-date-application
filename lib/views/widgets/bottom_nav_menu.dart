@@ -59,8 +59,12 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
 
           int newMessages = 0;
 
-          if(snapshot.hasData) {
-            newMessages = snapshot.data["counter"] as int ?? 0;
+          try {
+            if(snapshot.hasData) {
+              newMessages = snapshot.data["counter"] as int ?? 0;
+            }
+          } on Exception catch (_) {
+            newMessages = 0;
           }
 
           return Row(

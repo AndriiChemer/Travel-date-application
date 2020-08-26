@@ -10,11 +10,11 @@ import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
 import 'package:travel_date_app/views/screens/settingsscreen/settings_screen.dart';
+import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 
 class AccountScreen extends StatefulWidget {
 
   final UserModel user;
-
   AccountScreen({@required this.user});
 
   @override
@@ -25,9 +25,13 @@ class _AccountScreenState extends State<AccountScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Auth _auth = Auth();
-  UserRepository _userRepository = UserRepository();
-  UserPreferences _userPreferences = UserPreferences();
+  SignInBloc signInBloc;
+
+  @override
+  void initState() {
+    signInBloc = BlocProvider.getBloc<SignInBloc>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,17 +229,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void logout() {
-//    BottomNavBloc bottomNavBloc = BlocProvider.getBloc<BottomNavBloc>();
-
-
-    _userPreferences.logout();
-    _auth.signOut();
-    _userPreferences.getUserId().then((userId) {
-      _userRepository.handleOnlineState(userId, false);
-    });
-
-//    bottomNavBloc.setNavIndexPage(0);
-//    bottomNavBloc.dispose();
+    signInBloc.onSignOutPressed();
     Navigator.pushNamedAndRemoveUntil(context, '/signin', (Route<dynamic> route) => false);
   }
 }
