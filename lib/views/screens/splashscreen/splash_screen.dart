@@ -6,9 +6,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
+import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
-import 'package:travel_date_app/views/screens/errorscreen/error_screen.dart';
-import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -20,34 +19,24 @@ class _SplashState extends State<Splash> {
   bool isLoading = false;
 
   Auth auth = Auth();
+  UserRepository userRepository = UserRepository();
   UserPreferences userPreferences = UserPreferences();
 
   @override
   void initState() {
-    super.initState();
 
-    userPreferences.isLoggedIn().then((isLoggedIn) {
-      // if  user logged in
-      if(isLoggedIn) {
-//        showProgress();
-
-        userPreferences.getUser().then((user) {
-          auth.signIn(user.email, user.password).then((firebaseUser) {
-
-            openMainScreen(user);
-          }).catchError((error) {
-            print(error);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ErrorScreen()));
-          });
-        });
-
-      } else {
-        // if user not logged in
+    auth.getCurrentUser().then((firebaseUser) {
+      userRepository.getUsersById(firebaseUser.uid).then((user) {
+        openMainScreen(user);
+      }).catchError((onError) {
+        print("SplashScreen getUsersByIdError\nError: ${onError.toString()}");
         openSignInScreen();
-      }
+      });
+    }).catchError((onError) {
+      print("SplashScreen getCurrentUserError\nError: ${onError.toString()}");
+      openSignInScreen();
     });
-
-
+    super.initState();
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/ErrorHandler.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
@@ -56,11 +58,6 @@ class SignInBloc extends BlocBase {
     _auth.signOut();
   }
 
-  void _showErrorMessage(onError) {
-    print('error: ' + onError.toString());
-    messageErrorSink.add(onError.toString());
-  }
-
   void _getUserById(UserModel user) {
     Future.wait([_userRepository.isUserExist(user.id), _userRepository.getUsersById(user.id)])
         .then((List responses) => _checkUserResponses(responses, user))
@@ -85,7 +82,6 @@ class SignInBloc extends BlocBase {
 
   @override
   void dispose() {
-    print("SignInBloc dispose");
     messageErrorController.close();
     mainScreenController.close();
     socialMediaScreenController.close();
@@ -96,7 +92,17 @@ class SignInBloc extends BlocBase {
     _auth.signIn(email, password)
         .then((firebaseUser) {
       _signInSuccess(firebaseUser);
-    }).then(_showErrorMessage);
+    }).catchError((onError) {
+      var platformError = onError as PlatformException;
+      print("code: ${platformError.code} | detail: ${platformError.details} | message: ${platformError.message}");
+      _showErrorMessage(platformError);
+    });
+  }
+
+  void _showErrorMessage(onError) {
+    print('error: ' + onError.toString());
+    var errorMessage = ErrorHandler.getErrorMessage(onError);
+    messageErrorSink.add(errorMessage);
   }
 
   void _signInSuccess(FirebaseUser firebaseUser) {

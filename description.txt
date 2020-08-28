@@ -2,3 +2,7 @@
 https://dev.to/prakashselvaraj/bloc-flutter-1352
 
 https://www.netguru.com/codestories/flutter-bloc
+
+
+2. Custom toast message
+https://medium.com/@Mak95/how-to-make-custom-toast-messages-in-flutter-9799ef3239b7

@@ -95,7 +95,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _emailOrPhoneInputField() {
     return TextFormField(
       autofocus: false,
-      validator: ValidateFields.emailOrPasswordValidate,
+      validator: ValidateFields.isEmailValid,
       controller: emailController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       decoration: InputDecoration(
@@ -108,7 +108,15 @@ class _SignInScreenState extends State<SignInScreen> {
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
           ),
-          enabledBorder: UnderlineInputBorder(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(25.7),
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(25.7),
+          ),
+          focusedErrorBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
           )
@@ -133,7 +141,15 @@ class _SignInScreenState extends State<SignInScreen> {
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
           ),
-          enabledBorder: UnderlineInputBorder(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(25.7),
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(25.7),
+          ),
+          focusedErrorBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(25.7),
           )

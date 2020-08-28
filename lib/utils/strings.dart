@@ -13,6 +13,7 @@ class Strings {
 
   // Generals errors
   static const String smth_wrong = 'Something went wrong!';
+  static const String general_error = 'Oops something went wrong!';
 
   // Registration Screen
   static const String name = "Name";
@@ -103,7 +104,9 @@ class Strings {
   static const String facebook_error_message = 'Something went wrong with the login process.\n' +
     "Here\'s the error Facebook gave us: ";
 
-  static const String user_not_exist = "User doe's not exist!";
 
-
+  //Server errors
+  static const String user_not_exist = "User does not exist!";
+  static const String badly_email_format = "The email address is badly formatted!";
+  static const String badly_password = "The password is invalid or the user does not have a password!";
 }
