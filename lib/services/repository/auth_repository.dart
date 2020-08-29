@@ -28,6 +28,8 @@ abstract class BaseAuth {
   Future<UserModel> facebookSignIn();
 
   Future<FirebaseUser> appleSignIn();
+
+  Future<void> resetPassword(String email);
 }
 
 class Auth implements BaseAuth {
@@ -185,5 +187,10 @@ class Auth implements BaseAuth {
     userModel.imageUrl = photo;
 
     return userModel;
+  }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

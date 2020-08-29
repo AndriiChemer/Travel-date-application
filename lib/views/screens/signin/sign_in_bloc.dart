@@ -120,4 +120,11 @@ class SignInBloc extends BlocBase {
           _showErrorMessage(onError);
         });
   }
+
+  void onResetPasswordClicked(String email) {
+    if(email != null) {
+      print("Reset password for email: $email");
+      _auth.resetPassword(email);
+    }
+  }
 }

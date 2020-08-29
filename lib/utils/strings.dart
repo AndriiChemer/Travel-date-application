@@ -93,7 +93,7 @@ class Strings {
 
   //Sign In screen
   static const String emailPassword = "Email / Phone password";
-  static const String dontHaveAccount = "Don't have an account?";
+  static const String dontHaveAccount = "Don't have an account?  ";
 
   //Edit Images Screen
   static const String add_images = "Add Images";
@@ -109,4 +109,11 @@ class Strings {
   static const String user_not_exist = "User does not exist!";
   static const String badly_email_format = "The email address is badly formatted!";
   static const String badly_password = "The password is invalid or the user does not have a password!";
+
+  //Dialogs messages
+    // Reset password
+  static const String ok = "OK";
+  static const String cancel = "CANCEL";
+  static const String reset_password_title = "Reset password";
+  static const String reset_password_message = "You will receive an email where you can reset your password!";
 }

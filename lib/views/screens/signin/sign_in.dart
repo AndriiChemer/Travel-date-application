@@ -8,7 +8,9 @@ import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
 import 'package:travel_date_app/views/screens/registrationflow/registrationscreen/registration_screen.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
+import 'package:travel_date_app/views/widgets/dialogs.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
+import 'package:travel_date_app/views/widgets/text_field.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -98,29 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
       validator: ValidateFields.isEmailValid,
       controller: emailController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
-      decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          hintText: Strings.emailPassword,
-          prefixIcon: Icon(Icons.person, color: Colors.grey[800],),
-          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          errorBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          focusedErrorBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          )
-      ),
+      decoration: getItemDecorationForField(hintText: Strings.emailPassword, iconData: Icons.person),
     );
   }
 
@@ -131,29 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
       controller: passwordController,
       style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
       validator: ValidateFields.isPasswordValid,
-      decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          hintText: Strings.password,
-          prefixIcon: Icon(Icons.lock, color: Colors.grey[800],),
-          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          errorBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          ),
-          focusedErrorBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(25.7),
-          )
-      ),
+      decoration: getItemDecorationForField(hintText: Strings.password, iconData: Icons.lock),
     );
   }
 
@@ -162,7 +120,9 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: GestureDetector(
-          onTap: showFeatureNotImplementedYet,
+          onTap: () {
+            _onForgotButtonClicked();
+          },
           child: Text("Forgot Password", style: TextStyle(decoration: TextDecoration.underline, color: Colors.yellow[800]),),
         ),
       ),
@@ -215,11 +175,11 @@ class _SignInScreenState extends State<SignInScreen> {
       child: RichText(
         text: TextSpan(
             text: Strings.dontHaveAccount,
-            style: TextStyle(color: Colors.white, fontSize: 17),
+            style: TextStyle(color: Colors.white, fontSize: 17, fontStyle: FontStyle.italic),
             children: [
               TextSpan(
                   text: Strings.sign_up,
-                  style: TextStyle(color: Colors.white, fontSize: 17),
+                  style: TextStyle(color: Colors.white, fontSize: 17, fontStyle: FontStyle.italic),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
@@ -301,5 +261,17 @@ class _SignInScreenState extends State<SignInScreen> {
         Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
       }
     });
+  }
+
+  Future<void> _onForgotButtonClicked() async {
+    var email = await showDialog(
+      context: context,
+      builder: (BuildContext context) => ResetPasswordDialogs(
+        title: Strings.reset_password_title,
+        description: Strings.reset_password_message,
+      ),
+    );
+
+    signInBloc.onResetPasswordClicked(email);
   }
 }
