@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:bloc_pattern/bloc_pattern.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,19 +9,20 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/utils/strings.dart';
+import 'package:travel_date_app/views/widgets/dialogs.dart';
 import 'package:travel_date_app/views/widgets/main_background.dart';
 
-import 'setuserdetail_bloc.dart';
+import 'social_media_sign_up_bloc.dart';
 
-class SetUserDetails extends StatefulWidget {
+class SocialMediaSignUp extends StatefulWidget {
   @override
-  _SetUserDetailsState createState() => _SetUserDetailsState();
+  _SocialMediaSignUpState createState() => _SocialMediaSignUpState();
 }
 
-class _SetUserDetailsState extends State<SetUserDetails> {
+class _SocialMediaSignUpState extends State<SocialMediaSignUp> {
 
   Auth _auth = Auth();
-  SetUserDetailBloc userDetailBloc;
+  SocialMediaSignUpBloc userDetailBloc;
 
   DateTime _selectedDate;
   int state;
@@ -31,7 +31,7 @@ class _SetUserDetailsState extends State<SetUserDetails> {
 
   @override
   void initState() {
-    userDetailBloc = BlocProvider.getBloc<SetUserDetailBloc>();
+    userDetailBloc = BlocProvider.getBloc<SocialMediaSignUpBloc>();
     userDetailBloc.getCurrentLocation();
     prepareListeners();
     super.initState();
@@ -90,8 +90,7 @@ class _SetUserDetailsState extends State<SetUserDetails> {
   Widget _arrowBack() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pop();
-        _auth.signOut();
+        _arrowBackClicked();
       },
       child: Icon(Icons.arrow_back, color: Colors.white, size: 40,),
     );
@@ -209,55 +208,23 @@ class _SetUserDetailsState extends State<SetUserDetails> {
     }
   }
 
-  _showIosDateBottomDialog(BuildContext context) {
-    DateTime nowDate = DateTime(1970, 1);
-    DateTime maxDate = DateTime(DateTime.now().year - 16, 1);
-
-    showModalBottomSheet(
+  _showIosDateBottomDialog(BuildContext context) async {
+    var date = await showModalBottomSheet(
         context: context,
         builder: (context) => Container(
           height: 260,
           color: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            ),
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Flexible(child: SizedBox(
-                  height: 20,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(Strings.select_button, style: TextStyle(color: Colors.blue[400]),),
-                  ),
-                ),),
-                Flexible(child: SizedBox(
-                  height: 200,
-                  child: CupertinoDatePicker(
-                    initialDateTime: nowDate,
-                    minimumDate: nowDate,
-                    maximumDate: maxDate,
-                    mode: CupertinoDatePickerMode.date,
-                    onDateTimeChanged: (selectedDate) {
-                      userDetailBloc.setAgeSelected(selectedDate);
-                    },
-                  ),
-                ),)
-              ],
-            ),
-          ),
+          child: IosDialogSelectDate()
         )
     );
+
+    userDetailBloc.setAgeSelected(date);
   }
 
   Widget _nextButton(BuildContext context) {
     return StreamBuilder(
       stream: userDetailBloc.progressStream,
+      initialData: false,
       builder: (context, snapshot) {
         bool isProgressVisible = snapshot.data;
         return isProgressVisible ? _loading() : ButtonTheme(
@@ -293,7 +260,7 @@ class _SetUserDetailsState extends State<SetUserDetails> {
 
     final newUser = ModalRoute.of(context).settings.arguments as UserModel;
 
-    userDetailBloc.onButtonClick(newUser, _selectedDate.millisecondsSinceEpoch, state);
+    userDetailBloc.onNextButtonClick(newUser, _selectedDate.millisecondsSinceEpoch, state);
   }
 
   void showErrorMessage(String message) {
@@ -326,7 +293,15 @@ class _SetUserDetailsState extends State<SetUserDetails> {
 
   @override
   void dispose() {
-    _auth.signOut();
+    userDetailBloc.logout();
     super.dispose();
+  }
+
+  void _arrowBackClicked() {
+    userDetailBloc.logout();
+    
+    Future.delayed(Duration(seconds: 1), () {
+      Navigator.pop(context, true);
+    });
   }
 }

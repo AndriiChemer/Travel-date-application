@@ -64,12 +64,13 @@ class Auth implements BaseAuth {
     return user;
   }
 
-  Future<void> signOut() async {
+  Future<bool> signOut() async {
     print("Auth");
     print("signOut");
-    _facebookSignIn.logOut();
-    _googleSignIn.signOut();
-    return _firebaseAuth.signOut();
+    await _facebookSignIn.logOut();
+    await _googleSignIn.signOut();
+    await _firebaseAuth.signOut();
+    return true;
   }
 
   Future<void> sendEmailVerification() async {
@@ -89,16 +90,26 @@ class Auth implements BaseAuth {
   @override
   Future<FirebaseUser> appleSignIn() async {
     print("googleSignIn");
+    if(_googleSignIn.currentUser != null) {
+      print("googleSignIn.currentUser is not null");
+    } else {
+      print("googleSignIn.currentUser is null");
+    }
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    print("googleSignIn 1");
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    print("googleSignIn 2");
 
     final AuthCredential credential = GoogleAuthProvider.getCredential(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken
     );
+    print("googleSignIn 3");
 
     AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
+    print("googleSignIn 4");
     FirebaseUser firebaseUser = authResult.user;
+    print("googleSignIn 5");
 
 
     print("currentUser.uid: " + firebaseUser.uid);

@@ -174,9 +174,9 @@ class _EditImageScreenState extends State<EditImageScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: FractionalOffset.topCenter,
-                  end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
-                  colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
-                  tileMode: TileMode.repeated, // repeats the gradient over the canvas
+                  end: FractionalOffset.bottomCenter,
+                  colors: [Colors.white.withOpacity(0.15), Colors.black, ],
+                  tileMode: TileMode.repeated,
                 ),
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10),  bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
               ),

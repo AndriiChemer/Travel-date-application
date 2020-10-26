@@ -1,19 +1,22 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location_platform_interface/location_platform_interface.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/ErrorHandler.dart';
 import 'package:travel_date_app/services/LocationService.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
+import 'package:travel_date_app/services/repository/auth_repository.dart';
 import 'package:travel_date_app/services/repository/new_messages_repository.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
+import 'package:travel_date_app/utils/strings.dart';
 
-class SetUserDetailBloc extends BlocBase {
-  SetUserDetailBloc();
+class SocialMediaSignUpBloc extends BlocBase {
+  SocialMediaSignUpBloc();
 
-  UserPreferences userPreferences = UserPreferences();
+  Auth _auth = Auth();
+  UserPreferences _userPreferences = UserPreferences();
   UserRepository userRepository = UserRepository();
   NewMessagesRepository newMessageRepository = NewMessagesRepository();
 
@@ -25,7 +28,7 @@ class SetUserDetailBloc extends BlocBase {
   var userController = BehaviorSubject<UserModel>();
 
   var messageErrorController = BehaviorSubject<String>();
-  var loadingProgressController = BehaviorSubject<bool>.seeded(false);
+  var loadingProgressController = BehaviorSubject<bool>();
 
   Stream<int> get stateStream => stateController.stream;
   Sink<int> get stateSink => stateController.sink;
@@ -51,8 +54,12 @@ class SetUserDetailBloc extends BlocBase {
   }
 
   void setAgeSelected(DateTime selectedDate) {
-    print("User age is: ${selectedDate.day}-${selectedDate.month}-${selectedDate.year})}");
-    ageSink.add(selectedDate);
+    if(selectedDate != null) {
+      print("User age is: ${selectedDate.day}-${selectedDate.month}-${selectedDate.year})}");
+      ageSink.add(selectedDate);
+    } else {
+      messageErrorSink.add(Strings.birthday_not_selected);
+    }
   }
 
   void _openNextScreen(UserModel user) {
@@ -60,13 +67,14 @@ class SetUserDetailBloc extends BlocBase {
 
     Future.wait([userRepository.addNewUser(user), newMessageRepository.addNewUser(user.id)])
         .then((List responses) {
-          userPreferences.writeUser(user);
+          _userPreferences.writeUser(user);
           progressSink.add(false);
           userSink.add(user);
         })
         .catchError((onError) {
           progressSink.add(false);
-          messageErrorSink.add(onError.toString());
+          var errorMessage = ErrorHandler.getErrorMessage(onError);
+          messageErrorSink.add(errorMessage);
         });
   }
 
@@ -82,7 +90,7 @@ class SetUserDetailBloc extends BlocBase {
     return birthDate;
   }
 
-  void onButtonClick(UserModel newUser, int millisecondsDateBirthday, int state) {
+  void onNextButtonClick(UserModel newUser, int millisecondsDateBirthday, int state) {
     newUser.birthday = millisecondsDateBirthday;
     newUser.sex = state == 0 ? "Male" : "Female";
 
@@ -99,7 +107,7 @@ class SetUserDetailBloc extends BlocBase {
       print("User place is null");
     }
 
-    _openNextScreen(newUser);
+//    _openNextScreen(newUser);
   }
 
   printUserLocation(Placemark place) {
@@ -153,5 +161,16 @@ class SetUserDetailBloc extends BlocBase {
       }
     }
     return age.toString();
+  }
+
+  logout() async {
+    _userPreferences.logout();
+    _auth.signOut();
+    //    Future.wait([_userPreferences.logout(), _auth.signOut()])
+//        .then((List responses) => {
+//
+//        }).catchError((onError) {
+//
+//        });
   }
 }

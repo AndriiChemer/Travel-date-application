@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:travel_date_app/utils/strings.dart';
@@ -200,7 +201,7 @@ class ResetPasswordDialogs extends StatelessWidget {
         Divider(),
         FlatButton(
           onPressed: () {
-            Navigator.pop(context, null);//of(context).pop(); // To close the dialog
+            Navigator.pop(context, null);
           },
           child: Text(Strings.cancel, style: TextStyle(fontSize: 16),),
         )
@@ -215,5 +216,53 @@ class ResetPasswordDialogs extends StatelessWidget {
     } else {
       print("Else");
     }
+  }
+}
+
+class IosDialogSelectDate extends StatelessWidget {
+
+  final DateTime nowDate = DateTime(1970, 1);
+  final DateTime maxDate = DateTime(DateTime.now().year - 16, 1);
+
+//  DateTime selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime selectedDateByUser;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+      ),
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Flexible(child: SizedBox(
+            height: 20,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context, selectedDateByUser);
+              },
+              child: Text(Strings.select_button, style: TextStyle(color: Colors.blue[400]),),
+            ),
+          ),),
+          Flexible(child: SizedBox(
+            height: 200,
+            child: CupertinoDatePicker(
+              initialDateTime: nowDate,
+              minimumDate: nowDate,
+              maximumDate: maxDate,
+              mode: CupertinoDatePickerMode.date,
+              onDateTimeChanged: (selectedDate) {
+                selectedDateByUser = selectedDate;
+//                Navigator.pop(context, null);
+//                userDetailBloc.setAgeSelected(selectedDate);
+              },
+            ),
+          ),)
+        ],
+      ),
+    );
   }
 }

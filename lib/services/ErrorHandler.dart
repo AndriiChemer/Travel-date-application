@@ -6,6 +6,8 @@ class ErrorHandler {
   static String getErrorMessage(onError) {
     if(onError is PlatformException) {
       return _getMessageByCode(onError.code);
+    } if(onError is NoSuchMethodError) {
+      return null;
     } else {
       return onError.toString();
     }
@@ -16,6 +18,8 @@ class ErrorHandler {
       return Strings.badly_email_format;
     } else if(code == "ERROR_WRONG_PASSWORD") {
       return Strings.badly_password;
+    } else if(code == "ERROR_USER_NOT_FOUND") {
+      return Strings.user_not_exist;
     }
     return Strings.general_error;
   }

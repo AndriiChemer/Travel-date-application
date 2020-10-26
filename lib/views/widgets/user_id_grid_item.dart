@@ -186,7 +186,7 @@ class _UserIdGridItemState extends State<UserIdGridItem> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: FractionalOffset.topCenter,
-                end: FractionalOffset.bottomCenter, // 10% of the width, so there are ten blinds.
+                end: FractionalOffset.bottomCenter, //// 10% of the width, so there are ten blinds.
                 colors: [Colors.white.withOpacity(0.15), Colors.black, ], // whitish to gray
                 tileMode: TileMode.repeated, // repeats the gradient over the canvas
               ),

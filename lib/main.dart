@@ -10,8 +10,8 @@ import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
 import 'package:travel_date_app/views/screens/registrationflow/successverify/success_verify.dart';
-import 'package:travel_date_app/views/screens/signin/setuserdetails/setuserdetail_bloc.dart';
-import 'package:travel_date_app/views/screens/signin/setuserdetails/setuserdetails.dart';
+import 'package:travel_date_app/views/screens/signin/setuserdetails/social_media_sign_up_bloc.dart';
+import 'package:travel_date_app/views/screens/signin/setuserdetails/social_media_sign_up.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 import 'package:travel_date_app/views/screens/splashscreen/splash_screen.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         Bloc((i)=> BottomNavBloc()),
         Bloc((i)=> MessageListBloc()),
         Bloc((i)=> UsersBloc()),
-        Bloc((i)=> SetUserDetailBloc()),
+        Bloc((i)=> SocialMediaSignUpBloc()),
         Bloc((i)=> SignInBloc()),
       ],
       child: UsersBlocProvider(
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                       '/verifyphone': (context) => VerifySuccess(),
                       '/setage': (context) => AgeScreen(),
                       '/mainNavigation': (context) => MainNavigation(),
-                      '/setuserdetails': (context) => SetUserDetails(),
+                      '/setuserdetails': (context) => SocialMediaSignUp(),
                     }
                 )
             ),

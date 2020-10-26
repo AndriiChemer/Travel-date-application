@@ -110,72 +110,29 @@ class _MainNavigationState extends State<MainNavigation> {
     return GestureDetector(
       onTap: onViewedIconClick,
       child: Container(
-        child: Stack(
-          children: [
-            Icon(Icons.remove_red_eye, color: Colors.yellow[800], size: 35,),
-            StreamBuilder(
-              stream: kissedWatchedBloc.getNewAccountWatchedCounter(userModel.id),
-              builder: (context, snapshot) {
-
-                if(!snapshot.hasData) {
-                  return Container();
-                }
-
-                var watchCount = snapshot.data.documents.length;
-
-                return watchCount > 0 ? Container(
-                  width: 40,
-                  height: 30,
-                  alignment: Alignment.topRight,
-                  margin: EdgeInsets.only(),
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.yellow[800],
-                        border: Border.all(color: Colors.black, width: 1)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Center(
-                        child: Text(
-                          watchCount.toString(),
-                          style: TextStyle(fontSize: 13, color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ) : Container();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _kissIcon() {
-    return GestureDetector(
-      onTap: onKissedIconClick,
-      child: Container(
-        child: Stack(
-          children: [
-            SvgPicture.asset("assets/images/icons/lips_icon.svg", height: 35, color: Colors.yellow[800],),
-            StreamBuilder(
-                stream: kissedWatchedBloc.getNewAccountKissedCounter(userModel.id),
+        color: Colors.red,
+        child: Center(
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: Icon(Icons.remove_red_eye, color: Colors.yellow[800], size: 35,),
+              ),
+              // ,
+              StreamBuilder(
+                stream: kissedWatchedBloc.getNewAccountWatchedCounter(userModel.id),
                 builder: (context, snapshot) {
 
-                  print('snapshot.hasData = ${snapshot.hasData}');
-                  if (!snapshot.hasData) {
-                    print("Does not has Data");
+                  if(!snapshot.hasData) {
                     return Container();
                   }
-                  print("Has Data");
 
-                  var kissCount = snapshot.data.documents.length;
-                  print('kissCount = $kissCount');
+                  var watchCount = snapshot.data.documents.length;
 
-                  return kissCount > 0 ? Container(
+                  return watchCount > 0 ? Container(
                     width: 40,
                     height: 30,
                     alignment: Alignment.topRight,
@@ -191,16 +148,73 @@ class _MainNavigationState extends State<MainNavigation> {
                         padding: const EdgeInsets.all(0.0),
                         child: Center(
                           child: Text(
-                            kissCount.toString(),
+                            watchCount.toString(),
                             style: TextStyle(fontSize: 13, color: Colors.black),
                           ),
                         ),
                       ),
                     ),
                   ) : Container();
-                }
-            )
-          ],
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _kissIcon() {
+    return GestureDetector(
+      onTap: onKissedIconClick,
+      child: Container(
+        child: Center(
+          child: Stack(
+            children: [
+              Center(
+                child: SvgPicture.asset("assets/images/icons/lips_icon.svg", height: 35, color: Colors.yellow[800],),
+              ),
+              StreamBuilder(
+                  stream: kissedWatchedBloc.getNewAccountKissedCounter(userModel.id),
+                  builder: (context, snapshot) {
+
+                    print('snapshot.hasData = ${snapshot.hasData}');
+                    if (!snapshot.hasData) {
+                      print("Does not has Data");
+                      return Container();
+                    }
+                    print("Has Data");
+
+                    var kissCount = snapshot.data.documents.length;
+                    print('kissCount = $kissCount');
+
+                    return kissCount > 0 ? Container(
+                      width: 40,
+                      height: 30,
+                      alignment: Alignment.topRight,
+                      margin: EdgeInsets.only(),
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.yellow[800],
+                            border: Border.all(color: Colors.black, width: 1)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: Center(
+                            child: Text(
+                              kissCount.toString(),
+                              style: TextStyle(fontSize: 13, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ) : Container();
+                  }
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -211,7 +225,7 @@ class _MainNavigationState extends State<MainNavigation> {
       onTap: () {
         Navigator.pushReplacementNamed(context, '/signin');
       },
-      child: Image.asset("assets/images/logo_big.png",),
+      child: Image.asset("assets/images/logo_big.png", height: 50,),
     );
   }
 

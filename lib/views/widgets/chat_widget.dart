@@ -45,9 +45,9 @@ class _ChatItemState extends State<ChatItem> {
     return GestureDetector(
       onTap: _openChat,
       child: Container(
-        height: 120,
+        height: 81,
         width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.only(left: 20, right: 20, top: 10),
+        margin: EdgeInsets.only(left: 20, right: 20, top: 5),
         child: StreamBuilder(
           stream: _usersBloc.getUserByIdStream(userId),
           initialData: null,
@@ -74,7 +74,6 @@ class _ChatItemState extends State<ChatItem> {
     return Column(
       children: <Widget>[
         _divider(context),
-        SizedBox(height: 10,),
         _chatDetail(id, chatName, chatImageUrl, isOnline)
       ],
     );
@@ -99,8 +98,8 @@ class _ChatItemState extends State<ChatItem> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 22), overflow: TextOverflow.ellipsis),
-            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 20), overflow: TextOverflow.ellipsis)
+            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18), overflow: TextOverflow.ellipsis),
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16), overflow: TextOverflow.ellipsis)
           ],
         ),
       ),
@@ -111,12 +110,12 @@ class _ChatItemState extends State<ChatItem> {
     return GestureDetector(
       onTap: _openUserDetails,
       child: Container(
-        margin: EdgeInsets.only(top: 10, bottom: 10, right: 20),
+        margin: EdgeInsets.only(top: 5, bottom: 10, right: 20),
         child: Stack(
           children: <Widget>[
             Container(
-              width: 70,
-              height: 70,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
@@ -137,8 +136,8 @@ class _ChatItemState extends State<ChatItem> {
         child: Align(
           alignment: Alignment.bottomRight,
           child: Container(
-            width: 16,
-            height: 16,
+            width: 14,
+            height: 14,
             margin: EdgeInsets.only(left: 45),
             decoration: BoxDecoration(
               color: isOnline ? Colors.yellow[800] : Colors.white,
@@ -156,7 +155,7 @@ class _ChatItemState extends State<ChatItem> {
         child: Align(
         alignment: Alignment.centerRight,
             child: Container(
-          height: 70,
+          height: 55,
           padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

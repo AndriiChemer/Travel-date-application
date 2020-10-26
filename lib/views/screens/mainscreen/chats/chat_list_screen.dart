@@ -63,17 +63,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   Widget _searchTextField() {
     return Container(
-      margin: EdgeInsets.fromLTRB(20, 30, 20, 20),
+      margin: EdgeInsets.fromLTRB(20, 15, 20, 10),
       child: TextFormField(
         autofocus: false,
         controller: searchTextFieldController,
-        style: TextStyle(fontSize: 18.0, color: Colors.grey[900]),
+        style: TextStyle(fontSize: 15.0, color: Colors.grey[900]),
         decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
             hintText: Strings.search,
             prefixIcon: Icon(Icons.search, color: Colors.grey[800],),
-            contentPadding: const EdgeInsets.only(left: 14.0, bottom: 12.0, top: 12.0),
+            contentPadding: const EdgeInsets.only(left: 14.0, bottom: 10.0, top: 12.0),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(25.7),
@@ -91,16 +91,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Wrap(
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(left: 20, top: 15),
+          margin: EdgeInsets.only(left: 20, top: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 24),),
+                child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 18),),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 5,),
               Container(
-                height: 90,
+                height: 70,
                 child: ListView.builder(
                     itemCount: chatModels.length,
                     scrollDirection: Axis.horizontal,
@@ -191,7 +191,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           },
 
           child: Container(
-            margin: EdgeInsets.only(top: 10, bottom: 20, right: 20),
+            margin: EdgeInsets.only(top: 5, bottom: 10, right: 20),
             child: Stack(
               children: <Widget>[
                 Container(

@@ -40,8 +40,8 @@ class Strings {
   static const String select_age = "Select age";
   static const String select_button = "Select";
   static const String next = "Next";
-  static const String male_error = "Please select who are you!";
-  static const String age_error = "Please choose your age!";
+  static const String male_error = "Please, choose your gender!";
+  static const String age_error = "Please, choose your age!";
 
   //Set Age Screen
   static const String interests = "Interests?";
@@ -104,9 +104,11 @@ class Strings {
   static const String facebook_error_message = 'Something went wrong with the login process.\n' +
     "Here\'s the error Facebook gave us: ";
 
+  //Social media sign up
+  static const String birthday_not_selected = "Please, select your date birthday.";
 
   //Server errors
-  static const String user_not_exist = "User does not exist!";
+  static const String user_not_exist = "User does't exist!\nYou can create new account or Sign In using social media buttons!";
   static const String badly_email_format = "The email address is badly formatted!";
   static const String badly_password = "The password is invalid or the user does not have a password!";
 

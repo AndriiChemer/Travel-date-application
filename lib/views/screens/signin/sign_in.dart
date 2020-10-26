@@ -2,6 +2,7 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/LocationService.dart';
 import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
 import 'package:travel_date_app/utils/strings.dart';
@@ -257,10 +258,17 @@ class _SignInScreenState extends State<SignInScreen> {
 
     signInBloc.socialMediaScreenStream.listen((newUser) {
       print("emit socialMediaScreenStream");
-      if(newUser != null) {
-        Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
-      }
+      _openSocialMediaSignUpScreen(newUser);
     });
+  }
+
+  void _openSocialMediaSignUpScreen(UserModel newUser) async {
+    if(newUser != null) {
+      bool result = await Navigator.pushNamed(context, '/setuserdetails', arguments: newUser);
+      if(result) {
+        signInBloc.onSignOutPressed();
+      }
+    }
   }
 
   Future<void> _onForgotButtonClicked() async {

@@ -102,7 +102,9 @@ class SignInBloc extends BlocBase {
   void _showErrorMessage(onError) {
     print('error: ' + onError.toString());
     var errorMessage = ErrorHandler.getErrorMessage(onError);
-    messageErrorSink.add(errorMessage);
+    if(errorMessage != null) {
+      messageErrorSink.add(errorMessage);
+    }
   }
 
   void _signInSuccess(FirebaseUser firebaseUser) {
