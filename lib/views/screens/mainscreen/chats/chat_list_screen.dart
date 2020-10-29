@@ -155,11 +155,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
           _chatBloc.isShowProgress(false);
 
           if(!snapshot.hasData) {
-            return Center(
-              child: Container(
-                child: Text('There are no any chats :(', style: TextStyle(fontSize: 24, color: Colors.yellow[800]),),
-              ),
-            );
+
+            return _showEmptyChats();
           } else {
 
             List<ChatModel> chats = _chatBloc.chatsConverter(snapshot.data.documents);
@@ -168,6 +165,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
               _chatBloc.isShowProgress(false);
               _chatBloc.showEmptyContent(false);
               addToMainChatList(chats, true);
+            } else {
+              return _showEmptyChats();
             }
 
             return ListView.builder(
@@ -178,6 +177,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _showEmptyChats() {
+    return Center(
+      child: Container(
+        child: Text('There are no any chats :(', style: TextStyle(fontSize: 24, color: Colors.yellow[800]),),
       ),
     );
   }
@@ -279,21 +286,50 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
     List<ChatModel> sorted = [];
+    List<int> indexesForRemoving = [];
+
+    int index = 0;
     chats.forEach((chat) {
 
-      if(!contains(chatModels, chat)) {
+      if(contains(chatModels, chat)) {
+
+        var existingChat = chatModels[index];
+
+        if(!equals(chat, existingChat)) {
+          print("\n updated chat${chat.lastMessage}\nold chat:${existingChat.lastMessage} \n");
+          sorted.add(chat);
+          indexesForRemoving.add(index);
+        }
+
+      } else {
         sorted.add(chat);
       }
+
+      index++;
     });
 
     if(isFromStream) {
-      chatModels.insertAll(0, sorted);
-      Future.delayed(Duration(seconds: 1), () { setState(() {}); });
-    } else {
-      setState(() {
-        chatModels.addAll(sorted);
+
+      indexesForRemoving.forEach((element) {
+        chatModels.removeAt(element);
       });
+
+      chatModels.insertAll(0, sorted);
+
+    } else {
+      chatModels.addAll(sorted);
     }
+  }
+
+  bool equals(ChatModel newChat, ChatModel existingChat) {
+
+    if(newChat.lastMessageAt == existingChat.lastMessageAt &&
+        newChat.lastMessage == existingChat.lastMessage &&
+        newChat.adminId == newChat.adminId) {
+      return true;
+    }
+
+    return false;
   }
 
   bool contains(List<ChatModel> list, ChatModel chat) {

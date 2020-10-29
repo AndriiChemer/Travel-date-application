@@ -23,7 +23,7 @@ class ChatModel {
 
   int lastContentType;
 
-  Map<String, dynamic> users;
+  List<Map<String, dynamic>> users;
 
   ChatModel(this.chatId, this.adminId, this.ids, this.createdAt,
       this.lastMessageAt, this.isChatActive, this.messageModify, this.lastMessage, this.groupChatId, this.lastContentType, this.users);

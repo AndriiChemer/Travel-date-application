@@ -20,6 +20,8 @@ class MessageRepository {
   }
 
   Stream<QuerySnapshot> getStreamMessagesByGroupChatId(String groupChatId, int documentLimit) {
+    print("MessageRepository");
+    print("getStreamMessagesByGroupChatId");
     return _firestore
         .collection(Columns.MESSAGE_COLUMN)
         .where('groupChatId', isEqualTo: groupChatId)

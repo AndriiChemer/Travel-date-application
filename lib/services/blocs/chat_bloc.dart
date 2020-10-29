@@ -45,10 +45,15 @@ class ChatBloc extends BlocBase {
     var adminId = yourId;
     var ids = [Ids(yourId, 0, true), Ids(userId, 0, false)];
 
-    var users = {
+    var user1 = {
       yourId: true,
+    };
+
+    var user2 = {
       userId: true
     };
+
+    List<Map<String, dynamic>> users = [user1, user2];
 
     int createdAt = DateTime.now().millisecondsSinceEpoch * 1000;
 

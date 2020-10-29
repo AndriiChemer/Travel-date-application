@@ -23,12 +23,27 @@ class ChatRepository {
   Stream<QuerySnapshot> getStreamChatListByUserId(String userId, int documentLimit) {
     print("ChatRepository");
     print("getStreamChatListByUserId");
+
     return _firestore
         .collection(Columns.CHAT_COLUMN)
+        .where('users', arrayContainsAny: [{userId: true}])
         .orderBy('lastMessageAt', descending: true)
-        .where('users.$userId', isEqualTo: true)
         .limit(documentLimit)
         .snapshots();
+
+    // return _firestore
+    //     .collection(Columns.CHAT_COLUMN)
+    //     .where('users', arrayContains: [userId])
+    //     .orderBy('lastMessageAt', descending: true)
+    //     .limit(documentLimit)
+    //     .snapshots();
+
+    // return _firestore
+    //     .collection(Columns.CHAT_COLUMN)
+    //     .where('users.$userId', isEqualTo: userId)
+    //     // .orderBy('lastMessageAt', descending: true)
+    //     .limit(documentLimit)
+    //     .snapshots();
   }
 
   Future<bool> createChat(ChatModel chatModel) async {

@@ -111,9 +111,9 @@ class MockServer {
   ];
 
   static List<ChatModel> chatsAndrii = [
-    ChatModel("1", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575536725137, 1575536751106, true, 0, "Fine, thanks:)", '1', -1, {'001': true, '002': true,}),
-    ChatModel("2", "2", [Ids('001', 0, true), Ids('002', 0, false)], 1575542888763, 1575542900405, true, 0, "Where are you?", '2', -1, {'001': true, '002': true,}),
-    ChatModel("3", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575542909316, 1575561488144, true, 0, "Fine, thanks:)", '2', -1, {'001': true, '002': true,}),
+    ChatModel("1", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575536725137, 1575536751106, true, 0, "Fine, thanks:)", '1', -1, List.empty()),
+    ChatModel("2", "2", [Ids('001', 0, true), Ids('002', 0, false)], 1575542888763, 1575542900405, true, 0, "Where are you?", '2', -1, List.empty()),
+    ChatModel("3", "1", [Ids('001', 0, true), Ids('002', 0, false)], 1575542909316, 1575561488144, true, 0, "Fine, thanks:)", '2', -1, List.empty()),
   ];
 
   static List<ChatUserInfo> chatAndriiViktoriia = [
