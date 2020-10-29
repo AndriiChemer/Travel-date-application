@@ -2,10 +2,6 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/user_model.dart';
-import 'package:travel_date_app/services/blocs/bottom_nav_bloc.dart';
-import 'package:travel_date_app/services/prefs/user_prefs.dart';
-import 'package:travel_date_app/services/repository/auth_repository.dart';
-import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
@@ -54,12 +50,13 @@ class _AccountScreenState extends State<AccountScreen> {
         _userInformation(),
         _userDescription(),
         _buttonPremiumCenter(context),
+
         _editProfileButton(),
-        SizedBox(height: 3,),
+        SizedBox(height: 2,),
         _verifyProfileButton(),
         SizedBox(height: widget.user.isVerify ? 0 : 3,),
         _settingsProfileButton(),
-        SizedBox(height: 3,),
+        SizedBox(height: 2,),
         _signOutButton(),
         SizedBox(height: widget.user.isVerify ? 20 : 40,),
       ],
@@ -181,22 +178,17 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _buildButton(Widget icon, String buttonText, GestureTapCallback callback) {
-    return GestureDetector(
-      onTap: callback,
+    return FlatButton(
+      onPressed: callback,
+      color: Colors.white.withOpacity(0.35),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.35),
-        ),
-
-        child: Container(
-          padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-          child: Row(
-            children: <Widget>[
-              icon,
-              SizedBox(width: 10,),
-              Text(buttonText, style: TextStyle(color: Colors.white, fontSize: 20),)
-            ],
-          ),
+        padding: EdgeInsets.only(top: 7, bottom: 7),
+        child: Row(
+          children: <Widget>[
+            icon,
+            SizedBox(width: 10,),
+            Text(buttonText, style: TextStyle(color: Colors.white, fontSize: 20),)
+          ],
         ),
       ),
     );

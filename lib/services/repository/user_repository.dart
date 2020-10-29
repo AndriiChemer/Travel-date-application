@@ -111,7 +111,7 @@ class UserRepository {
   }
 
   //TODO task uncomment where
-  Future<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) async {
+  Future<QuerySnapshot> getUsersByLocation(String yourId, String city, DocumentSnapshot lastDocument, int documentLimit) async {
     print("UserRepository");
     print("getUsersByLocation");
 
@@ -121,6 +121,7 @@ class UserRepository {
       querySnapshot = await _firestore
           .collection(Columns.USER_COLUMN)
 //          .where('city', isEqualTo: city)
+//           .where('field', '!=', yourId)
           .orderBy('lastVisitedAt')
           .limit(documentLimit)
           .getDocuments();
@@ -213,41 +214,4 @@ class UserRepository {
       print('onError: ' + onError.toString());
     });
   }
-
-//  Future<QuerySnapshot> getUserById(String userId) async {
-//    print("UserRepository");
-//    print("getUserById userId = $userId");
-//
-//    return await _firestore.collection(USER_COLUMN)
-//        .where('id', isEqualTo: userId)
-//        .getDocuments();
-//  }
-
-//  Stream<QuerySnapshot> getUsersByLocation(String city, DocumentSnapshot lastDocument, int documentLimit) {
-//    print("UserRepository");
-//    print("getUsersByLocation");
-//
-//    Stream<QuerySnapshot> querySnapshot;
-//    if(lastDocument == null) {
-//
-//      querySnapshot = _firestore
-//          .collection(USER_COLUMN)
-//          .where('city', isEqualTo: city)
-//          .orderBy('dateCreated')
-//          .limit(documentLimit)
-//          .snapshots();
-//
-//    } else {
-//
-//      querySnapshot = _firestore
-//          .collection(USER_COLUMN)
-//          .where('city', isEqualTo: city)
-//          .orderBy('dateCreated')
-//          .startAfterDocument(lastDocument)
-//          .limit(documentLimit)
-//          .snapshots();
-//
-//    }
-//    return querySnapshot;
-//  }
 }

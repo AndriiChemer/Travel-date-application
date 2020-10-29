@@ -1,5 +1,6 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/chat.dart';
 import 'package:travel_date_app/models/message.dart';
 import 'package:travel_date_app/services/repository/chat_repository.dart';
@@ -13,6 +14,14 @@ class ChatBloc extends BlocBase {
   bool _isLoading = false;
   int documentLimit = 10;
   DocumentSnapshot lastDocument;
+
+  /// Show progress
+  var _showProgress = BehaviorSubject<bool>();
+  Observable<bool> get showProgress => _showProgress.stream;
+
+  /// Show progress
+  var _emptyContent = BehaviorSubject<bool>();
+  Observable<bool> get emptyContent => _emptyContent.stream;
 
   final _chatRepository = ChatRepository();
   final _messageRepository = MessageRepository();
@@ -35,13 +44,19 @@ class ChatBloc extends BlocBase {
     var chatId = grpChtId;
     var adminId = yourId;
     var ids = [Ids(yourId, 0, true), Ids(userId, 0, false)];
+
+    var users = {
+      yourId: true,
+      userId: true
+    };
+
     int createdAt = DateTime.now().millisecondsSinceEpoch * 1000;
 
     var isChatActive = true;
     var messageModify = 0;
     var groupChatId = grpChtId;
 
-    ChatModel chat = ChatModel(chatId, adminId,  ids, createdAt, null, isChatActive, messageModify, null, groupChatId, null);
+    ChatModel chat = ChatModel(chatId, adminId,  ids, createdAt, null, isChatActive, messageModify, null, groupChatId, null, users);
 
     _chatRepository.createChat(chat).then((isCreated) {
 
@@ -83,6 +98,7 @@ class ChatBloc extends BlocBase {
     List<ChatModel> chats = [];
 
     documents.forEach((document){
+      print('Chat1');
       ChatModel chat = ChatModel.fromMap(document.data);
 
       chats.add(chat);
@@ -93,5 +109,22 @@ class ChatBloc extends BlocBase {
 
   void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) {
     _chatRepository.updateUserInRoom(isUserInRoom, yourId, groupCharId);
+  }
+
+  void isShowProgress(bool isVisible) {
+    _showProgress.add(isVisible);
+  }
+
+  void showEmptyContent(bool isVisible) {
+    _emptyContent.add(isVisible);
+  }
+
+  // ignore: must_call_super
+  void dispose() async {
+    await _showProgress.drain();
+    _showProgress.close();
+
+    await _emptyContent.drain();
+    _emptyContent.close();
   }
 }

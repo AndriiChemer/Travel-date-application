@@ -12,11 +12,11 @@ import 'package:travel_date_app/services/repository/new_messages_repository.dart
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/screens/kisswatchprofilescreen/who_kiss_watch_profile.dart';
+import 'package:travel_date_app/views/screens/mainscreen/users/users_screen.dart';
 import 'package:travel_date_app/views/widgets/bottom_nav_menu.dart';
 
 import 'account/account_screen.dart';
 import 'chats/chat_list_screen.dart';
-import 'discover/discover_screen.dart';
 
 class MainNavigation extends StatefulWidget {
 
@@ -43,14 +43,14 @@ class _MainNavigationState extends State<MainNavigation> {
     if(userModel == null) {
       userModel = ModalRoute.of(context).settings.arguments as UserModel;
     }
-    usersByLocationBloc.getUsersByLocation(userModel.city);
+    usersByLocationBloc.getUsersByLocation(userModel.city, userModel.id);
     usersByLocationBloc.getChats(userModel.id);
     usersByLocationBloc.isEmptyUsersByLocation.listen((onValue) {
-      usersByLocationBloc.getUsers();
+      usersByLocationBloc.getUsers(userModel.id);
     });
 
     navigationScreens = [
-      DiscoverScreen(),
+      UsersScreen(),
       Container(child: Center(child: Text("2", style: TextStyle(color: Colors.white)),),),
       ChatListScreen(yourAccount: userModel),
       AccountScreen(user: userModel)
@@ -110,7 +110,6 @@ class _MainNavigationState extends State<MainNavigation> {
     return GestureDetector(
       onTap: onViewedIconClick,
       child: Container(
-        color: Colors.red,
         child: Center(
           child: Stack(
             children: [

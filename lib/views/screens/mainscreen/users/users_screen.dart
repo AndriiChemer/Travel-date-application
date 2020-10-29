@@ -8,12 +8,12 @@ import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/views/widgets/user_grid_item.dart';
 
-class DiscoverScreen extends StatefulWidget {
+class UsersScreen extends StatefulWidget {
   @override
-  _DiscoverScreenState createState() => _DiscoverScreenState();
+  _UsersScreenState createState() => _UsersScreenState();
 }
 
-class _DiscoverScreenState extends State<DiscoverScreen> {
+class _UsersScreenState extends State<UsersScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -99,9 +99,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       double delta = MediaQuery.of(context).size.height * 0.2;
       if(maxScroll - currentScroll <= delta) {
         if(!isEmptyUsersByLocation) {
-          usersByLocationBloc.getUsersByLocation(ownModel.city);
+          usersByLocationBloc.getUsersByLocation(ownModel.city, ownModel.id);
         } else {
-          usersByLocationBloc.getUsers();
+          usersByLocationBloc.getUsers(ownModel.id);
         }
       }
     });

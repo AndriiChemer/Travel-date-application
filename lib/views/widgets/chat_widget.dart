@@ -42,30 +42,24 @@ class _ChatItemState extends State<ChatItem> {
   Widget build(BuildContext context) {
     String userId = _getUserIs(widget.yourModel.id);
 
-    return GestureDetector(
-      onTap: _openChat,
-      child: Container(
-        height: 81,
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-        child: StreamBuilder(
-          stream: _usersBloc.getUserByIdStream(userId),
-          initialData: null,
-          builder: (context, snapshot) {
+    return Container(
+      height: 81,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(left: 20, right: 20, top: 5),
+      child: StreamBuilder(
+        stream: _usersBloc.getUserByIdStream(userId),
+        initialData: null,
+        builder: (context, snapshot) {
 
+          if (!snapshot.hasData) {
+            return Container();
+          } else {
 
+            userModel = _usersBloc.usersConverter(widget.yourModel.id, snapshot.data.documents).first;
 
-            if (!snapshot.hasData) {
-
-              return Container();
-            } else {
-
-              userModel = _usersBloc.usersConverter(snapshot.data.documents).first;
-
-              return _bindItem(userId, userModel.name, userModel.imageUrl, userModel.isOnline);
-            }
-          },
-        ),
+            return _bindItem(userId, userModel.name, userModel.imageUrl, userModel.isOnline);
+          }
+        },
       ),
     );
   }
@@ -80,26 +74,32 @@ class _ChatItemState extends State<ChatItem> {
   }
 
   Widget _chatDetail(String id, String chatName, String chatImageUrl, bool isOnline) {
-    return Row(
-      children: <Widget>[
-        _circleImage(chatImageUrl, isOnline),
-        _chatInfo(chatName),
-        _lastMessageAt(id),
-      ],
+    return Expanded(
+      child: Row(
+        children: [
+          _circleImage(chatImageUrl, isOnline),
+          Expanded(
+            child: _chatInfo(chatName),
+          ),
+
+          _lastMessageAt(id),
+        ],
+      ),
     );
   }
 
   Widget _chatInfo(String chatName) {
     int valueEnd = widget.chatModel.lastMessage.length > 17 ? 17 : widget.chatModel.lastMessage.length;
-    return Container(
-      padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
-      child: Center(
+    return GestureDetector(
+      onTap: _openChat,
+      child: Container(
+        padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(chatName, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18), overflow: TextOverflow.ellipsis),
-            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16), overflow: TextOverflow.ellipsis)
+            Text(chatName, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18),),
+            Text("${widget.chatModel.lastMessage.substring(0, valueEnd)}...", overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16), )
           ],
         ),
       ),
@@ -151,7 +151,7 @@ class _ChatItemState extends State<ChatItem> {
   Widget _lastMessageAt(String id) {
     String lastMessage = TimeUtils.readTimestamp(widget.chatModel.lastMessageAt);
 
-    return Expanded(
+    return Container(
         child: Align(
         alignment: Alignment.centerRight,
             child: Container(
@@ -220,23 +220,25 @@ class _ChatItemState extends State<ChatItem> {
 
   Widget _circleNotification(int newMessageCount) {
     this.newMessageCount = newMessageCount;
-    return Container(
-      padding: EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(13),
-      ),
-      constraints: BoxConstraints(
-        minWidth: 20,
-        minHeight: 20,
-      ),
-      child: Text(
-        '$newMessageCount',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(13),
         ),
-        textAlign: TextAlign.center,
+        constraints: BoxConstraints(
+          minWidth: 20,
+          minHeight: 20,
+        ),
+        child: Text(
+          '$newMessageCount',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 11,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

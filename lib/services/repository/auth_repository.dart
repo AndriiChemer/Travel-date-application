@@ -25,6 +25,8 @@ abstract class BaseAuth {
 
   Future<UserModel> googleSignIn();
 
+  Future<UserModel> instagramSignIn();
+
   Future<UserModel> facebookSignIn();
 
   Future<FirebaseUser> appleSignIn();
@@ -203,5 +205,13 @@ class Auth implements BaseAuth {
   @override
   Future<void> resetPassword(String email) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  @override
+  Future<UserModel> instagramSignIn() async {
+    String url = 'https://api.instagram.com/oauth/authorize?client_id=317178079336950&redirect_uri=vk.com&response_type=123&scope=user_profile,user_media&state=3';
+    await http.get(url);
+
+    throw UnimplementedError();
   }
 }

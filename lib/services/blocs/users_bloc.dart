@@ -31,7 +31,7 @@ class UsersBloc extends BlocBase {
 
   Function(bool) get showProgressBar => _showProgress.sink.add;
 
-  void getUsersByLocation(String city) {
+  void getUsersByLocation(String city, String yourId) {
     print("UsersByLocationBloc");
     print("getUsersByLocation");
 
@@ -46,10 +46,10 @@ class UsersBloc extends BlocBase {
     
     _handleProgress(_isLoading);
 
-    _userRepository.getUsersByLocation(city, lastDocument, documentLimit).then((querySnapshot) {
+    _userRepository.getUsersByLocation(yourId, city, lastDocument, documentLimit).then((querySnapshot) {
 
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
-      List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
+      List<UserModel> usersList = usersConverter(yourId, usersListDocumentSnapshot);
 
       _users.add(usersList);
       _usersQuerySnapshot.add(usersListDocumentSnapshot);
@@ -77,13 +77,13 @@ class UsersBloc extends BlocBase {
     });
   }
 
-  void getUsers() {
+  void getUsers(String yourId) {
     print("UsersByLocationBloc");
     print("getUsers");
 
     _userRepository.getUsers(lastDocument, documentLimit).then((querySnapshot) {
       List<DocumentSnapshot> usersListDocumentSnapshot = querySnapshot.documents;
-      List<UserModel> usersList = usersConverter(usersListDocumentSnapshot);
+      List<UserModel> usersList = usersConverter(yourId, usersListDocumentSnapshot);
 
       _users.add(usersList);
       _usersQuerySnapshot.add(usersListDocumentSnapshot);
@@ -130,12 +130,15 @@ class UsersBloc extends BlocBase {
     _isLoading = isLoading;
   }
 
-  List<UserModel> usersConverter(List<DocumentSnapshot> listDocumentSnapshot) {
+  List<UserModel> usersConverter(String yourId, List<DocumentSnapshot> listDocumentSnapshot) {
     List<UserModel> users = [];
     listDocumentSnapshot.forEach((document) {
       UserModel user = UserModel.fromMap(document.data);
 
-      users.add(user);
+      if(yourId != user.id) {
+        users.add(user);
+      }
+
     });
 
     return users;

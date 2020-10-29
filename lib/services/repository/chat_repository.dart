@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:travel_date_app/models/chat.dart';
 
 import 'columns.dart';
@@ -24,7 +25,8 @@ class ChatRepository {
     print("getStreamChatListByUserId");
     return _firestore
         .collection(Columns.CHAT_COLUMN)
-        .orderBy('createdAt', descending: true)
+        .orderBy('lastMessageAt', descending: true)
+        .where('users.$userId', isEqualTo: true)
         .limit(documentLimit)
         .snapshots();
   }
@@ -75,7 +77,7 @@ class ChatRepository {
     try {
       _firestore.collection(Columns.CHAT_COLUMN)
           .document(chatModel.groupChatId)
-          .updateData(chatModel.toJson())
+          .updateData(chatModel.updateJson())
           .then((onValue) {
         print('Chat has been updated successful');
       }).catchError((onError) {
@@ -86,17 +88,6 @@ class ChatRepository {
       print('Try catch error ');
     }
   }
-
-//  void incrementNewMessageInChat(String grpChtId, String userId) {
-//    print("ChatRepository");
-//    print("updatincrementNewMessageInChateUserInRoom");
-//    _firestore.collection(Columns.CHAT_COLUMN)
-//        .document(grpChtId)
-//        .collection("ids")
-//        .document(userId)
-//        .where('userId', isEqualTo: userId)
-//        .updateData({"newMessageCoun" : FieldValue.increment(1)});
-//  }
 
   void updateUserInRoom(bool isUserInRoom, String yourId, String groupCharId) async {
     print("ChatRepository");

@@ -23,9 +23,10 @@ class ChatModel {
 
   int lastContentType;
 
+  Map<String, dynamic> users;
 
   ChatModel(this.chatId, this.adminId, this.ids, this.createdAt,
-      this.lastMessageAt, this.isChatActive, this.messageModify, this.lastMessage, this.groupChatId, this.lastContentType);
+      this.lastMessageAt, this.isChatActive, this.messageModify, this.lastMessage, this.groupChatId, this.lastContentType, this.users);
 
   ChatModel.fromMap(Map snapshot) :
         chatId = snapshot['chatId'] ?? '',
@@ -40,6 +41,22 @@ class ChatModel {
         lastMessage = snapshot['lastMessage'] ?? '';
 
   toJson() {
+    return {
+      "chatId": chatId,
+      "adminId": adminId,
+      "lastMessageAt": lastMessageAt,
+      "isChatActive": isChatActive,
+      "messageModify": messageModify,
+      "lastMessage": lastMessage,
+      "createdAt": createdAt,
+      "ids": convertListToMap(ids),
+      "groupChatId": groupChatId,
+      "lastContentType": lastContentType,
+      "users": users,
+    };
+  }
+
+  updateJson() {
     return {
       "chatId": chatId,
       "adminId": adminId,
@@ -75,9 +92,14 @@ class ChatModel {
     }).toList();
   }
 
+  static List<String> parseUserIDList(Map snapshot) {
+    return snapshot['users'].map<String>((item) {
+      return item as String;
+    }).toList();
+  }
+
   //TODO Think about it
   UserModel adminModel;
-  List<UserModel> users;
 }
 
 class Ids {

@@ -41,7 +41,12 @@ class SignInBloc extends BlocBase {
 
   void onFacebookSignInPressed() {
     _auth.facebookSignIn().then((user) {
-      _getUserById(user);
+      if(user != null) {
+        _getUserById(user);
+      } else {
+        _showErrorMessage("Facebook user is null!");
+      }
+
     }).catchError((onError) {
       _showErrorMessage(onError);
     });
@@ -71,6 +76,12 @@ class SignInBloc extends BlocBase {
     UserModel existingUser = responses[1];
 
     if(isUserExist) {
+      existingUser.imageUrl = newUser.imageUrl;
+
+      if(existingUser.imageUrl != newUser.imageUrl) {
+        _userRepository.updateUser(existingUser);
+      }
+
       print(existingUser.toJson().toString());
       _userPreferences.writeUser(existingUser);
       _userPreferences.saveLoggedIn();

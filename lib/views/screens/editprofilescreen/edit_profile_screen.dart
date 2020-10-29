@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,9 +7,18 @@ import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/services/repository/user_repository.dart';
 import 'package:travel_date_app/utils/colors.dart';
+import 'package:travel_date_app/utils/global_value.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editimages/edit_images.dart';
 import 'package:travel_date_app/views/widgets/app_bars.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:simple_auth/simple_auth.dart' as simpleAuth;
+import 'package:simple_auth_flutter/simple_auth_flutter.dart';
+
 
 class EditProfileScreen extends StatefulWidget {
 
@@ -34,6 +45,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+
+    SimpleAuthFlutter.init(context);
 
     _nameController.text = widget.user.name;
     _ageController.text = widget.user.calculateAge();
@@ -99,64 +112,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _instagramButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 50,
-        margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
-        decoration: BoxDecoration(
-          color: CustomColors.secondaryBackground,
-          borderRadius: BorderRadius.all(
-              Radius.circular(25)
-          ),
+  Widget _buildButton(String iconPath, String buttonText, GestureTapCallback callback) {
+    return Container(
+      height: 50,
+      margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      decoration: BoxDecoration(
+        color: CustomColors.secondaryBackground,
+        borderRadius: BorderRadius.all(
+            Radius.circular(25)
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(right: 10),
-              child: Image.asset('assets/images/icons/instagram_logo.png'),
-            ),
-            Text(Strings.conn_instagram, style: TextStyle(fontSize: 20, color: Colors.white),)
-          ],
+      ),
+      child: FlatButton(
+        onPressed: callback,
+        child: Container(
+          height: 50,
+          padding: EdgeInsets.only(top: 7, bottom: 7),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(right: 10),
+                child: Image.asset(iconPath),
+              ),
+              Text(buttonText, style: TextStyle(fontSize: 20, color: Colors.white),)
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _snapchatButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
+  Widget _instagramButton(BuildContext context) {
+    var iconPath = 'assets/images/icons/instagram_logo.png';
 
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 50,
-        margin: EdgeInsets.only(left: 20, right: 20, bottom: 20,),
-        decoration: BoxDecoration(
-          color: CustomColors.secondaryBackground,
-          borderRadius: BorderRadius.all(
-              Radius.circular(25)
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(right: 10),
-              child: Image.asset('assets/images/icons/snapchat_logo.png'),
-            ),
-            Text(Strings.conn_snapchat, style: TextStyle(fontSize: 20, color: Colors.white),)
-          ],
-        ),
-      ),
-    );
+    return _buildButton(iconPath, Strings.conn_instagram, _onInstagramButtonClicked);
+  }
+
+  Widget _snapchatButton(BuildContext context) {
+    var iconPath = 'assets/images/icons/snapchat_logo.png';
+    return _buildButton(iconPath, Strings.conn_snapchat, () {
+
+    });
   }
 
   Widget _editName() {
@@ -315,6 +312,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _imageSlider(BuildContext context) {
     return widget.user.isPhotoEmpty() ? _emptyImage(context) : CarouselSlider(
       height: 250,
+      viewportFraction: 1.0,
       items: widget.user.images.map((photoUrl) {
         return Builder(
           builder: (BuildContext context) {
@@ -416,5 +414,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _userRepository.updateUser(widget.user);
       Navigator.pop(context);
     }
+  }
+
+
+
+
+  final simpleAuth.InstagramApi _igApi = simpleAuth.InstagramApi(
+    "instagram",
+    GlobalValue.appID,
+    GlobalValue.secretID,
+    GlobalValue.redirectUrl,
+    scopes: [
+      'user_profile', // For getting username, account type, etc.
+      'user_media', // For accessing media count & data like posts, videos etc.
+    ],
+  );
+
+  _onInstagramButtonClicked() {
+
+    _igApi.authenticate().then((simpleAuth.Account _user) async {
+      print('result');
+      simpleAuth.OAuthAccount user = _user;
+      var igUserResponse =
+          await Dio(BaseOptions(baseUrl: 'https://graph.instagram.com')).get(
+            '/me',
+            queryParameters: {
+              "fields": "username,id,account_type,media_count",
+              "access_token": user.token,
+            }
+          );
+
+      print("data1: ${igUserResponse.data['id']}");
+      print("data2: ${igUserResponse.data['username']}");
+      print("data3: ${igUserResponse.data['account_type']}");
+      print("data4: ${igUserResponse.data['media_count']}");
+
+    });
   }
 }

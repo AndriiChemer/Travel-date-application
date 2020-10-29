@@ -48,13 +48,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: CustomColors.mainBackground,
-      body: Container(
-        child: Column(
-          children: <Widget>[
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+
+          ];
+        },
+        body: Column(
+          children: [
             _searchTextField(),
             _divider(context),
             _usersInChat(),
             _chatList(),
+            _loading(),
           ],
         ),
       ),
@@ -62,84 +68,105 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _searchTextField() {
-    return Container(
-      margin: EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: TextFormField(
-        autofocus: false,
-        controller: searchTextFieldController,
-        style: TextStyle(fontSize: 15.0, color: Colors.grey[900]),
-        decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            hintText: Strings.search,
-            prefixIcon: Icon(Icons.search, color: Colors.grey[800],),
-            contentPadding: const EdgeInsets.only(left: 14.0, bottom: 10.0, top: 12.0),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(25.7),
+    return StreamBuilder(
+      initialData: true,
+      stream: _chatBloc.emptyContent,
+      builder: (context, snapshot) {
+        return snapshot.data ? Container() : Container(
+          margin: EdgeInsets.fromLTRB(20, 15, 20, 10),
+          child: TextFormField(
+            autofocus: false,
+            controller: searchTextFieldController,
+            style: TextStyle(fontSize: 15.0, color: Colors.grey[900]),
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: Strings.search,
+                prefixIcon: Icon(Icons.search, color: Colors.grey[800],),
+                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 10.0, top: 12.0),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(25.7),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(25.7),
+                )
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(25.7),
-            )
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
   Widget _usersInChat() {
-    return Wrap(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(left: 20, top: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return StreamBuilder(
+        initialData: true,
+        stream: _chatBloc.emptyContent,
+        builder: (context, snapshot) {
+          return snapshot.data ? Container() : Wrap(
             children: <Widget>[
               Container(
-                child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 18),),
-              ),
-              SizedBox(height: 5,),
-              Container(
-                height: 70,
-                child: ListView.builder(
-                    itemCount: chatModels.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int index) {
+                margin: EdgeInsets.only(left: 20, top: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: Text("Matches", style: TextStyle(color: Colors.white, fontSize: 18),),
+                    ),
+                    SizedBox(height: 5,),
+                    Container(
+                      height: 70,
+                      child: ListView.builder(
+                          itemCount: chatModels.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
 
-                      if(chatModels.isEmpty) {
-                        return Container();
-                      }
+                            if(chatModels.isEmpty) {
+                              return Container();
+                            }
 
-                      String userID = chatModels[index].ids
-                          .where((model) => model.userId != widget.yourAccount.id)
-                          .toList()
-                          .first
-                          .userId;
+                            String userID = chatModels[index].ids
+                                .where((model) => model.userId != widget.yourAccount.id)
+                                .toList()
+                                .first
+                                .userId;
 
-                      return _circleImage(userID);
-                    }
+                            return _circleImage(userID);
+                          }
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              )
             ],
-          ),
-        )
-      ],
+          );
+        }
     );
   }
 
   Widget _chatList() {
     return Flexible(
+      flex: 1,
       child: StreamBuilder(
         stream: _chatBloc.getStreamChatListByUserId(widget.yourAccount.id),
         initialData: null,
         builder: (context, snapshot) {
+          _chatBloc.isShowProgress(false);
+
           if(!snapshot.hasData) {
-            return _loading();
+            return Center(
+              child: Container(
+                child: Text('There are no any chats :(', style: TextStyle(fontSize: 24, color: Colors.yellow[800]),),
+              ),
+            );
           } else {
 
             List<ChatModel> chats = _chatBloc.chatsConverter(snapshot.data.documents);
 
             if(chats.length > 0) {
+              _chatBloc.isShowProgress(false);
+              _chatBloc.showEmptyContent(false);
               addToMainChatList(chats, true);
             }
 
@@ -156,15 +183,21 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _loading() {
-    return Container(
-      height: 90,
-      margin: EdgeInsets.only(top: 10, bottom: 10),
-      child: Center(
-        child: SpinKitFadingCube(
-          color: Colors.yellow[800],
-          size: 30,
-        ),
-      ),
+
+    return StreamBuilder(
+        initialData: true,
+        stream: _chatBloc.showProgress,
+        builder: (context, snapshot) {
+          return snapshot.data ? Expanded(child: Container(
+            margin: EdgeInsets.only(top: 10, bottom: 10),
+            child: Center(
+              child: SpinKitFadingCube(
+                color: Colors.yellow[800],
+                size: 30,
+              ),
+            ),
+          )) : Container();
+        }
     );
   }
 
@@ -183,7 +216,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           return Container();
         }
 
-        UserModel user = _usersBloc.usersConverter(snapshot.data.documents).first;
+        UserModel user = _usersBloc.usersConverter(widget.yourAccount.id, snapshot.data.documents).first;
 
         return GestureDetector(
           onTap: () {
@@ -230,11 +263,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Widget _divider(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 20, right: 20),
-      width: MediaQuery.of(context).size.width,
-      height: 1,
-      color: Colors.grey,
+    return StreamBuilder(
+        initialData: true,
+        stream: _chatBloc.emptyContent,
+        builder: (context, snapshot) {
+          return snapshot.data ? Container() : Container(
+            margin: EdgeInsets.only(left: 20, right: 20),
+            width: MediaQuery.of(context).size.width,
+            height: 1,
+            color: Colors.grey,
+          );
+        }
     );
   }
 
