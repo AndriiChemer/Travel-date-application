@@ -30,20 +30,6 @@ class ChatRepository {
         .orderBy('lastMessageAt', descending: true)
         .limit(documentLimit)
         .snapshots();
-
-    // return _firestore
-    //     .collection(Columns.CHAT_COLUMN)
-    //     .where('users', arrayContains: [userId])
-    //     .orderBy('lastMessageAt', descending: true)
-    //     .limit(documentLimit)
-    //     .snapshots();
-
-    // return _firestore
-    //     .collection(Columns.CHAT_COLUMN)
-    //     .where('users.$userId', isEqualTo: userId)
-    //     // .orderBy('lastMessageAt', descending: true)
-    //     .limit(documentLimit)
-    //     .snapshots();
   }
 
   Future<bool> createChat(ChatModel chatModel) async {

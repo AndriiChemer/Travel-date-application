@@ -98,8 +98,27 @@ class ChatModel {
     }).toList();
   }
 
-  //TODO Think about it
-  UserModel adminModel;
+  bool contains(List<ChatModel> list) {
+
+    for(ChatModel itemChat in list) {
+      if(itemChat.groupChatId == groupChatId) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool equals(ChatModel model) {
+
+    if(lastMessageAt == model.lastMessageAt &&
+        lastMessage == model.lastMessage &&
+        adminId == model.adminId) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 class Ids {

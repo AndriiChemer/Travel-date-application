@@ -291,12 +291,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
     int index = 0;
     chats.forEach((chat) {
 
-      if(contains(chatModels, chat)) {
+      if(chat.contains(chatModels)) {
 
         var existingChat = chatModels[index];
 
-        if(!equals(chat, existingChat)) {
-          print("\n updated chat${chat.lastMessage}\nold chat:${existingChat.lastMessage} \n");
+        if(!chat.equals(existingChat)) {
           sorted.add(chat);
           indexesForRemoving.add(index);
         }
@@ -319,29 +318,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     } else {
       chatModels.addAll(sorted);
     }
-  }
-
-  bool equals(ChatModel newChat, ChatModel existingChat) {
-
-    if(newChat.lastMessageAt == existingChat.lastMessageAt &&
-        newChat.lastMessage == existingChat.lastMessage &&
-        newChat.adminId == newChat.adminId) {
-      return true;
-    }
-
-    return false;
-  }
-
-  bool contains(List<ChatModel> list, ChatModel chat) {
-    String groupChatId = chat.groupChatId;
-
-    for(ChatModel itemChat in list) {
-      if(itemChat.groupChatId == groupChatId) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   void addScrollListener() {

@@ -10,8 +10,6 @@ import 'package:travel_date_app/views/widgets/chat_widget.dart';
 
 class ChatBloc extends BlocBase {
 
-  bool _hasMore = true;
-  bool _isLoading = false;
   int documentLimit = 10;
   DocumentSnapshot lastDocument;
 
