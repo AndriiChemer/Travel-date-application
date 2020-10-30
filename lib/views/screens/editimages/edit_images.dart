@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/image_bloc.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
-import 'package:travel_date_app/services/prefs/user_prefs.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/utils/validatop.dart';
@@ -26,41 +25,16 @@ class EditImageScreen extends StatefulWidget {
 
 class _EditImageScreenState extends State<EditImageScreen> {
 
+  static const int SET_PROFILE = 1;
+  static const int REMOVE = 2;
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  var _userPreferences = UserPreferences();
   ImageBloc _imageBloc;
-  List<String> images = [];
-
-  @override
-  void initState() {
-    buildImageList();
-
-    super.initState();
-  }
-
-  buildImageList() {
-    _userPreferences.getGalleryImages().then((imageList) {
-
-      if(imageList != null) {
-        imageList.map((image) {
-          images.add(image);
-        }).toList();
-      }
-
-      widget.user.images.addAll(images);
-
-      if(widget.user.imageUrl != '') {
-        images.insert(0, widget.user.imageUrl);
-      }
-      setState(() {
-        images.add('');
-      });
-    });
-  }
 
     @override
   void didChangeDependencies() {
     _imageBloc = ImageBlocProvider.of(context);
+    _imageBloc.prepareUserImages();
     super.didChangeDependencies();
   }
 
@@ -100,17 +74,27 @@ class _EditImageScreenState extends State<EditImageScreen> {
     final double itemWidth = size.width / 3;
     final double itemHeight = (size.width / 2);
 
-    return Expanded(
-      child: GridView.count(
-        crossAxisCount: 3,
-        shrinkWrap: true,
-        physics: ScrollPhysics(),
-        childAspectRatio: (itemWidth / itemHeight),
-        padding: const EdgeInsets.all(10),
-        children: images.map((String image) {
-          return ValidateFields.isStringUrl(image) ? _imageItem(image, itemWidth, itemHeight) : image != '' ? _localImage(image, itemWidth, itemHeight) : _addImage(itemWidth, itemHeight);
-        }).toList(),
-      ),
+    return StreamBuilder<List<String>>(
+      stream: _imageBloc.imagesStream,
+      initialData: [],
+      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+
+        List<String> images = snapshot.data;
+        images.add('');
+
+        return Expanded(
+          child: GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: ScrollPhysics(),
+            childAspectRatio: (itemWidth / itemHeight),
+            padding: const EdgeInsets.all(10),
+            children: images.map((String image) {
+              return ValidateFields.isStringUrl(image) ? _imageItem(image, itemWidth, itemHeight) : image != '' ? _localImage(image, itemWidth, itemHeight) : _addImage(itemWidth, itemHeight);
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -219,23 +203,10 @@ class _EditImageScreenState extends State<EditImageScreen> {
     );
   }
 
-  _editButtonClick(int value, String image) {
-    // TODO task add functions
-  }
-
   Future _addImageButtonClick() async {
     await ImagePicker.pickImage(source: ImageSource.gallery).then((imageFile){
       _imageBloc.uploadImage(imageFile, widget.user);
-      showLocalImage(imageFile);
     });
-  }
-
-  showLocalImage(File image) {
-      setState(() {
-        images.removeLast();
-        images.add(image.path);
-        images.add('');
-      });
   }
 
   onSaveClick() {
@@ -265,21 +236,24 @@ class _EditImageScreenState extends State<EditImageScreen> {
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
         PopupMenuItem(
-          value: 1,
-          child: Text("Menu 1", style: TextStyle(fontWeight: FontWeight.w700),),
+          value: SET_PROFILE,
+          child: Text("Set as profile", style: TextStyle(fontWeight: FontWeight.w700),),
         ),
         PopupMenuItem(
-          value: 2,
-          child: Text("Menu 2", style: TextStyle(fontWeight: FontWeight.w700),),
-        ),
-        PopupMenuItem(
-          value: 3,
-          child: Text("Menu 3", style: TextStyle(fontWeight: FontWeight.w700),),
+          value: REMOVE,
+          child: Text("Remove", style: TextStyle(fontWeight: FontWeight.w700),),
         )
       ],
       padding: EdgeInsets.all(0),
       onSelected: (value) {
-        _editButtonClick(value, image);
+        switch(value) {
+          case SET_PROFILE:
+            _imageBloc.setAsProfileImage(widget.user.id, image);
+            break;
+          case REMOVE:
+            _imageBloc.removeImage(widget.user.id, image);
+            break;
+        }
       },
       child: GestureDetector(
         child: Container(

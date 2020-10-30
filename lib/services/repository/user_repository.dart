@@ -185,7 +185,18 @@ class UserRepository {
     return imageUrl;
   }
 
-  Future<void> uploadUserImage(String imageUrl, String id) {
+  Future<void> removeImage(String userId, String url) async {
+    FirebaseStorage.instance.getReferenceFromUrl(url)
+        .then((value) {
+          value.delete();
+        })
+        .catchError((onError) {
+          print('Remove image error: ${onError.toString()}');
+        });
+
+  }
+
+  Future<void> setUserImage(String imageUrl, String id) async {
     print("UserRepository");
     print("uploadUserImage");
 
@@ -200,13 +211,13 @@ class UserRepository {
     });
   }
 
-  Future<void> addGalleryImage(UserModel user) {
+  Future<void> updateGallery(String userId, List<String> images) async {
     print("UserRepository");
     print("uploadUserImage");
 
     _firestore.collection(Columns.USER_COLUMN)
-        .document(user.id)
-        .updateData({'images' : FieldValue.arrayUnion(user.images)})
+        .document(userId)
+        .updateData({'images' : FieldValue.arrayUnion(images)})
         .then((onValue) {
       print('User\'s gallery has been updated successful');
     }).catchError((onError) {

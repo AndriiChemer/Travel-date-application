@@ -95,13 +95,48 @@ class UserPreferences {
     await prefs.setString(_userImage, imageUrl);
   }
 
+  Future<List<String>> setImageAsProfile(String imageUrl) async {
+    prefs = await SharedPreferences.getInstance();
+
+    List<String> images = prefs.getStringList(_imageList);
+    if(images != null) {
+
+      int index = indexAt(imageUrl, images);
+      String oldImageProfile = images[0];
+
+      images.removeAt(index);
+      images.insert(index, oldImageProfile);
+      images.removeAt(0);
+      images.insert(0, imageUrl);
+
+    }
+
+    await prefs.setStringList(_imageList, images);
+
+    return images;
+  }
+
+  int indexAt(String imageUrl, List<String> images) {
+    int index = 0;
+    for(String image in images) {
+
+      if(image == imageUrl) {
+        return index;
+      }
+
+      index++;
+    }
+
+    return -1;
+  }
+
   Future<String> getUserId() async {
     prefs = await SharedPreferences.getInstance();
 
     return prefs.getString(_userID);
   }
 
-  void addGalleryImage(String imageUrl) async {
+  Future<List<String>> addGalleryImage(String imageUrl) async {
     prefs = await SharedPreferences.getInstance();
 
     List<String> images = prefs.getStringList(_imageList);
@@ -112,6 +147,21 @@ class UserPreferences {
     }
 
     await prefs.setStringList(_imageList, images);
+
+    return images;
+  }
+
+  Future<List<String>> removeImageFromGallery(String imageUrl) async {
+    prefs = await SharedPreferences.getInstance();
+
+    List<String> images = prefs.getStringList(_imageList);
+    if(images != null) {
+      images.remove(imageUrl);
+    }
+
+    await prefs.setStringList(_imageList, images);
+
+    return images;
   }
 
   Future<List<String>> getGalleryImages() async {

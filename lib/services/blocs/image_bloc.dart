@@ -10,34 +10,57 @@ class ImageBloc {
 
   final _userRepository = UserRepository();
   final _userPreferences = UserPreferences();
-  var _showProgress = BehaviorSubject<bool>();
-  var _image = BehaviorSubject<String>();
 
-  Observable<bool> get showProgress => _showProgress.stream;
-  Stream<String> get image => _image.stream;
+  /// Error message
+  var _imageListController = BehaviorSubject<List<String>>();
+  Stream<List<String>> get imagesStream => _imageListController.stream;
+  Sink<List<String>> get _imagesSink => _imageListController.sink;
 
   uploadImage(File image, UserModel user) async {
     _userRepository.uploadImageProfile(image, user.id).then((imageUrl) async {
       if(user.imageUrl == "") {
         user.imageUrl = imageUrl;
         _userPreferences.setUserImage(imageUrl);
-        _userRepository.uploadUserImage(imageUrl, user.id);
-      } else {
-        user.images.add(imageUrl);
-        _userRepository.addGalleryImage(user);
-        _userPreferences.addGalleryImage(imageUrl);
+        _userRepository.setUserImage(imageUrl, user.id);
       }
+
+      List<String> images = await _userPreferences.addGalleryImage(imageUrl);
+      _userRepository.updateGallery(user.id, images);
+
+      _imagesSink.add(images);
     }).catchError((onError){
       //TODO task show error for user
 
     });
   }
 
-  void dispose() async {
-    await _showProgress.drain();
-    _showProgress.close();
+  removeImage(String userId, String imageUrl) async {
+    _userRepository.removeImage(userId, imageUrl);
+    _userPreferences.removeImageFromGallery(imageUrl).then((imageList) {
 
-    await _image.drain();
-    _image.close();
+      _userRepository.updateGallery(userId, imageList);
+
+      _imagesSink.add(imageList);
+    });
+  }
+
+  setAsProfileImage(String userId, String imageUrl) async {
+    _userPreferences.setUserImage(imageUrl);
+    _userRepository.setUserImage(imageUrl, userId);
+    List<String> images = await _userPreferences.setImageAsProfile(imageUrl);
+
+    _userRepository.updateGallery(userId, images);
+    _imagesSink.add(images);
+  }
+
+  prepareUserImages() {
+    _userPreferences.getGalleryImages().then((images) {
+      _imagesSink.add(images);
+    });
+  }
+
+  void dispose() async {
+    await _imageListController.drain();
+    _imageListController.close();
   }
 }
