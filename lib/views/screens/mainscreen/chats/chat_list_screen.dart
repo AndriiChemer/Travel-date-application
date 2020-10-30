@@ -285,39 +285,38 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   void addToMainChatList(List<ChatModel> chats, bool isFromStream) {
-    List<ChatModel> sorted = [];
-    List<int> indexesForRemoving = [];
+    List<ChatModel> sorted = prepareSortedChatList(chats);
 
-    int index = 0;
+    if(isFromStream) {
+      chatModels.insertAll(0, sorted);
+
+    } else {
+      chatModels.addAll(sorted);
+    }
+  }
+
+  List<ChatModel> prepareSortedChatList(List<ChatModel> chats) {
+    List<ChatModel> sorted = [];
+
     chats.forEach((chat) {
 
-      if(chat.contains(chatModels)) {
+      int existingIndex = chat.containsAndGetIndexOrNull(chatModels);
+      if(existingIndex != null) {
 
-        var existingChat = chatModels[index];
+        var existingChat = chatModels[existingIndex];
 
         if(!chat.equals(existingChat)) {
           sorted.add(chat);
-          indexesForRemoving.add(index);
+          chatModels.removeAt(existingIndex);
         }
 
       } else {
         sorted.add(chat);
       }
 
-      index++;
     });
 
-    if(isFromStream) {
-
-      indexesForRemoving.forEach((element) {
-        chatModels.removeAt(element);
-      });
-
-      chatModels.insertAll(0, sorted);
-
-    } else {
-      chatModels.addAll(sorted);
-    }
+    return sorted;
   }
 
   void addScrollListener() {

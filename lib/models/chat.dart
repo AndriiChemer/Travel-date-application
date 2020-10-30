@@ -109,6 +109,20 @@ class ChatModel {
     return false;
   }
 
+  int containsAndGetIndexOrNull(List<ChatModel> list) {
+
+    int index = 0;
+    for(ChatModel itemChat in list) {
+      
+      if(itemChat.groupChatId == groupChatId) {
+        return index;
+      }
+      index++;
+    }
+
+    return null;
+  }
+
   bool equals(ChatModel model) {
 
     if(lastMessageAt == model.lastMessageAt &&
