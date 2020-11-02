@@ -61,6 +61,6 @@ class _CustomAppBarState extends State<CustomAppBar>{
   }
 
   _onTapClick() {
-    Navigator.of(context).pop();
+    Navigator.of(context).pop({'isUpdate' : true});
   }
 }

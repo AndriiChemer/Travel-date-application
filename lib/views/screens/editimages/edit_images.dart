@@ -67,7 +67,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
   }
 
   _arrowBackClick() {
-    Navigator.of(context).pop({'user' : widget.user});
+    Navigator.of(context).pop({'isUpdate' : true});
   }
 
   Widget _gridImageList(BuildContext context) {
@@ -243,7 +243,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
   }
 
   onSaveClick() {
-    Navigator.pop(context, {'user' : widget.user});
+    Navigator.of(context).pop({'isUpdate' : true});
   }
 
   Widget _saveButton(BuildContext context) {

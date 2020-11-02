@@ -17,10 +17,7 @@ class ImageBloc {
   Sink<List<String>> get _imagesSink => _imageListController.sink;
 
   uploadImage(File image, UserModel user) async {
-    //TODO show image list with last image loading
-    List<String> loadImages = _imageListController.value;
-    loadImages.add('loading');
-    _imagesSink.add(loadImages);
+    _addLoadingImage();
 
     _userRepository.uploadImageProfile(image, user.id).then((imageUrl) async {
       if(user.imageUrl == "") {
@@ -34,9 +31,15 @@ class ImageBloc {
 
       _imagesSink.add(images);
     }).catchError((onError){
-      //TODO task show error for user
-
+      print('uploadImage Error: ${onError.toString()}');
     });
+  }
+
+  _addLoadingImage() {
+    List<String> loadImages = _imageListController.value;
+    loadImages.removeLast();
+    loadImages.add('loading');
+    _imagesSink.add(loadImages);
   }
 
   removeImage(String userId, String imageUrl) async {

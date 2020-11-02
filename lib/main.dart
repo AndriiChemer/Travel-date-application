@@ -7,6 +7,7 @@ import 'package:travel_date_app/services/blocs/providers/chat_bloc_provider.dart
 import 'package:travel_date_app/services/blocs/providers/general_new_message_bloc_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/progress_block_provider.dart';
 import 'package:travel_date_app/services/blocs/providers/user_provider.dart';
+import 'package:travel_date_app/services/blocs/user_bloc.dart';
 import 'package:travel_date_app/services/blocs/users_bloc.dart';
 import 'package:travel_date_app/views/screens/mainscreen/main_navigation.dart';
 import 'package:travel_date_app/views/screens/registrationflow/agescreen/agescreen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         Bloc((i)=> UsersBloc()),
         Bloc((i)=> SocialMediaSignUpBloc()),
         Bloc((i)=> SignInBloc()),
+        Bloc((i)=> UserBloc()),
       ],
       child: UsersBlocProvider(
         child: UserBlocProvider(

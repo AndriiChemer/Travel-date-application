@@ -9,7 +9,6 @@ import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_scr
 import 'package:travel_date_app/views/screens/settingsscreen/settings_screen.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 
-//TODO load user from preferences
 class AccountScreen extends StatefulWidget {
 
   final UserModel user;
@@ -50,22 +49,31 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _mainContent(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        _userImage(),
-        _userInformation(),
-        _userDescription(),
-        _buttonPremiumCenter(context),
+    return StreamBuilder<Object>(
+      stream: userBloc.userStream,
+      initialData: widget.user,
+      builder: (context, snapshot) {
 
-        _editProfileButton(),
-        SizedBox(height: 2,),
-        _verifyProfileButton(),
-        SizedBox(height: widget.user.isVerify ? 0 : 3,),
-        _settingsProfileButton(),
-        SizedBox(height: 2,),
-        _signOutButton(),
-        SizedBox(height: widget.user.isVerify ? 20 : 40,),
-      ],
+        UserModel user = snapshot.data;
+
+        return ListView(
+          children: <Widget>[
+            _userImage(user),
+            _userInformation(user),
+            _userDescription(user),
+            _buttonPremiumCenter(context),
+
+            _editProfileButton(user),
+            SizedBox(height: 2,),
+            _verifyProfileButton(user),
+            SizedBox(height: user.isVerify ? 0 : 3,),
+            _settingsProfileButton(),
+            SizedBox(height: 2,),
+            _signOutButton(),
+            SizedBox(height: user.isVerify ? 20 : 40,),
+          ],
+        );
+      }
     );
   }
 
@@ -110,7 +118,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _userImage() {
+  Widget _userImage(UserModel user) {
     return GestureDetector(
       onTap: () {
 
@@ -119,7 +127,7 @@ class _AccountScreenState extends State<AccountScreen> {
         height: 250,
         decoration: BoxDecoration(
             image: DecorationImage(
-              image: widget.user.isPhotoEmpty() ? AssetImage(widget.user.getEmptyPhoto()) : NetworkImage(widget.user.imageUrl),
+              image: user.isPhotoEmpty() ? AssetImage(user.getEmptyPhoto()) : NetworkImage(user.imageUrl),
               fit: BoxFit.cover,
             )
         ),
@@ -127,14 +135,13 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _userInformation() {
-    var userName = widget.user.name;
-    var userAge = widget.user.calculateAge();
+  Widget _userInformation(UserModel user) {
+
     return Container(
       padding: EdgeInsets.all(20),
       child: Row(
         children: <Widget>[
-          Text("$userName, $userAge", style: TextStyle(color: Colors.white, fontSize: 23),),
+          Text("${user.name}, ${user.calculateAge()}", style: TextStyle(color: Colors.white, fontSize: 23),),
           _goldCircle(),
         ],
       ),
@@ -153,22 +160,26 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _userDescription() {
-    return widget.user.description != null ? Container(
+  Widget _userDescription(UserModel user) {
+    return user.description != null ? Container(
       color: CustomColors.personItemBackground,
       padding: EdgeInsets.all(20),
-      child: Text(widget.user.description != null ? widget.user.description : "", style: TextStyle(color: Colors.white),),
+      child: Text(user.description != null ? user.description : "", style: TextStyle(color: Colors.white),),
     ) : Container();
   }
 
-  Widget _editProfileButton() {
-    return _buildButton(Icon(Icons.edit, size: 30, color: Colors.white,), Strings.edit, () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: widget.user)));
+  Widget _editProfileButton(UserModel user) {
+    return _buildButton(Icon(Icons.edit, size: 30, color: Colors.white,), Strings.edit, () async {
+      var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: user)));
+
+      if(result['isUpdate'] as bool) {
+        userBloc.getUser();
+      }
     });
   }
 
-  Widget _verifyProfileButton() {
-    return widget.user.isVerify ? Container() : _buildButton(Icon(Icons.verified_user, size: 30, color: Colors.white,), Strings.verify, () {
+  Widget _verifyProfileButton(UserModel user) {
+    return user.isVerify ? Container() : _buildButton(Icon(Icons.verified_user, size: 30, color: Colors.white,), Strings.verify, () {
 
     });
   }
