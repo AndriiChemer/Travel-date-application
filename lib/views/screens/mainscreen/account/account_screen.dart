@@ -2,12 +2,14 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_date_app/models/user_model.dart';
+import 'package:travel_date_app/services/blocs/user_bloc.dart';
 import 'package:travel_date_app/utils/colors.dart';
 import 'package:travel_date_app/utils/strings.dart';
 import 'package:travel_date_app/views/screens/editprofilescreen/edit_profile_screen.dart';
 import 'package:travel_date_app/views/screens/settingsscreen/settings_screen.dart';
 import 'package:travel_date_app/views/screens/signin/sign_in_bloc.dart';
 
+//TODO load user from preferences
 class AccountScreen extends StatefulWidget {
 
   final UserModel user;
@@ -22,10 +24,14 @@ class _AccountScreenState extends State<AccountScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   SignInBloc signInBloc;
+  UserBloc userBloc;
 
   @override
   void initState() {
     signInBloc = BlocProvider.getBloc<SignInBloc>();
+    userBloc = BlocProvider.getBloc<UserBloc>();
+
+    userBloc.getUser();
     super.initState();
   }
 

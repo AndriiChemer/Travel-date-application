@@ -11,12 +11,17 @@ class ImageBloc {
   final _userRepository = UserRepository();
   final _userPreferences = UserPreferences();
 
-  /// Error message
+  /// Images message
   var _imageListController = BehaviorSubject<List<String>>();
   Stream<List<String>> get imagesStream => _imageListController.stream;
   Sink<List<String>> get _imagesSink => _imageListController.sink;
 
   uploadImage(File image, UserModel user) async {
+    //TODO show image list with last image loading
+    List<String> loadImages = _imageListController.value;
+    loadImages.add('loading');
+    _imagesSink.add(loadImages);
+
     _userRepository.uploadImageProfile(image, user.id).then((imageUrl) async {
       if(user.imageUrl == "") {
         user.imageUrl = imageUrl;

@@ -29,7 +29,7 @@ class SignInBloc extends BlocBase {
   /// Sign In using social media screen
   var socialMediaScreenController = BehaviorSubject<UserModel>();
   Stream<UserModel> get socialMediaScreenStream => socialMediaScreenController.stream;
-  Sink<UserModel> get socialMediaScreenErrorSink => socialMediaScreenController.sink;
+  Sink<UserModel> get socialMediaScreenSink => socialMediaScreenController.sink;
 
   void onGoogleSignInPressed() {
     _auth.googleSignIn().then((user) {
@@ -55,7 +55,7 @@ class SignInBloc extends BlocBase {
   void onSignOutPressed() {
     messageErrorSink.add(null);
     mainScreenErrorSink.add(null);
-    socialMediaScreenErrorSink.add(null);
+    socialMediaScreenSink.add(null);
     _userPreferences.getUserId().then((userId) {
       _userRepository.handleOnlineState(userId, false);
     });
@@ -87,7 +87,7 @@ class SignInBloc extends BlocBase {
       _userPreferences.saveLoggedIn();
       mainScreenErrorSink.add(existingUser);
     } else {
-      socialMediaScreenErrorSink.add(newUser);
+      socialMediaScreenSink.add(newUser);
     }
   }
 

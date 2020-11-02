@@ -157,7 +157,8 @@ class Auth implements BaseAuth {
          ''');
 
         FirebaseUser firebaseUser = (await _firebaseAuth.signInWithCredential(authCredential)).user;
-        var userPhotoUrl = await _getUrlFromFacebook(firebaseUser, accessToken.token);
+        var userPhotoUrl = '';//await _getUrlFromFacebook(firebaseUser, accessToken.token);
+        //TODO add photo 
         UserModel user = _getUserModel(firebaseUser, userPhotoUrl);
 
         return user;

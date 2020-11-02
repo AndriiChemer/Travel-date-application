@@ -107,7 +107,7 @@ class SocialMediaSignUpBloc extends BlocBase {
       print("User place is null");
     }
 
-//    _openNextScreen(newUser);
+   _openNextScreen(newUser);
   }
 
   printUserLocation(Placemark place) {

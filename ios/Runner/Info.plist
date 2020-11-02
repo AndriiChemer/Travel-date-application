@@ -34,6 +34,14 @@
 				<string>com.googleusercontent.apps.418506897771-de2fmu4m13biacgt1bcg7k891mgptfll</string>
 			</array>
 		</dict>
+		<dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>instagram.com</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>myappredirect</string>
+        </dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
@@ -94,16 +102,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-    	<array>
-    		<dict>
-    			<key>CFBundleURLSchemes</key>
-    			<array>
-    				<string>instagram.com</string>
-    			</array>
-    			<key>CFBundleURLName</key>
-    			<string>myappredirect</string>
-    		</dict>
-    	</array>
 </dict>
 </plist>

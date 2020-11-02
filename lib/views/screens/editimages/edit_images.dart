@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:travel_date_app/models/user_model.dart';
 import 'package:travel_date_app/services/blocs/image_bloc.dart';
@@ -90,7 +91,7 @@ class _EditImageScreenState extends State<EditImageScreen> {
             childAspectRatio: (itemWidth / itemHeight),
             padding: const EdgeInsets.all(10),
             children: images.map((String image) {
-              return ValidateFields.isStringUrl(image) ? _imageItem(image, itemWidth, itemHeight) : image != '' ? _localImage(image, itemWidth, itemHeight) : _addImage(itemWidth, itemHeight);
+              return ValidateFields.isStringUrl(image) ? _imageItem(image, itemWidth, itemHeight) : image == 'loading' ? _loadingImage(itemWidth, itemHeight)  : _addImage(itemWidth, itemHeight);
             }).toList(),
           ),
         );
@@ -138,6 +139,32 @@ class _EditImageScreenState extends State<EditImageScreen> {
     );
   }
 
+  Widget _loadingImage(double itemWidth, double itemHeight) {
+    return Container(
+      margin: EdgeInsets.all(5),
+      child: DottedBorder(
+        color: Colors.white,
+        borderType: BorderType.RRect,
+        radius: Radius.circular(10),
+        dashPattern: [8, 4],
+        padding: EdgeInsets.all(0),
+        child: Container(
+          width: itemWidth - 40,
+          height: itemHeight - 45,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Center(
+            child: SpinKitFadingCube(
+              color: Colors.yellow[800],
+              size: 30,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _imageItem(String image, double itemWidth, double itemHeight) {
     return Container(
       margin: EdgeInsets.all(5),
@@ -169,34 +196,40 @@ class _EditImageScreenState extends State<EditImageScreen> {
 
           Align(
             alignment: Alignment.bottomRight,
-            child: _popupImageMenu(image),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _localImage(String image, double itemWidth, double itemHeight) {
-    return Container(
-      margin: EdgeInsets.all(5),
-
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: itemWidth - 40,
-            height: itemHeight - 45,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+            child: PopupMenuButton<int>(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: SET_PROFILE,
+                  child: Text("Set as profile", style: TextStyle(fontWeight: FontWeight.w700),),
+                ),
+                PopupMenuItem(
+                  value: REMOVE,
+                  child: Text("Remove", style: TextStyle(fontWeight: FontWeight.w700),),
+                )
+              ],
+              padding: EdgeInsets.all(0),
+              onSelected: (value) {
+                switch(value) {
+                  case SET_PROFILE:
+                    _imageBloc.setAsProfileImage(widget.user.id, image);
+                    break;
+                  case REMOVE:
+                    _imageBloc.removeImage(widget.user.id, image);
+                    break;
+                }
+              },
+              child: GestureDetector(
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  child: Icon(Icons.edit, size: 20,),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.yellow[800]
+                  ),
+                ),
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: new BorderRadius.circular(10),
-              child: Image.file(File(image), fit: BoxFit.cover,),
-            ),
-          ),
-
-          Align(
-              alignment: Alignment.bottomRight,
-              child: _popupImageMenu(image)
           )
         ],
       ),
@@ -226,43 +259,6 @@ class _EditImageScreenState extends State<EditImageScreen> {
           onPressed: onSaveClick,
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(30.0),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _popupImageMenu(String image) {
-    return PopupMenuButton<int>(
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: SET_PROFILE,
-          child: Text("Set as profile", style: TextStyle(fontWeight: FontWeight.w700),),
-        ),
-        PopupMenuItem(
-          value: REMOVE,
-          child: Text("Remove", style: TextStyle(fontWeight: FontWeight.w700),),
-        )
-      ],
-      padding: EdgeInsets.all(0),
-      onSelected: (value) {
-        switch(value) {
-          case SET_PROFILE:
-            _imageBloc.setAsProfileImage(widget.user.id, image);
-            break;
-          case REMOVE:
-            _imageBloc.removeImage(widget.user.id, image);
-            break;
-        }
-      },
-      child: GestureDetector(
-        child: Container(
-          width: 25,
-          height: 25,
-          child: Icon(Icons.edit, size: 20,),
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.yellow[800]
           ),
         ),
       ),
